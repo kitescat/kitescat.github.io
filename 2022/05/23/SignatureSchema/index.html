@@ -19,19 +19,19 @@
     <meta name="description" content="验证的方式有许多种，你知道哪些？">
 <meta property="og:type" content="article">
 <meta property="og:title" content="数字签名知多少？| 一篇总结与分类">
-<meta property="og:url" content="http://example.com/2022/05/23/SignatureSchema/index.html">
+<meta property="og:url" content="https://kitescat.github.io/2022/05/23/SignatureSchema/index.html">
 <meta property="og:site_name" content="kitescat 的博客">
 <meta property="og:description" content="验证的方式有许多种，你知道哪些？">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/img/DS.png">
+<meta property="og:image" content="https://kitescat.github.io/img/DS.png">
 <meta property="article:published_time" content="2022-05-23T13:26:47.000Z">
-<meta property="article:modified_time" content="2022-05-27T06:34:14.767Z">
+<meta property="article:modified_time" content="2022-05-27T14:17:58.692Z">
 <meta property="article:author" content="kitescat">
 <meta property="article:tag" content="数字签名">
 <meta property="article:tag" content="区块链">
 <meta property="article:tag" content="Crypto">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/img/DS.png">
+<meta name="twitter:image" content="https://kitescat.github.io/img/DS.png">
   
   
   
@@ -73,7 +73,7 @@
   <script id="fluid-configs">
     var Fluid = window.Fluid || {};
     Fluid.ctx = Object.assign({}, Fluid.ctx)
-    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"Bdvwiy7o0pH7cQqR3w5tSkwq-gzGzoHsz","app_key":"F1k0q0hNrqIoyqh5dgzVHVYi","server_url":null,"path":"window.location.pathname","ignore_local":false,"security":false}},"search_path":"/local-search.xml"};
+    var CONFIG = {"hostname":"kitescat.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"Bdvwiy7o0pH7cQqR3w5tSkwq-gzGzoHsz","app_key":"F1k0q0hNrqIoyqh5dgzVHVYi","server_url":null,"path":"window.location.pathname","ignore_local":false,"security":false}},"search_path":"/local-search.xml"};
 
     if (CONFIG.web_analytics.follow_dnt) {
       var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
@@ -222,7 +222,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          83 字
+          287 字
         
       </span>
     
@@ -234,7 +234,7 @@
         
         
           <!-- compatible with older versions-->
-          1 分钟
+          3 分钟
         
       </span>
     
@@ -284,9 +284,14 @@
             
             <div class="markdown-body">
               
-              <h1 id="数字签名"><a href="#数字签名" class="headerlink" title="数字签名"></a>数字签名</h1><p>盲签名<br>环签名<br>多方签名<br>群签名<br>DSA 数字签名<br>Schnorr signature<br>ElGamal signature</p>
-<p>一个简单的数字签名，并介绍其使用的加密算法</p>
-<h1 id="分类"><a href="#分类" class="headerlink" title="分类"></a>分类</h1><h1 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h1>
+              <p>首先你必须知道什么是加密，什么是签名。<br>加密是对一段明文做分组，混淆等操作之后，即使变成密文，经过密钥解密也能恢复的数学操作。<br>签名是对消息的哈希用私钥进行签名，并用公钥进行验证的一种操作。<br>而哈希是一种压缩的操作，对消息已经有了一定损失，无法恢复。</p>
+<h1 id="数字签名"><a href="#数字签名" class="headerlink" title="数字签名"></a>数字签名</h1><p>签名是对消息的哈希用私钥进行签名，并用公钥进行验证的一种操作。用于消息的身份验证，避免冒充和伪造。<br>一个数字签名的简单流程如下:<br><img src="/img/DS_flow.jpg" srcset="/img/loading.gif" lazyload></p>
+<h2 id="分类"><a href="#分类" class="headerlink" title="分类"></a>分类</h2><p>介绍其各自使用的加密算法，数学知识等</p>
+<h3 id="盲签名-匿名性"><a href="#盲签名-匿名性" class="headerlink" title="盲签名 匿名性"></a>盲签名 匿名性</h3><h3 id="DSA-数字签名"><a href="#DSA-数字签名" class="headerlink" title="DSA 数字签名"></a>DSA 数字签名</h3><h3 id="Schnorr-signature"><a href="#Schnorr-signature" class="headerlink" title="Schnorr signature"></a>Schnorr signature</h3><h3 id="ElGamal-signature"><a href="#ElGamal-signature" class="headerlink" title="ElGamal signature"></a>ElGamal signature</h3><h3 id="环签名-匿名"><a href="#环签名-匿名" class="headerlink" title="环签名 匿名"></a>环签名 匿名</h3><h3 id="多方签名"><a href="#多方签名" class="headerlink" title="多方签名"></a>多方签名</h3><p>多方见证 但是速度慢</p>
+<h3 id="群签名"><a href="#群签名" class="headerlink" title="群签名"></a>群签名</h3><center>欢迎关注我的个人公众号</center>
+
+<p><img src="/img/debug.jpg" srcset="/img/loading.gif" lazyload>s</p>
+
               
             </div>
             <hr/>
@@ -314,7 +319,7 @@
   <div class="license-box my-3">
     <div class="license-title">
       <div>数字签名知多少？| 一篇总结与分类</div>
-      <div>http://example.com/2022/05/23/SignatureSchema/</div>
+      <div>https://kitescat.github.io/2022/05/23/SignatureSchema/</div>
     </div>
     <div class="license-meta">
       
@@ -356,9 +361,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/05/23/DH-keyexchange/" title="DH-keyexchange">
+                      <a href="/2022/05/24/SmartContract/" title="智能合约||Web3的投币机">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">DH-keyexchange</span>
+                        <span class="hidden-mobile">智能合约||Web3的投币机</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
