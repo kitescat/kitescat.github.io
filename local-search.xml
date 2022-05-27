@@ -1,0 +1,422 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  
+  
+  
+  <entry>
+    <title>智能合约||Web3的投币机</title>
+    <link href="/2022/05/24/SmartContract/"/>
+    <url>/2022/05/24/SmartContract/</url>
+    
+    <content type="html"><![CDATA[<p>这篇文章主要整理了我的一些疑惑和解答，仅供参考，本人还在学习。</p><h2 id="0x01-什么是智能合约？"><a href="#0x01-什么是智能合约？" class="headerlink" title="0x01 什么是智能合约？"></a>0x01 什么是智能合约？</h2><p>以太坊的智能合约并非现实中常见的合同，而是存在区块链上，可以被触发执行的一段<strong>程序代码</strong>，这些代码实现了某种预定的规则，是存在于以太坊执行环境中的“自治代理”。</p><h2 id="0x02-没有智能合约之前是如何运作的？"><a href="#0x02-没有智能合约之前是如何运作的？" class="headerlink" title="0x02 没有智能合约之前是如何运作的？"></a>0x02 没有智能合约之前是如何运作的？</h2><p>我们知道区块链简单可以分为三个发展阶段。</p><ol><li><p>Blockchain 1.0<br>加密货币概念开始：第一代技术始于2009年的比特币网络，它被称为区块链1.0。在这一代中，引入了第一个加密货币的创造。<br>这一阶段的想法都是关于<strong>支付及生成加密货币</strong>的功能。</p></li><li><p>Blockchain 2.0<br>智能合约的出现：在区块链技术的第二阶段，2010年引入了各种应用的智能合约和金融服务。<strong>以太坊和超级账本</strong>在这一代中出现。</p></li><li><p>Blockchain 3.0</p></li></ol><p><strong>去中心化应用程序Dapp</strong>的兴起：在这一代区块链中，引入了对分散应用的收敛性。各种研究领域，如卫生、监管、物联网、供应链、商业和智能计算机被考虑用来构建去中心化的应用程序。<br>在这个级别上，使用了以太坊、超级账本和其他一些能够为各种应用程序编写智能合约的平台</p><p>由此我们得知，<strong>没有智能合约之前，区块链技术只能实现很简单的交易等，并不能实现去中心化服务</strong>。</p><h2 id="0x03-智能合约是如何发布和运行的？有什么用"><a href="#0x03-智能合约是如何发布和运行的？有什么用" class="headerlink" title="0x03 智能合约是如何发布和运行的？有什么用?"></a>0x03 智能合约是如何发布和运行的？有什么用?</h2><h3 id="3-1-智能合约的创建："><a href="#3-1-智能合约的创建：" class="headerlink" title="3.1 智能合约的创建："></a>3.1 智能合约的创建：</h3><p>外部账户发起一个转账交易到0x0地址，合约的代码在data域里。<br><img src="/img/contract_new.png"></p><h3 id="3-2-智能合约的部署："><a href="#3-2-智能合约的部署：" class="headerlink" title="3.2 智能合约的部署："></a>3.2 智能合约的部署：</h3><p>主要流程包括以下4个步骤：<br>（1）启动一个以太坊节点/在本地安装hardhat、truffle等平台，他们是solidity编译器；<br>（2）编写智能合约；<br>（3）编写后的智能合约经以太坊虚拟机的编译，成为计算机可运行的字节码；<br>（4）外部账户（合约发起者）发起一个转账交易到0x0地址，编译好的字节码文件在data域里。最终，通过发起交易的形式广播到区块链网络中，由矿工挖矿确认后即可将智能合约存入区块链中，并得到智能合约所在地址及调用合约所需接口。<br>以上就是智能合约的部署方式。</p><p><strong>tips:</strong><br>(1)不是必须的，不一定非要有一个节点 普通用户编写完智能合约之后，在hardhat或者remix等平台本地编译，发送一个新建智能合约的交易到网关节点，由网关节点发送交易到0x0地址，并以广播形式… 重复以上。<br>data域是交易的其中一个内容。</p><h3 id="3-3-智能合约的执行："><a href="#3-3-智能合约的执行：" class="headerlink" title="3.3 智能合约的执行："></a>3.3 智能合约的执行：</h3><p>智能合约可以被外部调用，也可以被另一个合约调用。<br>外部即外部账户，普通用户想要调用智能合约的某个功能,他会</p><pre><code class="hljs">(1) 首先 ，发起一个智能合约交易，data中存储调用的函数。相应的有Gas消耗(2) 交易发送到比如网关节点 infura之类的infura节点对该交易进行验证，加入自己的交易池中，并向其他节点广播该交易(3) 其他节点收到交易之后,也进行验证,并加入交易池,广播给其他节点重复以上直到该交易广播到全网 （这个过程时间多少？）(4) 矿工节点除了有广播和验证的功能之外，还有打包区块的功能。最终，该交易会被一个矿工节点打包到区块上，添加到区块链上。(5) 新的区块不断广播，节点验证每个区块，加入到自己本地存储的区块链，也就是账本上。注意：每个节点都会执行新产生的区块中的智能合约操作，在EVM中执行。</code></pre><p>tips:<br>Infura是一个托管的以太坊节点集群，可以将你开发的以太坊智能合约部署到infura提供的节点上，而无需搭建自己的以太坊节点。通过api调用，可以执行交易，合约交易产生的结果输出到程序中。</p><h2 id="0x04-EVM的作用"><a href="#0x04-EVM的作用" class="headerlink" title="0x04 EVM的作用"></a>0x04 EVM的作用</h2><p>以太坊虚拟机是在沙盒中运行，这是和区块链主链完全隔离的，并且完美地作为测试环境运行。因此，任何想要使用EVM创建智能合约的人，都可以在不受到其他区块链操作的影响下完成。</p><p>注意EVM和节点主机是隔离的，所以智能合约的运行和运行节点客户端的主机之间无关。<br>个人理解：主机运行客户端，所以成为节点。客户端中有EVM和区块链等。<br>至于节点客户端和主机之间有什么交互，我们后续再解答，笔者还未了解详细。</p><h2 id="0x05-以太坊的交易"><a href="#0x05-以太坊的交易" class="headerlink" title="0x05 以太坊的交易"></a>0x05 以太坊的交易</h2><h3 id="5-1-交易的执行"><a href="#5-1-交易的执行" class="headerlink" title="5.1 交易的执行"></a>5.1 交易的执行</h3><p><strong>以太坊一个普通交易是如何执行的？</strong></p><ol><li>用户从Dapp或者钱包初始化一笔交易，比如发送资金或者调用合约。这个类似弹出了MetaMask交易界面。</li><li>用户使用它们的钱包（私钥）签名这个交易。这个例如我们在第一步弹出的交易界面点击确定按钮（签名交易）。</li><li>钱包将签名后的交易发送到连接到以太坊网络的一个节点，通常叫着网关节点。比如我们常用的Infura节点。</li><li>网关节点验证该交易有效并将它放入自己的内存池（交易池/交易队列）中。此时，该交易为Pending状态，所有人都可以读取（前提是提供该项服务）。具体的对象名称在Geth和Parity客户并不相同。进入pending状态的交易代表着将要被交易，具体交易区块由打包矿工决定。</li><li>网关节点将该交易向其它节点（邻近节点）扩散（广播）。这是个Pending交易传播过程。<br>它节点接收到该交易后也验证有效性，然后放入自己的内存池中。然后再向其它节点扩散。这是其它节点将pending放入自己的内存池中。</li><li>重复上述步骤，直到该交易扩散到整个网络。<br>矿工是一种特殊节点，它们除了接收交易和验证它以外，还试图把它加入一个区块。矿工特权，具有打包交易的权利。</li><li>最终，会有一个矿工将该交易打包到区块中（这里假定交易成功并且会被打包）并添加到区块链上（产生一个新区块）。这就是通常所说的挖矿（出块）。<br>新产生的区块向全网广播。（以太坊大概13秒左右出一个块，基本上能够全网广播）。</li><li>所有节点接收到该区块，查看其中包含的交易并将其从自己的内存池中移除。</li></ol><p>当然，这里是有前提的，假定该交易一定被打包，实际上，交易有可能不会被打包，还有可能会被挤出内存池，因为矿工遵循利益最大化原则，谁出的价格高（gasPrice)，先给谁打包，这个原则也催生了跟随交易和抢先交易。</p><h3 id="5-2-交易的种类"><a href="#5-2-交易的种类" class="headerlink" title="5.2 交易的种类"></a>5.2 交易的种类</h3><p><strong>以太坊区块链可以托管三种类型的交易：</strong></p><ol><li><p>首先，你可以将以太坊从一个账户转移到另一个账户。这些转账和比特币转账差不多。例如，你可以转3ETH到房东的账户，作为房租。这些转账记录会包含以下内容：转账生效时的时间戳，转出资金者的地址作为资金的来源，接受者的地址，当然还有资金的数额。</p></li><li><p>用户还可以不给特定对象转账。这类转账就是创建智能合约。例如，假如Jackson和James很聪明，他们打算为特定赌注的条件创建智能合约。这种转账就会包含转出者的账户地址以及时间戳。</p></li><li><p>从外部账户转账到智能合约。每次账户想要执行智能合约，转账就会根据智能合约完成，而且相关的执行规则会记录在数据中，来指导这个合约如何运行。<br>每次上述的转账发生，网络中的节点就会通过EVM来运行特定的代码。</p></li></ol><p><strong>以下内容我并未整理清楚，等待我后续补全！</strong></p><ol><li>智能合约的调用和交易流程</li><li>智能合约有什么新的发展方向</li><li>Solidity 智能合约审计</li><li>其他关于以太坊的知识</li></ol><h2 id="0x06-一些有用的课程和笔记"><a href="#0x06-一些有用的课程和笔记" class="headerlink" title="0x06 一些有用的课程和笔记"></a>0x06 一些有用的课程和笔记</h2><p><a href="https://blog.csdn.net/Mu_Xiaoye/article/details/104299664?spm=1001.2014.3001.5506">https://blog.csdn.net/Mu_Xiaoye/article/details/104299664?spm=1001.2014.3001.5506</a><br><a href="https://www.bilibili.com/video/BV1Vt411X7JF?p=22">https://www.bilibili.com/video/BV1Vt411X7JF?p=22</a></p><h2 id="0x07-参考链接："><a href="#0x07-参考链接：" class="headerlink" title="0x07 参考链接："></a>0x07 参考链接：</h2><p><a href="https://blog.csdn.net/XYlittlework/article/details/118026479">https://blog.csdn.net/XYlittlework/article/details/118026479</a><br><a href="https://www.jb51.net/blockchain/768106.html">https://www.jb51.net/blockchain/768106.html</a><br><a href="https://blog.csdn.net/weixin_39430411/article/details/118197937">https://blog.csdn.net/weixin_39430411/article/details/118197937</a><br><a href="https://blog.csdn.net/Mu_Xiaoye/article/details/104299664?spm=1001.2014.3001.5506">https://blog.csdn.net/Mu_Xiaoye/article/details/104299664?spm=1001.2014.3001.5506</a><br><a href="https://www.bilibili.com/video/BV1Vt411X7JF?p=22">https://www.bilibili.com/video/BV1Vt411X7JF?p=22</a></p><center>欢迎关注我的个人公众号</center><p><img src="/img/debug.jpg"></p>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>区块链</tag>
+      
+      <tag>以太坊</tag>
+      
+      <tag>智能合约</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>DH-keyexchange</title>
+    <link href="/2022/05/23/DH-keyexchange/"/>
+    <url>/2022/05/23/DH-keyexchange/</url>
+    
+    <content type="html"><![CDATA[]]></content>
+    
+    
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>数字签名知多少？| 一篇总结与分类</title>
+    <link href="/2022/05/23/SignatureSchema/"/>
+    <url>/2022/05/23/SignatureSchema/</url>
+    
+    <content type="html"><![CDATA[<h1 id="数字签名"><a href="#数字签名" class="headerlink" title="数字签名"></a>数字签名</h1><p>盲签名<br>环签名<br>多方签名<br>群签名<br>DSA 数字签名<br>Schnorr signature<br>ElGamal signature</p><p>一个简单的数字签名，并介绍其使用的加密算法</p><h1 id="分类"><a href="#分类" class="headerlink" title="分类"></a>分类</h1><h1 id="应用场景"><a href="#应用场景" class="headerlink" title="应用场景"></a>应用场景</h1>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>数字签名</tag>
+      
+      <tag>区块链</tag>
+      
+      <tag>Crypto</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>BlindSignature | 先生您好，这份文件是你签的吗？</title>
+    <link href="/2022/05/23/BlindSignature%E7%9B%B2%E7%AD%BE%E5%90%8D/"/>
+    <url>/2022/05/23/BlindSignature%E7%9B%B2%E7%AD%BE%E5%90%8D/</url>
+    
+    <content type="html"><![CDATA[<h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>-假设一种场景，对某文件签名，而不让签名者看到文件内容，怎么做呢？</p><p>-有同学会说：我知道！让签名者把眼睛闭起来。是的，这也其实是一种办法。<br> 当然更优化的方案是：把文件放到信封里，在信封里放一张复写纸，签名者在信封上签名时，<br> 他的签名便透过复写纸签到文件上。</p><p>此时实现了让签名者不知道内容的同时，实现了数字签名，保护了文件的内容安全。<br>这里只是做一个简单的类比，实际情况中，信封就是消息的盲化操作。<br>（没耐心的人请直接阅读0x04 本文搬运自@Weisswire 大佬的博客 <a href="https://www.cnblogs.com/Severus-Cavendish/p/15587538.html">https://www.cnblogs.com/Severus-Cavendish/p/15587538.html</a>)</p><h1 id="0x01-盲签名的定义"><a href="#0x01-盲签名的定义" class="headerlink" title="0x01 盲签名的定义"></a>0x01 盲签名的定义</h1><p>是一种数字签名的方式，在消息内容被签名之前，对于签名者来说消息内容是不可见的，也就是盲化。</p><h1 id="0x02-性质"><a href="#0x02-性质" class="headerlink" title="0x02 性质"></a>0x02 性质</h1><pre><code class="hljs">不可伪造性：除了签名者本人外，任何人都不能以他的名义生成有效的盲签名。这是一条最基本的性质。不可抵赖性：签名者一旦签署了某个消息，他无法否认自己对消息的签名。盲性：签名者虽然对某个消息进行了签名，但他不可能得到消息的具体内容。不可跟踪性：一旦消息的签名公开后，签名者不能确定自己何时签署的这条消息。即签名者仅知sig(m&#39;)，而不知sig(m）。即使签名者保留sig(m&#39;)及其他有关数据，仍难以找出sig(m)和、sig(m&#39;)之间的内在联系，不可对消息m的拥有者进行追踪</code></pre><h1 id="0x03-流程"><a href="#0x03-流程" class="headerlink" title="0x03 流程"></a>0x03 流程</h1><ol><li>接收者首先将待签数据进行盲变换，把变换后的盲数据发给签名者。</li><li>经签名者签名后再发给接收者。</li><li>接收者对签名再作去盲变换，得出的便是签名者对原数据的盲签名。</li></ol><p><img src="/img/blindvsnormal.png"></p><h1 id="0x04-具体步骤"><a href="#0x04-具体步骤" class="headerlink" title="0x04 具体步骤"></a>0x04 具体步骤</h1><p>1.消息盲化。甲将原消息m进行盲化处理得m’，然后将盲消息m’传送给乙。进行盲化处理的方法很多，例如，可随机选取某个数，称该随机数为盲因子，把原消息数值化后，与盲因子相乘即可得到盲消息。</p><p>2.对盲消息签名。乙应用通常的数字签名方法对盲消息进行签名，并将其签名sig(m’)送给甲。</p><p>3.恢复签名。甲通过除去盲因子的方法，从盲签名sig(m’)中得到相关原消息m的签名：sig(m)。将来出现纠纷时，当甲拿出乙的盲签名，而乙显然不能否认其签名，这样就可以证明原消息的真实性。</p><p>传统的方案主要是RSA方案，区块链中多数时候会用到椭圆曲线进行签名。</p><h1 id="0x05-应用场景"><a href="#0x05-应用场景" class="headerlink" title="0x05 应用场景"></a>0x05 应用场景</h1><p>一切需要匿名签名的情况，比如</p><ol><li>匿名投票</li><li>电子现金：一般的签名，签名者对自己发出的签名，必须是记得的，比如，在何时何地对谁发的，他自己可以记下来。<br>但是，如果把签名看作是电子现金的话，就涉及到一个匿名性的问题。<br>我们也不希望银行通过追踪自己发出签名，来获得用户的消费情况，于是就设计出盲签名。</li></ol><center>欢迎关注我的个人公众号</center><p><img src="/img/debug.jpg"></p>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>数字签名</tag>
+      
+      <tag>区块链</tag>
+      
+      <tag>Crypto</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>给密码学初学者的启示（一）</title>
+    <link href="/2022/05/18/CrytoSchema/"/>
+    <url>/2022/05/18/CrytoSchema/</url>
+    
+    <content type="html"><![CDATA[<h1 id="密码学方案概述"><a href="#密码学方案概述" class="headerlink" title="密码学方案概述"></a>密码学方案概述</h1><h2 id="0x01-密码学分类"><a href="#0x01-密码学分类" class="headerlink" title="0x01 密码学分类"></a>0x01 密码学分类</h2><p>对称密码学<br>非对称密码学<br>RSA DES AES 椭圆曲线 Elgama<br>ABE 是什么 如何实现的 可以怎么利用和优化于方案中<br>基于什么的加解密</p><h2 id="0x02-基于身份加密-可否认加密-配对加密"><a href="#0x02-基于身份加密-可否认加密-配对加密" class="headerlink" title="0x02 基于身份加密 可否认加密 配对加密"></a>0x02 基于身份加密 可否认加密 配对加密</h2><p>在基于身份加密出现之前的解决方案是？</p><h2 id="0x03-常见的hash算法"><a href="#0x03-常见的hash算法" class="headerlink" title="0x03 常见的hash算法"></a>0x03 常见的hash算法</h2><p>MD5<br>sha1<br>sha256<br>什么是哈希碰撞<br>哈希算法的应用场景<br>为什么要用哈希而不是其他算法  他的优缺点是什么？</p><p>关于哈希算法的疑惑</p><p>1.单向性的意思是：一个固定的输入会得到一个固定的输出吗？<br>2.如果一个固定的输入会得到固定的输出 那这有什么不可破解的难度存在 我只需要找摘要对应的是哪个明文不就行了吗<br>3.或许一个hash值对应着许多个不同的明文？</p><h2 id="0x04-常见的密码学攻击方式"><a href="#0x04-常见的密码学攻击方式" class="headerlink" title="0x04 常见的密码学攻击方式"></a>0x04 常见的密码学攻击方式</h2><p>频率攻击</p><h1 id="0x05-密码学应用"><a href="#0x05-密码学应用" class="headerlink" title="0x05 密码学应用"></a>0x05 密码学应用</h1><p>数字签名？原理是什么？怎么用 盲签名 环签名 群签名 多签名<br>什么是布隆过滤器？</p>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>Crypto</tag>
+      
+      <tag>密码学攻击</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>IPFS？数据永存！</title>
+    <link href="/2022/05/16/IPFS_1.0/"/>
+    <url>/2022/05/16/IPFS_1.0/</url>
+    
+    <content type="html"><![CDATA[<h1 id="0x01-什么是IPFS"><a href="#0x01-什么是IPFS" class="headerlink" title="0x01 什么是IPFS"></a>0x01 什么是IPFS</h1><h1 id="0x02-IPFS-文件的上传和下载"><a href="#0x02-IPFS-文件的上传和下载" class="headerlink" title="0x02 IPFS 文件的上传和下载"></a>0x02 IPFS 文件的上传和下载</h1><h1 id="0x03-IPFS-网关"><a href="#0x03-IPFS-网关" class="headerlink" title="0x03 IPFS 网关"></a>0x03 IPFS 网关</h1><h1 id="0x04-如何搭建自己的ipfs服务"><a href="#0x04-如何搭建自己的ipfs服务" class="headerlink" title="0x04 如何搭建自己的ipfs服务"></a>0x04 如何搭建自己的ipfs服务</h1><p>多种方式，如Desktop 通过<a href="http://127.0.0.1:8080/ipfs/hash">http://127.0.0.1:8080/ipfs/hash</a> 访问文件 有一些是https:// 访问</p><h1 id="0x05-有趣的发现"><a href="#0x05-有趣的发现" class="headerlink" title="0x05 有趣的发现"></a>0x05 有趣的发现</h1><p>发现去一些公开的IPFS网关 也可以通过hash值访问到特定文件，而且即使你本地的文件删除了<br>该文件仍然会在其他节点上存在着副本，隔段时间再消失（应该是）<br>这就颇有  数据永存  的味道了<br>这样，一个只要能联网，就可以访问某文件的神奇的世界就实现了（bushi</p>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>分布式文件系统</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>给区块链初学者的实验启示（一）</title>
+    <link href="/2022/05/16/how2builddev4bc/"/>
+    <url>/2022/05/16/how2builddev4bc/</url>
+    
+    <content type="html"><![CDATA[<h1 id="0x01-区块链介绍"><a href="#0x01-区块链介绍" class="headerlink" title="0x01 区块链介绍"></a>0x01 区块链介绍</h1><p>区块链与其他技术的区别<br>点对点网络 分布式网络 分布式文件系统 IPFS<br>区块链种类<br>比特币网络 和 以太坊网络 的区别是什么？<br>测试网络的存在</p><p>Fork 是什么？<br>最长链原则<br>挖矿是如何进行的<br>一些常见的区块链漏洞</p><p>共识算法<br>原理的核心<br>什么是账户<br>账户是如何产生的 占不占空间<br>什么是地址<br>什么是账本 Ledger<br>什么是交易 Transtraction TX<br>一次交易必须是一对一的吗 还是可以多对多？ 一个人给多个人转账？<br>区块链的数据是不断增长的 为什么不会有数据爆炸？<br>区块链上的区块存储的到底是什么？</p><p>一个地址可能是账户 可能是智能合约 查看某账户的交易记录<br>如何知道一个地址是合约还是账户<br>公私钥的作用</p><p>一个账户消亡之后 私钥会回收吗<br>地址呢？</p><p>什么是智能合约<br>数字签名<br>Merkle Tree<br>以太坊区块是如何打包的？区块里面是什么？<br>多条链是如何处理的？<br>DPOS 的几条准则和会遇到的情况？</p><h1 id="0x02-实验平台"><a href="#0x02-实验平台" class="headerlink" title="0x02 实验平台"></a>0x02 实验平台</h1><p>hardhhat<br>Remix IDE<br>Ganache</p><p>如何搭建私链？<br>什么是钱包？MetaMask<br>Solidity<br>开发语言<br>什么库 library</p><h1 id="0x03-Web-3-0"><a href="#0x03-Web-3-0" class="headerlink" title="0x03 Web 3.0"></a>0x03 Web 3.0</h1><h1 id="0x04-测试网络以及测试币水龙头"><a href="#0x04-测试网络以及测试币水龙头" class="headerlink" title="0x04 测试网络以及测试币水龙头"></a>0x04 测试网络以及测试币水龙头</h1><p>如何得到测试币<br>网站：<br>Rinkeby testnet<br><a href="https://faucets.chain.link/rinkeby">https://faucets.chain.link/rinkeby</a> 拿0.1ETH<br><a href="https://rinkebyfaucet.com/">https://rinkebyfaucet.com/</a> 拿0.5ETH<br>Ropsten testnet<br><a href="https://faucet.dimensions.network/">https://faucet.dimensions.network/</a> 拿1ETH<br><a href="https://faucet.egorfine.com/">https://faucet.egorfine.com/</a> 拿10ETH<br><a href="https://moonborrow.com/">https://moonborrow.com/</a> 拿一定数量的币</p>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>Blockchain</tag>
+      
+      <tag>Ethereum</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>粗心程序员惨遭删库勒索</title>
+    <link href="/2022/05/15/monogodbvuls/"/>
+    <url>/2022/05/15/monogodbvuls/</url>
+    
+    <content type="html"><![CDATA[<h1 id="MongoDB遭遇删库勒索漏洞"><a href="#MongoDB遭遇删库勒索漏洞" class="headerlink" title="MongoDB遭遇删库勒索漏洞"></a>MongoDB遭遇删库勒索漏洞</h1><p>申明：本地测试，请遵守法律，切勿对未授权网站进行恶意攻击渗透</p><h2 id="0X01-漏洞介绍"><a href="#0X01-漏洞介绍" class="headerlink" title="0X01 漏洞介绍"></a>0X01 漏洞介绍</h2><p>最近在看的项目源代码用到很多类型的数据库，除了上次我们讲到redis数据库<br>这次我又发现，除了已知的redis之外，MongoDB数据库也可能存在未授权登录<br><img src="/img/mongo.png"></p><p>这里我们对MongoDB不做特别介绍，只需要知道该漏洞，和上次的redis漏洞一样初始化运行时候，默认都是没有密码的<br>且没有严格的访问控制，容易造成任意用户登录等问题</p><h2 id="0X02-漏洞利用"><a href="#0X02-漏洞利用" class="headerlink" title="0X02 漏洞利用"></a>0X02 漏洞利用</h2><p>信息搜集一番，安装MongoDB Compass，根据ip和端口号尝试连接<br><img src="/img/mongo_connect.png"><br>通过输入ip:port连接成功!<br><img src="/img/mongo_login.png"></p><p>查看数据库 Database，发现有三个admin，config和一个显著的Readme to recover your data<br><img src="/img/mondb_cont.png"></p><p>查看ReadMe和其他数据库，发现该数据库已经被dump了<br>且攻击者留下信息，要求48h内汇款比特币交易，才会将数据还给你</p><pre><code class="hljs">All your data is a backed up. You must pay 0.03 BTC to 1322TfVUsgwNkWupVwEdceyRYbEZeN9qCu 48 hours for recover it.After 48 hours expiration we will leaked and exposed all your data. In case of refusal to pay, we will contact the General Data Protection Regulation, GDPR and notify them that youstore user data in an open form and is not safe. Under the rules of the law, you face a heavy fine or arrest andyour base dump will be dropped from our server! You can buy bitcoin here, does not take much time to buy https://localbitcoins.com or https://buy.moonpay.io/ After paying write to me in the mail with your DB IP: recmydb+1vqt9@onionmail.org and you will receive a link to download your database dump.</code></pre><p>到目前为止，我们已经展示了两个数据库相关的利用手段特别傻瓜的漏洞，均为未授权访问类型的漏洞<br>即通过远程连接无密码登录服务器数据库，并可以对数据库进行若干操作</p><p>灵机一动，我们去fofa(网络空间扫描)看看其他机器是否有类似的漏洞<br><img src="/img/fofa_mongo.png"><br>果不其然，很多ip都存在，且相当一部分机器已经被删库，并留下勒索信息<br><img src="/img/fofa_mongobug.png"></p><h2 id="0X03-可能造成的影响："><a href="#0X03-可能造成的影响：" class="headerlink" title="0X03 可能造成的影响："></a>0X03 可能造成的影响：</h2><p>首先数据库内容若非敏感信息，损失不严重<br>但我们发现任意登陆者都可以任意上传文件，推测可以造成服务器内存异常<br>这样就会使得原本正常运行在该服务器上的服务无法很好地运行</p><h2 id="0X04-可能造成的影响："><a href="#0X04-可能造成的影响：" class="headerlink" title="0X04 可能造成的影响："></a>0X04 可能造成的影响：</h2><p>若不需要mongodb可以将其卸载 然后设置好权限 去掉外网访问权限<br>其他修复意见见网络</p><h2 id="0X05-相关博客"><a href="#0X05-相关博客" class="headerlink" title="0X05 相关博客"></a>0X05 相关博客</h2><p><a href="https://www.cnblogs.com/lzkalislw/p/15991123.html">https://www.cnblogs.com/lzkalislw/p/15991123.html</a> </p>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>Database</tag>
+      
+      <tag>MongoDB</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>门罗币挖矿漏洞</title>
+    <link href="/2022/04/23/Vulnerability/"/>
+    <url>/2022/04/23/Vulnerability/</url>
+    
+    <content type="html"><![CDATA[<h1 id="关于Redis未授权访问漏洞引发挖矿漏洞的渗透经历"><a href="#关于Redis未授权访问漏洞引发挖矿漏洞的渗透经历" class="headerlink" title="关于Redis未授权访问漏洞引发挖矿漏洞的渗透经历"></a>关于Redis未授权访问漏洞引发挖矿漏洞的渗透经历</h1><p>申明：本地测试，请遵守法律，切勿对未授权网站进行恶意攻击渗透</p><h2 id="漏洞：Redis未授权访问漏洞及门罗币挖矿漏洞"><a href="#漏洞：Redis未授权访问漏洞及门罗币挖矿漏洞" class="headerlink" title="漏洞：Redis未授权访问漏洞及门罗币挖矿漏洞"></a>漏洞：Redis未授权访问漏洞及门罗币挖矿漏洞</h2><h2 id="1-测试条件：建议本地测试-源码安装开源项目"><a href="#1-测试条件：建议本地测试-源码安装开源项目" class="headerlink" title="1.测试条件：建议本地测试 源码安装开源项目"></a>1.测试条件：建议本地测试 源码安装开源项目</h2><p>漏洞存在的原因是服务器开放redis服务，6379端口打开，且未设置数据库访问密码；<br>攻击者可以任意连接，攻击者通过连接redis服务，在有root权限启动redis服务的情况下，<br>使用特殊指令能够修改服务器密钥或者运行恶意脚本，达到植入挖矿脚本等目的</p><h2 id="2-细节："><a href="#2-细节：" class="headerlink" title="2.细节："></a>2.细节：</h2><p>通过任意pc端，安装redis-cli；<br>在redis目录命令行输入redis-cli -h  ip -p 端口连接到该服务器redis服务（本地测试）；<br><img src="/img/redis_login.png"><br>成功连接redis服务，接下来查看redis中存储的内容；</p><h3 id="2-1-输入info获取服务器敏感信息"><a href="#2-1-输入info获取服务器敏感信息" class="headerlink" title="2.1 输入info获取服务器敏感信息"></a>2.1 输入info获取服务器敏感信息</h3><p><img src="/img/redis_info.png"></p><h3 id="2-2-输入config命令；"><a href="#2-2-输入config命令；" class="headerlink" title="2.2 输入config命令；"></a>2.2 输入config命令；</h3><p><img src="/img/redis_eg.png"></p><h3 id="2-3-尝试查看redis数据库存储内容；"><a href="#2-3-尝试查看redis数据库存储内容；" class="headerlink" title="2.3 尝试查看redis数据库存储内容；"></a>2.3 尝试查看redis数据库存储内容；</h3><p><img src="/img/redis_keys.png"><br>发现异常脚本存储backup等；<br><img src="/img/novel_shell.png"><br>此处仔细查看发现他们的格式都很整齐一致，一开始我以为只是简单的指令，可是明明没有root权限；<br>为何要在redis里面存储需要用到root权限的shell脚本，本身数据库存脚本就已经很可疑了。</p><p>这时候谷歌大法好，搜索一波，发现有类似利用漏洞手段，门罗币挖矿相关的；<br><img src="/img/lost_keys.png"><br>发现上面的backup和网络中出现的一模一样，即使他用oracle做障眼法，还是难逃法眼。<br><img src="/img/wakuang.png"></p><p>———————————–END——————————————–</p><h2 id="3-结论"><a href="#3-结论" class="headerlink" title="3.结论"></a>3.结论</h2><p>漏洞已被利用，且脚本可能不定时自动运行，进行门罗币挖矿；<br>可利用“top”指令查看cpu占用率，查看是否有异常进程。</p><h2 id="4-修复建议："><a href="#4-修复建议：" class="headerlink" title="4.修复建议："></a>4.修复建议：</h2><p>删除挖矿脚本，杀死异常进程；<br>删除多余的ssh密钥；<br>重装redis服务，设置严格密码，关闭6379端口；<br>以下为网络对该漏洞修复提供的建议：</p><h2 id="5-相关博客"><a href="#5-相关博客" class="headerlink" title="5.相关博客"></a>5.相关博客</h2><p><a href="https://www.cnblogs.com/Cl0ud/p/13873085.html">https://www.cnblogs.com/Cl0ud/p/13873085.html</a></p>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>Blockchain</tag>
+      
+      <tag>Database</tag>
+      
+      <tag>Redis</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>Commitment Schema之比特承诺</title>
+    <link href="/2022/03/21/CommitmentSchema/"/>
+    <url>/2022/03/21/CommitmentSchema/</url>
+    
+    <content type="html"><![CDATA[<p>最近读论文，涉及到一个密码学概念：Commitment Schema。字面意思就是承诺方案。</p>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>Blockchain</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>ECC椭圆曲线密码</title>
+    <link href="/2022/03/20/ECC%E6%A4%AD%E5%9C%86%E6%9B%B2%E7%BA%BF%E5%AF%86%E7%A0%81/"/>
+    <url>/2022/03/20/ECC%E6%A4%AD%E5%9C%86%E6%9B%B2%E7%BA%BF%E5%AF%86%E7%A0%81/</url>
+    
+    <content type="html"><![CDATA[]]></content>
+    
+    
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>区块链开发（一）||一个最简单Dapp的实现</title>
+    <link href="/2022/03/19/%E5%8C%BA%E5%9D%97%E9%93%BE%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89%E4%B8%80%E4%B8%AA%E6%9C%80%E7%AE%80%E5%8D%95Dapp%E7%9A%84%E5%AE%9E%E7%8E%B0/"/>
+    <url>/2022/03/19/%E5%8C%BA%E5%9D%97%E9%93%BE%E5%BC%80%E5%8F%91%EF%BC%88%E4%B8%80%EF%BC%89%E4%B8%80%E4%B8%AA%E6%9C%80%E7%AE%80%E5%8D%95Dapp%E7%9A%84%E5%AE%9E%E7%8E%B0/</url>
+    
+    <content type="html"><![CDATA[<h1 id="项目背景"><a href="#项目背景" class="headerlink" title="项目背景"></a>项目背景</h1><h1 id="目的"><a href="#目的" class="headerlink" title="目的"></a>目的</h1><h1 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h1><h1 id="智能合约开发"><a href="#智能合约开发" class="headerlink" title="智能合约开发"></a>智能合约开发</h1><h1 id="最终实现效果"><a href="#最终实现效果" class="headerlink" title="最终实现效果"></a>最终实现效果</h1><h1 id="github链接"><a href="#github链接" class="headerlink" title="github链接"></a>github链接</h1>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>Blockchain</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>Nuls链的部署和相关知识</title>
+    <link href="/2022/03/19/Nuls%E9%93%BE%E7%9A%84%E9%83%A8%E7%BD%B2%E5%92%8C%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/"/>
+    <url>/2022/03/19/Nuls%E9%93%BE%E7%9A%84%E9%83%A8%E7%BD%B2%E5%92%8C%E7%9B%B8%E5%85%B3%E7%9F%A5%E8%AF%86/</url>
+    
+    <content type="html"><![CDATA[<h1 id="区块链软件工程课程"><a href="#区块链软件工程课程" class="headerlink" title="区块链软件工程课程"></a>区块链软件工程课程</h1><p>由于本学期选了区块链软件工程这个课，所以开始接触coderchain这个项目，尽管老师将项目源码开放了，但是很多技术细节我还不是懂不明白<br>跟前面讲的FISCO BCOS一样，一脸懵逼。接下来我会记录跑这个项目，以及添加自己的代码模块的过程。</p><h1 id="NULS链的部署"><a href="#NULS链的部署" class="headerlink" title="NULS链的部署"></a>NULS链的部署</h1><p>我们用到chainbox</p><h2 id="Chainbox"><a href="#Chainbox" class="headerlink" title="Chainbox"></a>Chainbox</h2><p>ChainBox是一个快速搭建区块链的工具，封装了账本，账户，交易，区块，共识，网络六个底层模块，屏蔽了分布式数据存储、点对点传输、共识机制、加密算法等复杂区块链技术，<br>开发者可使用它实现分钟级搭建TPS达1000的基础链，或根据标准通信协议开发业务模块，然后通过chainbox驱动组成一条全新的应用链</p><h2 id="Chainbox的特点"><a href="#Chainbox的特点" class="headerlink" title="Chainbox的特点"></a>Chainbox的特点</h2><p>NULS ChainBox本质上是NULS2.0的一个扩展应用，它的定位是一站式区块链开发平台，它有3个核心特点：</p><ol><li>快速搭建开发环境</li><li>通过模板降低应用开发门槛</li><li>通过约定和脚本降低模板集成的难度，实现一键生成可运行程序</li></ol><h2 id="问题："><a href="#问题：" class="headerlink" title="问题："></a>问题：</h2><p>1.对于MAVEN不熟悉：用到chainbox，但是我在部署时候jdk，maven成功之后，还是出现了运行脚本无法成功或者时间太长的问题<br>这里可能是网络问题，耐心等待下，不过这些小点对我熟悉coderchain项目有点阻碍<br>2.环境变量设置错误：发现一个是我把环境变量设置错了，导致在./tools -p example运行以及./cmd运行时候出现JAVA_HOME 环境未配置等问题<br><img src="/img/jdk.png"><br>这里jdk应该换成java，拼写错误。。。</p><p>3.对于不熟悉chainbox的读者，简单来讲，chainbox就是一个有点像FISCO BCOS的控制台，使得区块链的操作更简便<br>4.执行到钱包开始运行以及进入NULS V2 CLI时，我不知道下一步是如何操作<br><img src="/img/wallet.png"><br><img src="/img/cli.png"><br>且我安装的服务器是命令行的形式，没有GUI，这就很伤。。。（因为这门课课程给的指导文件说是尽量用GUI，我傻傻的相信了。。。）</p><h3 id="Github无法访问的解决方法"><a href="#Github无法访问的解决方法" class="headerlink" title="Github无法访问的解决方法"></a>Github无法访问的解决方法</h3><p>不知道为啥即使我的外主机能访问github，虚拟机却无法顺利的git clone<br>这时候你可以选择将github项目clone到你自己的gitee主页，之后再讲git地址修改为你的gitee地址<br>！！！注意：所有包含github地址的配置文件，都可以这么修改！！！</p><h2 id="其他的疑问："><a href="#其他的疑问：" class="headerlink" title="其他的疑问："></a>其他的疑问：</h2><h3 id="区块链基本操作的执行"><a href="#区块链基本操作的执行" class="headerlink" title="区块链基本操作的执行"></a>区块链基本操作的执行</h3><h3 id="NULS链"><a href="#NULS链" class="headerlink" title="NULS链"></a>NULS链</h3><h3 id="FISCO-BCO的资产注册-用户登录-交易是如何执行的？"><a href="#FISCO-BCO的资产注册-用户登录-交易是如何执行的？" class="headerlink" title="FISCO BCO的资产注册 用户登录 交易是如何执行的？"></a>FISCO BCO的资产注册 用户登录 交易是如何执行的？</h3><h3 id="智能合约编写后如何通过java代码与链交互-用到接口-接口是如何实现的？"><a href="#智能合约编写后如何通过java代码与链交互-用到接口-接口是如何实现的？" class="headerlink" title="智能合约编写后如何通过java代码与链交互 用到接口 接口是如何实现的？"></a>智能合约编写后如何通过java代码与链交互 用到接口 接口是如何实现的？</h3><h3 id="对比之下，两条链的底层有什么区别？"><a href="#对比之下，两条链的底层有什么区别？" class="headerlink" title="对比之下，两条链的底层有什么区别？"></a>对比之下，两条链的底层有什么区别？</h3><center>如有任何问题可发邮件联系我 </center><center>联系方式：kitescat@foxmail.com </center><center>欢迎关注我的个人公众号：打代码的猫</center><p><img src="/img/debug.jpg"></p>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>Blockchain</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>AAGrid-基于区块链的智能电网分布式认证与授权协议</title>
+    <link href="/2022/03/15/AAGrid-%E5%9F%BA%E4%BA%8E%E5%8C%BA%E5%9D%97%E9%93%BE%E7%9A%84%E6%99%BA%E8%83%BD%E7%94%B5%E7%BD%91%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A4%E8%AF%81%E4%B8%8E%E6%8E%88%E6%9D%83%E5%8D%8F%E8%AE%AE/"/>
+    <url>/2022/03/15/AAGrid-%E5%9F%BA%E4%BA%8E%E5%8C%BA%E5%9D%97%E9%93%BE%E7%9A%84%E6%99%BA%E8%83%BD%E7%94%B5%E7%BD%91%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%A4%E8%AF%81%E4%B8%8E%E6%8E%88%E6%9D%83%E5%8D%8F%E8%AE%AE/</url>
+    
+    <content type="html"><![CDATA[<h1 id="序"><a href="#序" class="headerlink" title="序"></a>序</h1><p>本篇我们讲解一篇论文“Distributed Blockchain-Based Authentication and Authorization Protocol for Smart Grid”<br>翻译成中文是：基于区块链的智能电网分布式认证与授权协议<br>我们将通过六个部分讲解这篇论文，包含介绍，贡献，实验，结论等；并对这篇论文的实验进行了初步的复现。</p><h2 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1.Introduction"></a>1.Introduction</h2><h3 id="Smart-Grid-智能电网：传统的电网目前正沿着成为电力信息和通信网络的方向发展。"><a href="#Smart-Grid-智能电网：传统的电网目前正沿着成为电力信息和通信网络的方向发展。" class="headerlink" title="Smart Grid 智能电网：传统的电网目前正沿着成为电力信息和通信网络的方向发展。"></a>Smart Grid 智能电网：传统的电网目前正沿着成为电力信息和通信网络的方向发展。</h3><p><img src="/img/smartgrid.png"><br>智能电网的特点：1.供应商和用户可以实时动态调整电力传输；<br>               2.实现自我修复和自我恢复能力；<br>               3.提高可持续性和效率。</p><h3 id="Authentication-认证：实际就是一个登录和注册的过程"><a href="#Authentication-认证：实际就是一个登录和注册的过程" class="headerlink" title="Authentication 认证：实际就是一个登录和注册的过程"></a>Authentication 认证：实际就是一个登录和注册的过程</h3><h4 id="Authorization-授权：授予某种访问或操作权限："><a href="#Authorization-授权：授予某种访问或操作权限：" class="headerlink" title="Authorization 授权：授予某种访问或操作权限："></a>Authorization 授权：授予某种访问或操作权限：</h4><pre><code class="hljs">            确定用户授权成功后允许执行哪些操作和功能            一种建立对资源的访问的方法，例如功率、计算能力或网络带宽。授权协议还可以处理用户在系统或网络上的权限，包括一个特定的用户是否完全可以访问该系统。流程：可以通过在电力信息管理系统中提供正确的用户名/-密码来验证电力用户的身份。一旦用户经过身份验证，电力服务提供商定义了用户权限的访问策略，是否可以进一步授权他们执行各种功能</code></pre><h3 id="区块链的类型：根据访问机制分为"><a href="#区块链的类型：根据访问机制分为" class="headerlink" title="区块链的类型：根据访问机制分为"></a>区块链的类型：根据访问机制分为</h3><pre><code class="hljs">公有链：BTC、ETH 私有链：以太坊私链联盟链：FISCO BCOS，Hyperledger Fabric</code></pre><p><img src="/img/chaintype.png"></p><h3 id="我们使用的平台：FISCO-BCOS（type：联盟链）"><a href="#我们使用的平台：FISCO-BCOS（type：联盟链）" class="headerlink" title="我们使用的平台：FISCO BCOS（type：联盟链）"></a>我们使用的平台：FISCO BCOS（type：联盟链）</h3><p>相关链接：<a href="https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/installation.html">https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/installation.html</a></p><h2 id="2-Motivation"><a href="#2-Motivation" class="headerlink" title="2.Motivation"></a>2.Motivation</h2><p>电网中出现的问题：<br>（1）中心化监督成本高<br>（2）信任问题<br>（3）信息安全问题</p><h2 id="3-Contributions"><a href="#3-Contributions" class="headerlink" title="3.Contributions"></a>3.Contributions</h2><p>（1）提出了一种基于区块链的分布式认证和授权协议<br>（2）第一个使用联盟区块链技术构建的A&amp;A协议<br>（3）通过算法来维护和记录智能合同，演示了一种使用FISCO平台实际部署我们的A&amp;A协议的方法</p><h2 id="4-Procedure"><a href="#4-Procedure" class="headerlink" title="4.Procedure"></a>4.Procedure</h2><h3 id="A1分布式认证：登录和注册"><a href="#A1分布式认证：登录和注册" class="headerlink" title="A1分布式认证：登录和注册"></a>A1分布式认证：登录和注册</h3><p><img src="/img/A1.jpg"></p><h3 id="A2分布式授权：资源注册和授权"><a href="#A2分布式授权：资源注册和授权" class="headerlink" title="A2分布式授权：资源注册和授权"></a>A2分布式授权：资源注册和授权</h3><p><img src="/img/A2.jpg"></p><h2 id="5-Experiment"><a href="#5-Experiment" class="headerlink" title="5.Experiment"></a>5.Experiment</h2><p>其中我们选择Fisco Bcos作为我们运行的平台，已有开发完善的JDK 接口，因此开发方便<br>源程序包括协议运行的由java编写的app以及实验程序</p><p>运行程序需首先部署Fisco链，运行节点。git下载项目源代码之后，用gradle build，<br>进入项目dist目录中，使用java -cp运行,具体请到github主页查看！</p><h3 id="实验结果："><a href="#实验结果：" class="headerlink" title="实验结果："></a>实验结果：</h3><h4 id="A1"><a href="#A1" class="headerlink" title="A1:"></a>A1:</h4><p><img src="/img/A1Exp1.jpg"><br><img src="/img/A1Exp2.png"><br><img src="/img/A1Exp3.png"></p><h4 id="A2"><a href="#A2" class="headerlink" title="A2:"></a>A2:</h4><p><img src="/img/A2Exp1.jpg"><br><img src="/img/A2Exp2.jpg"></p><h2 id="6-Conclusion"><a href="#6-Conclusion" class="headerlink" title="6.Conclusion"></a>6.Conclusion</h2><p>（1）协议安全可靠<br>（2）部署和实验证明协议的效率高<br>（3）未来方向：将区块链技术用于智能电网的数据统计与资源计算；<br>        对于分布式授权功能，加入角色访问控制<br>        对于数据加密协议，引入同态加密等方法</p><p>程序源代码链接：<a href="https://github.com/humuchuang/AAGrid">https://github.com/humuchuang/AAGrid</a> 或 <a href="https://gitee.com/kitescat/AAGrid">https://gitee.com/kitescat/AAGrid</a></p><h2 id="结尾"><a href="#结尾" class="headerlink" title="结尾"></a>结尾</h2><center>如有任何问题可发邮件联系我 </center><center>联系方式：kitescat@foxmail.com </center><center>欢迎关注我的个人公众号：打代码的猫</center><p><img src="/img/debug.jpg"></p>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>Blockchain</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>開山漏洞扫描器 || tkscanner</title>
+    <link href="/2021/03/25/tkscanner-1/"/>
+    <url>/2021/03/25/tkscanner-1/</url>
+    
+    <content type="html"><![CDATA[<h2 id="tkscanner：面向web应用的漏洞扫描器"><a href="#tkscanner：面向web应用的漏洞扫描器" class="headerlink" title="tkscanner：面向web应用的漏洞扫描器"></a>tkscanner：面向web应用的漏洞扫描器</h2><p>记录一下web漏扫器的开发进度，目前已经写了一点简单的界面</p><h3 id="一、界面展示"><a href="#一、界面展示" class="headerlink" title="一、界面展示"></a>一、界面展示</h3><ol><li>登录界面<br><img src="/img/tk1.png"> </li><li>导航栏<br><img src="/img/tk2.png"></li><li>url输入框<br><img src="/img/tk3.png"></li><li>主页整体一览<br><img src="/img/tk4.png"></li></ol><p>   </p><h3 id="二、接下来可能遇到的困难："><a href="#二、接下来可能遇到的困难：" class="headerlink" title="二、接下来可能遇到的困难："></a>二、接下来可能遇到的困难：</h3><ol><li>爬虫和漏洞检测代码的实现 </li><li>其中redis我没接触过  </li><li>还有多线程和celery异步队列啥的，听起来还是很高深啊。不知道后面会怎么实现  </li><li>前端界面如何优化：Bootstrap框架的学习</li></ol>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>web安全，漏洞扫描</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>项目复盘（二）||innovation-LDA</title>
+    <link href="/2021/03/25/%E9%A1%B9%E7%9B%AE%E5%A4%8D%E7%9B%98%EF%BC%88%E4%BA%8C%EF%BC%89-innovation-LDA/"/>
+    <url>/2021/03/25/%E9%A1%B9%E7%9B%AE%E5%A4%8D%E7%9B%98%EF%BC%88%E4%BA%8C%EF%BC%89-innovation-LDA/</url>
+    
+    <content type="html"><![CDATA[<h2 id="项目复盘（二）-innovation-LDA"><a href="#项目复盘（二）-innovation-LDA" class="headerlink" title="项目复盘（二）||innovation-LDA"></a>项目复盘（二）||innovation-LDA</h2><p>大创项目：基于Innovation-LDA的企业创新社区文本主题发现研究<br>时间：2019.11-2020.4  <br>由于复试需要复盘我的项目，想在就简单梳理一遍</p><h3 id="一、目的："><a href="#一、目的：" class="headerlink" title="一、目的："></a>一、目的：</h3><p>对小米社区的帖子进行分析，利用基于LDA原型算法改进的inno-LDA算法，提取帖子中的主题</p><h3 id="二、输入和输出"><a href="#二、输入和输出" class="headerlink" title="二、输入和输出"></a>二、输入和输出</h3><ol><li>数据来源：小米社区的数据  （不同时间段的）  </li><li>爬虫：已经有的数据 有不同时间段的帖子 每份大概3w条  <br>由于是老师提供的数据，都输出在excel里了，就没去仔细研究爬虫了<br>数据如图：<br><img src="/img/dataoflda.png"> </li><li>输出：每个算法程序的输出为每个帖子对应的主题 </li></ol><p>  例如帖子1：    </p><pre><code class="hljs">标题：单手模式改进意见_新功能建议_MIUI论坛        内容：单手模式能不能把显示区域居中靠右或者靠左...  输出为主题：单手模式   </code></pre><ol start="4"><li>实现：我们实现的lda类模型有LDA,local_LDA,sent_LDA,inno_LDA四种。  <br>我负责的是sent_lda。</li></ol><h3 id="三、方法和原理"><a href="#三、方法和原理" class="headerlink" title="三、方法和原理"></a>三、方法和原理</h3><p>LDA算法的原理：<br>Blei D M, Ng A Y, Jordan M I. Latent dirichlet allocation[J]. Journal of Machine Learning Research, 2012, 3:993-1022.</p><p>吉布斯采样和EM变分算法的区别：</p><p>Inno-LDA的原理：<br>local_LDA的原理：<br>出自论文：Brody S, Elhadad N. An unsupervised aspect-sentiment model for online reviews<br>sent_lda算法的原理：</p><h3 id="四、主要负责什么工作"><a href="#四、主要负责什么工作" class="headerlink" title="四、主要负责什么工作"></a>四、主要负责什么工作</h3><p>Sent-lda的输入脚本开发<br>数据清洗，用正则表达式 比如繁体 字母大小写 特殊字符<br>正则表达式哪些比较好用？特殊<br>中文分词 用的是百度的jieba分词<br>自定义字典 对一些特定的专业词汇自定义分词<br>数据展示：困惑度整合成条形图，词云跑过主题图<br>Sent-lda算法的复现（这个没做）<br>lda主题算法和其他变形讲解？</p><h3 id="五、遇到的问题如何解决"><a href="#五、遇到的问题如何解决" class="headerlink" title="五、遇到的问题如何解决"></a>五、遇到的问题如何解决</h3><p>有些参数上的错误，造成算法错误<br>困惑度的计算<br>多线程跑，数据量大<br>我自己遇到的问题：一开始需要我复现输入脚本的代码，我就去读论文。但是似乎需要固定的格式作者没给出。就通读了下算法变形的地方，在我们复现的lda上做修改。不过最后找到原作者用到了他的脚本和软件。<br>感谢来自上交的鲍杨老师提供了脚本：<br>老师说要避免出现过拟合的现象<br>最后的结果是我们人工标记打分主题的匹配程度，inno-lda优于lda，但sentlda可能更好，具体原因就没再深究，我就结束了我的工作。家里有事加上考研。<br>我自己遇到的问题就是预处理，多个版本总是不一致<br>因为一开始就和原作者那个不一样，所以要修改原作者的脚本和我们的一致才行</p><h3 id="六、参考文献"><a href="#六、参考文献" class="headerlink" title="六、参考文献"></a>六、参考文献</h3>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>项目复盘</tag>
+      
+      <tag>NLP</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>项目复盘（一）||图像处理C#程序</title>
+    <link href="/2021/03/25/%E9%A1%B9%E7%9B%AE%E5%A4%8D%E7%9B%98%EF%BC%88%E4%B8%80%EF%BC%89-%E5%9F%BA%E4%BA%8EEmguCV%E7%9A%84%E8%AF%86%E5%88%AB%E5%9B%BE%E5%BD%A2%E4%B8%AD%E5%BF%83%E7%9A%84C-WinForm%E7%A8%8B%E5%BA%8F/"/>
+    <url>/2021/03/25/%E9%A1%B9%E7%9B%AE%E5%A4%8D%E7%9B%98%EF%BC%88%E4%B8%80%EF%BC%89-%E5%9F%BA%E4%BA%8EEmguCV%E7%9A%84%E8%AF%86%E5%88%AB%E5%9B%BE%E5%BD%A2%E4%B8%AD%E5%BF%83%E7%9A%84C-WinForm%E7%A8%8B%E5%BA%8F/</url>
+    
+    <content type="html"><![CDATA[<h1 id="对物体中心检测的-C-窗口程序的复盘"><a href="#对物体中心检测的-C-窗口程序的复盘" class="headerlink" title="对物体中心检测的 C# 窗口程序的复盘"></a>对物体中心检测的 C# 窗口程序的复盘</h1><h2 id="一、目的："><a href="#一、目的：" class="headerlink" title="一、目的："></a>一、目的：</h2><p>测物体的中心输出相对坐标 便于蛋糕机器人喷涂图案</p><h2 id="二、实现的输入和输出"><a href="#二、实现的输入和输出" class="headerlink" title="二、实现的输入和输出"></a>二、实现的输入和输出</h2><h3 id="输入："><a href="#输入：" class="headerlink" title="输入："></a>输入：</h3><p>照相机照相 光源干扰 反光灯因素如何避免</p><h3 id="对图像中的噪点如何处理？"><a href="#对图像中的噪点如何处理？" class="headerlink" title="对图像中的噪点如何处理？"></a>对图像中的噪点如何处理？</h3><p>加入蛋糕上面有多个圆形怎么办 取最外面的图像 不管是方形还是圆形<br>选择机制 加入轮廓最大的是方形就选择方形中心</p><h3 id="输出："><a href="#输出：" class="headerlink" title="输出："></a>输出：</h3><p>1.圆形的圆心坐标<br>2.方形的中心坐标 </p><h3 id="结果："><a href="#结果：" class="headerlink" title="结果："></a>结果：</h3><p>输出到窗口上面显示相对于图片左上角的相对坐标 便于与现实中喷头的参考系对照   </p><h2 id="三、方法："><a href="#三、方法：" class="headerlink" title="三、方法："></a>三、方法：</h2><p>高斯滤波–&gt;进行灰度处理–&gt;进行二值化–&gt;进行开运算–&gt;轮廓提取–&gt;计算中心点位<br>预处理：高斯滤波 二值化 灰度处理等等均可以<br>应用霍夫变换必须使用二值化图像<br>可以先执行边缘检测再执行霍夫变换<br>1.主要是用边缘检测中的Canny和霍夫变换中的霍夫圆，和线检测<br>2.圆形直接使用霍夫圆变换，方形使用Canny或者霍夫线变换<br>3.共同的方法是使用封装好的FindContours，找到轮廓，之后输入到ApproxPolyDP多边形拟合曲线，识别他是什么形状的，比如三角形，方形，圆形。（图像的矩）<br>4.轮廓优化：最后对于生成的轮廓，可以使用形态学进行优化 例如开运算 </p><h2 id="四、原理和基础知识："><a href="#四、原理和基础知识：" class="headerlink" title="四、原理和基础知识："></a>四、原理和基础知识：</h2><ol><li>高斯滤波filter：线性平滑滤波 为什么叫做高斯：处理高斯噪声 数值上符合正态分布<br>对像素邻域内各像素灰度值加权平均替代中心像素的灰度值<br>对整幅图像像素值进行加权平均，针对每一个像素点的值，都由其本身值和邻域内的其他像素值经过加权平均后得到。 </li><li>灰度处理 BGR2Gray 就是对BGR三个数值进行操作化为灰度值 取平均值 </li><li>图像分割：<br>边缘检测： 检测那些灰度值急剧变化的点<br>平滑滤波 边缘锐化 边缘判定 边缘连接<h3 id="Canny算法-对噪声和边缘检测的折中方案"><a href="#Canny算法-对噪声和边缘检测的折中方案" class="headerlink" title="Canny算法 对噪声和边缘检测的折中方案"></a>Canny算法 对噪声和边缘检测的折中方案</h3>Canny算子的步骤是：</li><li>先进行滤波降噪。</li><li>计算梯度幅值和方向（进行Sobel算子计算）。</li><li>非极大值抑制。将模糊（blurred）的边界变得清晰（sharp）。通俗的讲，就是保留了每个像素点上梯度强度的极大值，而删掉其他的值。</li><li>滞后阈值。设定一个阈值上界和阈值下界（opencv中通常由人为指定的），图像中的像素点如果大于阈值上界则认为必然是边界（称为强边界，strong edge），小于阈值下界则认为必然不是边界，两者之间的则认为是候选项（称为弱边界，weak edge）</li><li>霍夫变换  CvInvoke.HoughCircles HoughLines<br>霍夫圆变换的基本思路是认为图像上每一个非零像素点都有可能是一个潜在的圆上的一点，跟霍夫线变换一样，也是通过投票，生成累积坐标平面，设置一个累积权重来定位圆<br><a href="https://blog.csdn.net/flymoon87/article/details/82830608">https://blog.csdn.net/flymoon87/article/details/82830608</a></li></ol><h3 id="利用霍夫变换"><a href="#利用霍夫变换" class="headerlink" title="利用霍夫变换"></a>利用霍夫变换</h3><p>public static CircleF[] HoughCircles 取数组第一个元素 Center 输出点<br>public static LineSegment2D[] HoughLinesP 取lines 第一个元素 输出点P1  P1为起点<br>霍夫梯度法的缺点<br>&lt;1&gt; 在霍夫梯度法中，使用Sobel导数来计算局部梯度，其可以视作等同于一条局部切线，这不是一个数值稳定的做法。在大多数情况下，这样做会得到正确的结果，但或许会在输出中产生一些噪声。<br>&lt;2&gt; 在边缘图像中的整个非0像素集被看做每个中心的候选部分。因此，如果把累加器的阈值设置偏低，算法将要消耗比较长的时间。第三，因为每一个中心只选择一个圆，如果有同心圆，就只能选择其中的一个。<br>&lt;3&gt; 因为中心是按照其关联的累加器值的升序排列的，并且如果新的中心过于接近之前已经接受的中心的话，就不会被保留下来。且当有许多同心圆或者是近似的同心圆时，霍夫梯度法的倾向是保留最大的一个圆。可以说这是一种比较极端的做法，因为在这里默认Sobel导数会产生噪声，若是对于无穷分辨率的平滑图像而言的话，这才是必须的。</p>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>项目复盘</tag>
+      
+      <tag>图像处理</tag>
+      
+      <tag>C#</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>pip的一些汇总</title>
+    <link href="/2021/03/18/pip%E7%9A%84%E4%B8%80%E4%BA%9B%E6%B1%87%E6%80%BB/"/>
+    <url>/2021/03/18/pip%E7%9A%84%E4%B8%80%E4%BA%9B%E6%B1%87%E6%80%BB/</url>
+    
+    <content type="html"><![CDATA[<p>关于pip</p><ol><li>版本造成的问题：<br>Python2与Python3共存<br><a href="https://blog.csdn.net/tingsky9985/article/details/80818617">python中使用pip，提示”Unable to create process using”的解决办法 </a>   </li><li>requirements.txt<br><a href="https://blog.csdn.net/sinat_26809255/article/details/107529736">python快速安装requirements中的安装包</a>  </li><li>镜像加速<br><a href="https://blog.csdn.net/tiny_fisher/article/details/85015465">PYTHON pip 清华镜像</a></li></ol>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>python</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>通过优质公众号学习</title>
+    <link href="/2021/03/10/learnbygzh/"/>
+    <url>/2021/03/10/learnbygzh/</url>
+    
+    <content type="html"><![CDATA[<h2 id="安全类公众号推荐，如何根据帖子学习技能"><a href="#安全类公众号推荐，如何根据帖子学习技能" class="headerlink" title="安全类公众号推荐，如何根据帖子学习技能"></a>安全类公众号推荐，如何根据帖子学习技能</h2><h3 id="（一）公众号列表"><a href="#（一）公众号列表" class="headerlink" title="（一）公众号列表"></a>（一）公众号列表</h3><p>包含 个人公众号以及团队实验室公众号：</p><ol><li>Hack学习<br>这个公众号不得不说，很良心啦 （也有B站账号可以去搜，当然那些视频自己斟酌）</li><li>信安旅程</li><li> 安全祖师爷</li><li> 快识</li><li>字节脉搏实验室</li><li>Ms08067安全实验室</li><li>NearSec</li><li>ChaMd5安全团队</li><li>西子实验室</li><li>10.Shadow Sec Team </li><li>五分钟学算法</li><li>Writeup</li><li>黑子的自我拯救</li><li> FreeBuf</li><li>火绒安全实验室</li><li>嘶吼专业版</li><li>i春秋</li><li>绿盟科技安全情报</li><li>Web安全工具库</li><li>看雪学苑</li></ol><p>也可以关注你喜欢的或者想入职的公司的安全团队公众号<br>或者应急响应中心SRC</p><h2 id="（二）知乎-微博"><a href="#（二）知乎-微博" class="headerlink" title="（二）知乎 微博"></a>（二）知乎 微博</h2><p>其实微博有很多硕博大佬，计算机领域的大佬，以后补充吧<br>当然毕竟微博是社交性较强的软件，得到的信息就不是特别干货那种啦。</p><h2 id="（三）视频学习"><a href="#（三）视频学习" class="headerlink" title="（三）视频学习"></a>（三）视频学习</h2><p>别以为只有B站有<br>有时候其实知识付费未尝不可，毕竟那些资源也不是能够完全公开学习的，自行斟酌吧。</p><h2 id="（四）书籍-网站-论坛社区"><a href="#（四）书籍-网站-论坛社区" class="headerlink" title="（四）书籍/网站/论坛社区"></a>（四）书籍/网站/论坛社区</h2><p>书籍：可以去找思维导图<br>网站类：其实有很多安全社区，知识星球什么的</p><p>接下来分着写，继续补充，继续学习，如果有缘的话，分享一些本科阶段的东西。<br>同时推荐一个大佬的主页：<br><a href="https://me.csdn.net/eastmount">Eastmount</a></p>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>公众号推荐</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>学习之路</title>
+    <link href="/2021/03/10/isway/"/>
+    <url>/2021/03/10/isway/</url>
+    
+    <content type="html"><![CDATA[<h1 id="信息安全专业学习之路"><a href="#信息安全专业学习之路" class="headerlink" title="信息安全专业学习之路"></a>信息安全专业学习之路</h1><p>将在这里慢慢分享我个人的学习经验</p><h2 id="一、专业基础课"><a href="#一、专业基础课" class="headerlink" title="一、专业基础课"></a>一、专业基础课</h2><h3 id="1-1-大一大二要学好的科目"><a href="#1-1-大一大二要学好的科目" class="headerlink" title="1.1 大一大二要学好的科目"></a>1.1 大一大二要学好的科目</h3><ol><li> C语言</li><li> 数据结构</li><li>计算机网络<pre><code class="hljs"> 计网一定要学好（我考研的学校科目就是计网和数据结构）</code></pre></li><li>  数据库 </li><li>计组 操作系统 （可能是大三学的） </li><li> 密码学</li></ol><h3 id="1-2-大二大三阶段"><a href="#1-2-大二大三阶段" class="headerlink" title="1.2 大二大三阶段"></a>1.2 大二大三阶段</h3><p> 如果你开始学面向对象了 建议你学好的科目和注意事项：</p><ol><li>语言类：精通一门不要这学一点那学一点<br>Python Java <strong>信安建议学Python</strong> 当然只是建议 我个人确实喜欢Java，而且最开始学习的面向对象语言也是Java，后来还学了C#（做图像处理，用EmguCV的库）</li><li>网络攻防技术</li><li>编译原理 如果你学AI 强烈建议你学好编译原理<br>信息安全专业科班，很多书籍可以参考武汉大学的计算机学院的书籍和课程</li></ol><h2 id="二、所有阶段都可以参加的事"><a href="#二、所有阶段都可以参加的事" class="headerlink" title="二、所有阶段都可以参加的事"></a>二、所有阶段都可以参加的事</h2><h3 id="2-1-CTF"><a href="#2-1-CTF" class="headerlink" title="2.1  CTF"></a>2.1  CTF</h3><ol><li>学习几个方向 边刷题边学习，譬如你是Web安全方向的可以刷Web的题目</li><li>尽量接触其他大学的CTF比赛（很多大学都有，有的甚至有自建网站，这个看你自己的信息检索能力了），不过可能大三了，打比赛的机会比较少了，看你个人，不过如果打过CTF拿奖或者有经验的话，企业招聘和考研面试都会给好印象。<h3 id="2-2-学业-大创"><a href="#2-2-学业-大创" class="headerlink" title="2.2 学业 大创"></a>2.2 学业 大创</h3>大一：总的来说，大一浑浑噩噩，工作室笔试都被刷了</li></ol><p>大二：学习图像处理 这期间受益良多 知道了学习一个领域的技巧 研究生师兄对我影响颇深</p><p>大三：<br>大创 目前队友完成了大创的基本代码，跑的是一个文本处理的主题模型算法，这里是为了锻炼自己的Python，但是由于刚捡回来，还是很吃力。</p><p>参加完美赛，我是负责写论文的，队友负责建模，我也负责一些代码处理文本，当然也是比较简单的工作，最难的还是怎么规划好论文，找到合适的算法和模型。</p><p>最近：成果如下，大三大创省级，美赛优秀奖哈哈哈（惭愧）<br>大四在等待考研复试</p><p>如果有相关信安考研的问题可以私信问我 或者关注我的个人公众号：打代码的猫</p><h3 id="2-3-大学以来我的三个方向"><a href="#2-3-大学以来我的三个方向" class="headerlink" title="2.3  大学以来我的三个方向"></a>2.3  大学以来我的三个方向</h3><ol><li>文本处理 2. 计算机视觉 3. 安全<br>其实我个人目前接触的领域就是上面几个<br>综合来说我觉得如果是有兴趣的话，可以努力往算法方向发展，然后争取读研。所以NLP和CV是值得学习的。<br>走安全路线的话，那么就和我一样，大三寒暑假开始备考。</li><li>疫情关系，待在家了里，开始了筹备考研的事情。</li><li>已经在复习考研了，最近毕业设计的事情也开始了。</li><li>已经考完研了，忙毕设和准备复试<h3 id="2-4-LeetCode"><a href="#2-4-LeetCode" class="headerlink" title="2.4 LeetCode"></a>2.4 LeetCode</h3>程序员如果就业或者为了提高编程技能，还是要刷题的<br>这部分我不是特别清楚，可以自行搜索。<h3 id="2-5-学习如何为自己未来做规划"><a href="#2-5-学习如何为自己未来做规划" class="headerlink" title="2.5 学习如何为自己未来做规划"></a>2.5 学习如何为自己未来做规划</h3>以上我所说的很多都是自己主动寻找的项目或者比赛，总结就是大学期间一定要多尝试，别怕尝试，怕麻烦。假如试错了，回头换个方向也是好的。<br>目前大创获得省级提名，美赛虽然没有获奖但也是一个过程吧。正在努力考研了。</li></ol><h2 id="三、考研"><a href="#三、考研" class="headerlink" title="三、考研"></a>三、考研</h2><p>初试成绩目前确定是过线了的 复试科目是离散数学<br>正在努力中！！！  </p><h2 id="四、-就业方向-Web安全工程师"><a href="#四、-就业方向-Web安全工程师" class="headerlink" title="四、 就业方向 Web安全工程师"></a>四、 就业方向 Web安全工程师</h2><p>可以根据企业需求来定。<br>安全就业方向其实有几大类：安全研发，安全开发，安全服务等等，还有特定的譬如Web安全，渗透工程师等等。<br>企业有例如奇安信，深信服，永信至诚，绿盟，蓝盾等等。去招聘网看。<br>大三下学期可以开始投简历，电话面试什么的，多面几次！</p><p>根据企业要求来学习其实很重要，即使考研也应该清楚自己想要的是什么。<br>可以自己找几个岗位要求多看几次，根据那些来充实自己！疫情期间正是赶超别人的好时机！大家都要加油呀！</p><h3 id="这是本人的对自己这一年的规划"><a href="#这是本人的对自己这一年的规划" class="headerlink" title="这是本人的对自己这一年的规划"></a>这是本人的对自己这一年的规划</h3><p>接下来会对各个计划细分 并且以博客的形式记录下来  以保持每日学习的状态</p><h3 id="我的gitee主页：kitescat的博客"><a href="#我的gitee主页：kitescat的博客" class="headerlink" title="我的gitee主页：kitescat的博客"></a>我的gitee主页：<a href="https://kitescat.gitee.io/">kitescat的博客</a></h3>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>自学指南</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>这是我的第一条博客</title>
+    <link href="/2021/03/10/hello-world/"/>
+    <url>/2021/03/10/hello-world/</url>
+    
+    <content type="html"><![CDATA[<p>基于Hexo发布的个人博客</p><h2 id="我的第一条博客"><a href="#我的第一条博客" class="headerlink" title="我的第一条博客"></a>我的第一条博客</h2><p>基于Hexo发布的个人博客主页，虽然没有什么技术含量，但是后面慢慢更新自己的技术栈吧！</p><h3 id="欢迎关注我的个人公众号：打代码的猫"><a href="#欢迎关注我的个人公众号：打代码的猫" class="headerlink" title="欢迎关注我的个人公众号：打代码的猫"></a>欢迎关注我的个人公众号：打代码的猫</h3><h2 id=""><a href="#" class="headerlink" title=""></a><img src="/img/gzh.jpg"></h2><p>written by: kitescat<br>3/10/2021 1:12:14 AM   </p>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>自学指南</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  
+</search>
