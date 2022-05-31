@@ -16,24 +16,25 @@
   <meta name="author" content="kitescat">
   <meta name="keywords" content="web安全">
   
-    <meta name="description" content="承诺方案，一个密码学原语介绍">
+    <meta name="description" content="Go的基本数据类型，类型零值，别名以及类型的转换">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Commitment Schema之比特承诺">
-<meta property="og:url" content="https://kitescat.github.io/2022/03/21/CommitmentSchema/index.html">
+<meta property="og:title" content="Go开发学习笔记 | 数据类型">
+<meta property="og:url" content="https://kitescat.github.io/2022/06/01/Golang-road/index.html">
 <meta property="og:site_name" content="kitescat 的博客">
-<meta property="og:description" content="承诺方案，一个密码学原语介绍">
+<meta property="og:description" content="Go的基本数据类型，类型零值，别名以及类型的转换">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://kitescat.github.io/img/bitcom.png">
-<meta property="article:published_time" content="2022-03-21T13:59:28.000Z">
-<meta property="article:modified_time" content="2022-04-23T09:40:32.915Z">
+<meta property="og:image" content="https://kitescat.github.io/img/test.png">
+<meta property="article:published_time" content="2022-05-31T17:19:55.000Z">
+<meta property="article:modified_time" content="2022-05-31T18:06:23.921Z">
 <meta property="article:author" content="kitescat">
-<meta property="article:tag" content="Blockchain">
+<meta property="article:tag" content="Go">
+<meta property="article:tag" content="学习笔记">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://kitescat.github.io/img/bitcom.png">
+<meta name="twitter:image" content="https://kitescat.github.io/img/test.png">
   
   
   
-  <title>Commitment Schema之比特承诺 - kitescat 的博客</title>
+  <title>Go开发学习笔记 | 数据类型 - kitescat 的博客</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -196,7 +197,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="Commitment Schema之比特承诺"></span>
+            <span id="subtitle" data-typed-text="Go开发学习笔记 | 数据类型"></span>
           
         </div>
 
@@ -207,8 +208,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-03-21 21:59" pubdate>
-          2022年3月21日 晚上
+        <time datetime="2022-06-01 01:19" pubdate>
+          2022年6月1日 凌晨
         </time>
       </span>
     
@@ -220,7 +221,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          45 字
+          69 字
         
       </span>
     
@@ -278,11 +279,15 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">Commitment Schema之比特承诺</h1>
+            <h1 style="display: none">Go开发学习笔记 | 数据类型</h1>
             
             <div class="markdown-body">
               
-              <p>最近读论文，涉及到一个密码学概念：Commitment Schema。字面意思就是承诺方案。</p>
+              <h2 id="GO的基本数据类型"><a href="#GO的基本数据类型" class="headerlink" title="GO的基本数据类型"></a>GO的基本数据类型</h2><p>uint int string等</p>
+<h2 id="GO的类型零值"><a href="#GO的类型零值" class="headerlink" title="GO的类型零值"></a>GO的类型零值</h2><p>0还是false 还是nil</p>
+<h2 id="类型别名"><a href="#类型别名" class="headerlink" title="类型别名"></a>类型别名</h2><p>起名字</p>
+<h2 id="类型转换"><a href="#类型转换" class="headerlink" title="类型转换"></a>类型转换</h2><p>不允许隐式转换</p>
+<h2 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h2><p>定义 声明 赋值</p>
 
               
             </div>
@@ -294,7 +299,9 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/Blockchain/">#Blockchain</a>
+        <a href="/tags/Go/">#Go</a>
+      
+        <a href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">#学习笔记</a>
       
     </div>
   
@@ -306,8 +313,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>Commitment Schema之比特承诺</div>
-      <div>https://kitescat.github.io/2022/03/21/CommitmentSchema/</div>
+      <div>Go开发学习笔记 | 数据类型</div>
+      <div>https://kitescat.github.io/2022/06/01/Golang-road/</div>
     </div>
     <div class="license-meta">
       
@@ -319,7 +326,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2022年3月21日</div>
+          <div>2022年6月1日</div>
         </div>
       
       
@@ -349,9 +356,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/04/23/Vulnerability/" title="门罗币挖矿漏洞">
+                      <a href="/2022/06/01/CommitmentSchema/" title="Commitment Schema之比特承诺">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">门罗币挖矿漏洞</span>
+                        <span class="hidden-mobile">Commitment Schema之比特承诺</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -359,8 +366,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/03/20/ECC%E6%A4%AD%E5%9C%86%E6%9B%B2%E7%BA%BF%E5%AF%86%E7%A0%81/" title="ECC椭圆曲线密码">
-                        <span class="hidden-mobile">ECC椭圆曲线密码</span>
+                      <a href="/2022/05/27/DH-keyexchange/" title="DH-keyexchange">
+                        <span class="hidden-mobile">DH-keyexchange</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

@@ -16,25 +16,24 @@
   <meta name="author" content="kitescat">
   <meta name="keywords" content="web安全">
   
-    <meta name="description" content="对称密钥无法直接传输，如何解决？Diffie Hellman 密钥交换协议教你如何安全地交换密钥！">
+    <meta name="description" content="承诺方案，一个密码学原语介绍">
 <meta property="og:type" content="article">
-<meta property="og:title" content="DH-keyexchange">
-<meta property="og:url" content="https://kitescat.github.io/2022/05/27/DH-keyexchange/index.html">
+<meta property="og:title" content="Commitment Schema之比特承诺">
+<meta property="og:url" content="https://kitescat.github.io/2022/06/01/CommitmentSchema/index.html">
 <meta property="og:site_name" content="kitescat 的博客">
-<meta property="og:description" content="对称密钥无法直接传输，如何解决？Diffie Hellman 密钥交换协议教你如何安全地交换密钥！">
+<meta property="og:description" content="承诺方案，一个密码学原语介绍">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://kitescat.github.io/img/DH_banner.jpg">
-<meta property="article:published_time" content="2022-05-27T14:07:36.000Z">
-<meta property="article:modified_time" content="2022-05-27T14:25:19.845Z">
+<meta property="og:image" content="https://kitescat.github.io/img/bitcom.png">
+<meta property="article:published_time" content="2022-05-31T18:04:28.000Z">
+<meta property="article:modified_time" content="2022-05-31T18:11:38.951Z">
 <meta property="article:author" content="kitescat">
-<meta property="article:tag" content="Crypto">
-<meta property="article:tag" content="Key Exchange">
+<meta property="article:tag" content="Blockchain">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://kitescat.github.io/img/DH_banner.jpg">
+<meta name="twitter:image" content="https://kitescat.github.io/img/bitcom.png">
   
   
   
-  <title>DH-keyexchange - kitescat 的博客</title>
+  <title>Commitment Schema之比特承诺 - kitescat 的博客</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -197,7 +196,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="DH-keyexchange"></span>
+            <span id="subtitle" data-typed-text="Commitment Schema之比特承诺"></span>
           
         </div>
 
@@ -208,8 +207,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-05-27 22:07" pubdate>
-          2022年5月27日 晚上
+        <time datetime="2022-06-01 02:04" pubdate>
+          2022年6月1日 凌晨
         </time>
       </span>
     
@@ -221,7 +220,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          1.4k 字
+          1.8k 字
         
       </span>
     
@@ -233,7 +232,7 @@
         
         
           <!-- compatible with older versions-->
-          13 分钟
+          15 分钟
         
       </span>
     
@@ -279,30 +278,33 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">DH-keyexchange</h1>
+            <h1 style="display: none">Commitment Schema之比特承诺</h1>
             
             <div class="markdown-body">
               
-              <h1 id="安全地交换共享密钥！"><a href="#安全地交换共享密钥！" class="headerlink" title="安全地交换共享密钥！"></a>安全地交换共享密钥！</h1><p>1976年，Diffie和Hellman在其题为《密码学的新方向》的论文中给出了公钥密码学的定义，并提出了DH密钥交换算法。<br>该算法解决了对称密码体制中的密钥分发问题，使得通信双方可以通过公开信道安全地交换共享密钥。其安全性建立在离散对数问题的困难性之上。</p>
-<p>为了更好地说明密钥交换协议的作用，我将会以自己的语言讲一遍<strong>为什么我们需要DH key exchange</strong></p>
-<h2 id="0x01-跟我一起设计密钥方案！"><a href="#0x01-跟我一起设计密钥方案！" class="headerlink" title="0x01 跟我一起设计密钥方案！"></a>0x01 跟我一起设计密钥方案！</h2><p>假设有两个人Alice 和 Bob 他们要传递信息<br><strong>分为对称密码学和非对称密码学的角度来设计</strong></p>
-<h3 id="1-1-第一回合"><a href="#1-1-第一回合" class="headerlink" title="1.1 第一回合"></a>1.1 第一回合</h3><p>最简单没有任何措施的方法，就是直接传信息，比如 Alice：“今天天气晴朗！” Bob就会收到该信息。<br>但是这有很大的问题，最大的问题就是没有保密性，任何监听他们通信信道的人都能回去该消息的明文。</p>
-<h3 id="1-2-第二回合"><a href="#1-2-第二回合" class="headerlink" title="1.2 第二回合"></a>1.2 第二回合</h3><p>那么我们升级方案，对该消息加密，利用对称密码学进行加密。<br>对称密码学的大白话意思就是：加密和解密都是同一个密钥。<br>这里双方决定以k为对称密钥，Alice对m用k加密，Bob对c用k解密得到m。</p>
-<p>假设这里密钥提前确定，且双方都不泄露密钥，那么该协议就是安全的。</p>
-<p>但是这里问题来了，如果Alice和Bob两人距离很远，不能提前商定用什么作为对称密钥，就又得传输该密钥。这样显然是不安全的。<br>为了传递消息，还需要传输密钥，方案不可行。</p>
-<h3 id="1-3-第三回合"><a href="#1-3-第三回合" class="headerlink" title="1.3 第三回合"></a>1.3 第三回合</h3><p>使用非对称密钥学。即加密和解密的密钥是不一样的，<strong>公钥加密，私钥解密</strong>。<br>    Alice Pk1，Sk1<br>    Bob   Pk2, Sk2</p>
-<p>Alice发送m，先用公钥对m加密得到c<br>Bob得到c，之后用Alice的私钥解密的到m。</p>
-<p>这里好像也是可行的，但显然用Alice的私钥解密是很理想的状态，事实就是私钥不会随意传输给对方。（长期密钥的话）<br>我们对m用Pk1加密之后，就必须要用Sk1解密，那问题来了，怎么传输Sk1给Bob，这里又是一个死结。<br><strong>因为私钥一旦暴露，传递信息也就暴露，所以我们不能传输私钥。</strong></p>
-<h3 id="1-4-第四回合"><a href="#1-4-第四回合" class="headerlink" title="1.4 第四回合"></a>1.4 第四回合</h3><p>终于我们引出了DH key exchange协议！<br>DH密钥交换协议的目的是，在不传输私钥的情况下，双方得到一个共享秘密，该秘密可以作为对称密钥进行加密。<br>也就是说，在传递m之前，Alice和Bob必须先进行密钥交换，得到共享秘密shared secret。<br><img src="/img/DH1.jpg" srcset="/img/loading.gif" lazyload></p>
-<h2 id="0x02-DH-密钥交换协议的介绍"><a href="#0x02-DH-密钥交换协议的介绍" class="headerlink" title="0x02 DH 密钥交换协议的介绍"></a>0x02 DH 密钥交换协议的介绍</h2><h3 id="2-1-为什么需要该协议？"><a href="#2-1-为什么需要该协议？" class="headerlink" title="2.1 为什么需要该协议？"></a>2.1 为什么需要该协议？</h3><p>为了解决对称密码体制中的密钥分发问题，使得通信双方可以通过公开信道安全地交换共享密钥。<br>提出了公钥密码学的概念，共享的是公钥，收到对方公钥之后，在对方公钥的基础上运算得到共享密钥。</p>
-<h3 id="2-2-协议细节"><a href="#2-2-协议细节" class="headerlink" title="2.2 协议细节"></a>2.2 协议细节</h3><p><img src="/img/DH2.png" srcset="/img/loading.gif" lazyload></p>
-<h3 id="最终实现了什么目的"><a href="#最终实现了什么目的" class="headerlink" title="最终实现了什么目的"></a>最终实现了什么目的</h3><p>最终，Alice和Bob在一个非安全信道上实现了一个安全的秘密共享。并获得一个密钥，可以加密他们的对话。</p>
-<h3 id="2-3-应用场景"><a href="#2-3-应用场景" class="headerlink" title="2.3 应用场景"></a>2.3 应用场景</h3><h3 id="2-4-DH密钥交换协议存在的漏洞"><a href="#2-4-DH密钥交换协议存在的漏洞" class="headerlink" title="2.4 DH密钥交换协议存在的漏洞"></a>2.4 DH密钥交换协议存在的漏洞</h3><p>然而，没有相互身份认证的DH密钥交换协议可能会遭受<strong>中间人攻击、模拟攻击和重播攻击</strong><br>于是在这个基础之上就衍生出了AKE。认证密钥交换协议，交换密钥的双方必须提前获得身份认证才能进行密钥交换。</p>
-<p>这个认证是如何完成的？<br>如CA 第三方认证机构颁发数字证书Certificate，证明Alice是Alice，Bob是Bob。<br>如何去除CA，是去中心化需要解决的问题，实现DAKE。</p>
-<h3 id="2-5-安全属性-待完善"><a href="#2-5-安全属性-待完善" class="headerlink" title="2.5 安全属性(待完善)"></a>2.5 安全属性(待完善)</h3><p>中间人攻击、模拟攻击和重播攻击</p>
-<h2 id="0x03-参考链接"><a href="#0x03-参考链接" class="headerlink" title="0x03 参考链接"></a>0x03 参考链接</h2><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_43255133/article/details/84757675?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522165365604016780357292666%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=165365604016780357292666&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~blog~sobaiduend~default-2-84757675-null-null.nonecase&utm_term=%E5%AF%86%E9%92%A5%E4%BA%A4%E6%8D%A2%E5%8D%8F%E8%AE%AE&spm=1018.2226.3001.4450">一文彻底搞懂加密、数字签名和数字证书，看不懂你打我！</a></p>
-<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/TheSkyLee/article/details/108699243?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522165365046016782425117461%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=165365046016782425117461&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~top_positive~default-1-108699243-null-null.142%5Ev11%5Econtrol,157%5Ev12%5Econtrol&utm_term=%E6%95%B0%E5%AD%97%E7%AD%BE%E5%90%8D&spm=1018.2226.3001.4187">Diffie-Hellman密钥交换协议</a></p>
-<p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange">维基百科Diffie–Hellman key exchange</a></p>
+              <h1 id="比特承诺"><a href="#比特承诺" class="headerlink" title="比特承诺"></a>比特承诺</h1><p>最近读论文，涉及到一个密码学概念：Commitment Schema。字面意思就是承诺方案。<br>很难理解，查阅了相关资料，搜集了一些有用的资料，下面搬运一篇来自公众号：包罗万想 的推文，链接为：<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/Oc9mKmyDxzfyK6bulHmVyw">GCAC08 3.12比特承诺</a></p>
+<h2 id="抛出问题："><a href="#抛出问题：" class="headerlink" title="抛出问题："></a>抛出问题：</h2><p>Alice和Bob约会。爱丽丝想看一部电影，鲍勃想看另一部电影。他们决定随机掷硬币选择电影。如果硬币正面朝上，它们将由爱丽丝选择；否则，他们将选择鲍勃的选择。当爱丽丝和鲍勃非常接近时，这很容易。他们都能验证结果。<br>但是当他们离得很远并且在电话里讲话时，这会变得更加困难。<br>鲍勃可以抛硬币，将结果告诉爱丽丝，但爱丽丝没有理由相信结果。<br>那么有什么办法来解决：让对方相信自己抛硬币的结果，并且<strong>自己无法篡改结果</strong>，在揭晓阶段又<strong>向对方证明自己确实是抛的正面/反面</strong>。<br>答案是 比特承诺！</p>
+<h2 id="0x01-概念"><a href="#0x01-概念" class="headerlink" title="0x01 概念"></a>0x01 概念</h2><p>比特承诺是安全多方计算中最重要的基础协议之一，对构建更复杂的多方协议起着重要作用。</p>
+<p>比特承诺(BitCommitment， BC)是密码学中的重要基础协议，其概念最早由 1995 年图灵奖得主 Blum提出。比特承诺方案可用于构建<strong>零知识证明、可验证秘密共享、硬币投掷等协议</strong>，同时和不经意传送一起构成两方安全计算的基础，是信息安全领域研究的热点。主要包含C,V两个算法。<br><img src="/img/commit_view.jpg" srcset="/img/loading.gif" lazyload></p>
+<h2 id="0x02-基本思想"><a href="#0x02-基本思想" class="headerlink" title="0x02 基本思想"></a>0x02 基本思想</h2><p>发送者 Alice 向接收者Bob 承诺一个比特b (如果是多个比特，即比特串t ，则称为比特 串承诺)，要求：</p>
+<p>在第 1 阶段即承诺阶段 Alice 向 Bob 承诺这 个比特b ，但是 <strong>Bob 无法知道b 的信息</strong>；</p>
+<p>在第 2 阶段即揭示阶段<strong>Alice 向 Bob 证实她在第 1 阶段承诺的确实是b</strong>，但是 Alice 无法欺骗 Bob(即不能在第 2 阶段篡改b的值)。</p>
+<h2 id="0x03-经典环境示例"><a href="#0x03-经典环境示例" class="headerlink" title="0x03 经典环境示例"></a>0x03 经典环境示例</h2><p>Alice将待承诺的比特或秘密写在一张纸上，然后将这张纸锁进一个保险箱，该保险箱只有唯一的钥匙可以打开。</p>
+<p>在承诺阶段， Alice将保险箱送给 Bob，但是保留钥匙；</p>
+<p>到了揭示阶段，Alice将比特或秘密告诉 Bob，同时将钥匙传给 Bob 使其相信自己的承诺。</p>
+<p>需要指出的是，保险箱不能被“暴力破解”的性质甚至允许Alice 在揭示阶段无需向 Bob 说明承诺的比特或秘密，只要将钥匙发送给 Bob 即可。</p>
+<h2 id="0x04-性质"><a href="#0x04-性质" class="headerlink" title="0x04 性质"></a>0x04 性质</h2><p>一个比特承诺方案必须具备下列性质：</p>
+<p>正确性：如果 Alice 和 Bob 均诚实地执行协议，那么在揭示阶段 Bob 将正确获得 Alice 承诺的比特b 。</p>
+<p>保密性Hiding：在揭示阶段之前 Bob 不能获知b的信息。</p>
+<p><img src="/img/hiding.jpg" srcset="/img/loading.gif" lazyload></p>
+<p>绑定性Binding ：在承诺阶段结束之后，Bob只能在揭示阶段获得唯一的b (即 Alice 无法将b 反转，就好像 Alice 与b “绑定”在一起一样)。<br>如果一个比特承诺协议同时满足保密性和绑定性，且没有对攻击者的计算能力做任何限制性假设，则称该比特承诺协议是无条件安全的。</p>
+<p><img src="/img/binding.jpg" srcset="/img/loading.gif" lazyload></p>
+<h2 id="0x05-三方比特承诺"><a href="#0x05-三方比特承诺" class="headerlink" title="0x05 三方比特承诺"></a>0x05 三方比特承诺</h2><p>在该模型下，承诺者由一人变为二人Alice 与 Bob，由此<strong>二人共同向第三方Chris 承诺一个比特或比特串</strong>。</p>
+<p>承诺阶段之前， Alice 与Bob 可以自由通信以商定承诺内容，但是在协议开始以后，要求 Alice 与 Bob 无法再进行通信。（考虑到量子计算环境，协议开始之后， Alice 与Bob 被物理隔离，无法再进行经典通信和量子通信，最多只允许对本地量子进行局域测量）。</p>
+<p>该模型最重要的特点是揭示阶段由 Bob 负责向 Chris 揭示b 的信息，因此 Alice 没有任何作弊的可能，即无法破坏协议的绑定性。</p>
+<h3 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h3><h4 id="囚徒困境"><a href="#囚徒困境" class="headerlink" title="囚徒困境"></a>囚徒困境</h4><p>三方参与的安全模型在实际生活中是有很多应用的，例如在博弈论的经典“囚徒困境”模型中，两个纵火嫌疑犯即可以视作证明者，他们在被抓住以前可以自由交流(例如商定问讯对策)，被抓以后将被警察(验证者)分开审讯。如果这两个嫌疑犯均“忠实”地在审讯过程中坚持否认纵火事实，那么他们将获得集体最优结果。又如，由两家单位合作来对某个大型项目进行投标(例如资金与技术的合作)，则这两家单位和招标方构成三方承诺模型。</p>
+<h4 id="安全多方计算"><a href="#安全多方计算" class="headerlink" title="安全多方计算"></a>安全多方计算</h4><p>另外，一些安全多方计算的协议模型，其最基本的组成结构也经常是三方，而非两方。例如可验证秘密分享(Verifiable Secret Sharing，VSS)，除了一个秘密分发方外，秘密分享方至少是两方，因此一个秘密分享方案至少需要三方的参与。又如，在匿名通信的重要基础模型——密码学家就餐问题中，参与的密码学家至少为三个。</p>
+<p>后续讲解Secret Sharing 秘密分享协议！</p>
 <center>欢迎关注我的个人公众号</center>
 
 <p><img src="/img/debug.jpg" srcset="/img/loading.gif" lazyload></p>
@@ -317,9 +319,7 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/Crypto/">#Crypto</a>
-      
-        <a href="/tags/Key-Exchange/">#Key Exchange</a>
+        <a href="/tags/Blockchain/">#Blockchain</a>
       
     </div>
   
@@ -331,8 +331,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>DH-keyexchange</div>
-      <div>https://kitescat.github.io/2022/05/27/DH-keyexchange/</div>
+      <div>Commitment Schema之比特承诺</div>
+      <div>https://kitescat.github.io/2022/06/01/CommitmentSchema/</div>
     </div>
     <div class="license-meta">
       
@@ -344,7 +344,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2022年5月27日</div>
+          <div>2022年6月1日</div>
         </div>
       
       
@@ -374,18 +374,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/06/01/Golang-road/" title="Go开发学习笔记 | 数据类型">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Go开发学习笔记 | 数据类型</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/05/24/SmartContract/" title="智能合约||Web3的投币机">
-                        <span class="hidden-mobile">智能合约||Web3的投币机</span>
+                      <a href="/2022/06/01/Golang-road/" title="Go开发学习笔记 | 数据类型">
+                        <span class="hidden-mobile">Go开发学习笔记 | 数据类型</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

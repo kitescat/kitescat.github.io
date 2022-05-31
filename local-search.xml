@@ -4,6 +4,46 @@
   
   
   <entry>
+    <title>Commitment Schema之比特承诺</title>
+    <link href="/2022/06/01/CommitmentSchema/"/>
+    <url>/2022/06/01/CommitmentSchema/</url>
+    
+    <content type="html"><![CDATA[<h1 id="比特承诺"><a href="#比特承诺" class="headerlink" title="比特承诺"></a>比特承诺</h1><p>最近读论文，涉及到一个密码学概念：Commitment Schema。字面意思就是承诺方案。<br>很难理解，查阅了相关资料，搜集了一些有用的资料，下面搬运一篇来自公众号：包罗万想 的推文，链接为：<a href="https://mp.weixin.qq.com/s/Oc9mKmyDxzfyK6bulHmVyw">GCAC08 3.12比特承诺</a></p><h2 id="抛出问题："><a href="#抛出问题：" class="headerlink" title="抛出问题："></a>抛出问题：</h2><p>Alice和Bob约会。爱丽丝想看一部电影，鲍勃想看另一部电影。他们决定随机掷硬币选择电影。如果硬币正面朝上，它们将由爱丽丝选择；否则，他们将选择鲍勃的选择。当爱丽丝和鲍勃非常接近时，这很容易。他们都能验证结果。<br>但是当他们离得很远并且在电话里讲话时，这会变得更加困难。<br>鲍勃可以抛硬币，将结果告诉爱丽丝，但爱丽丝没有理由相信结果。<br>那么有什么办法来解决：让对方相信自己抛硬币的结果，并且<strong>自己无法篡改结果</strong>，在揭晓阶段又<strong>向对方证明自己确实是抛的正面/反面</strong>。<br>答案是 比特承诺！</p><h2 id="0x01-概念"><a href="#0x01-概念" class="headerlink" title="0x01 概念"></a>0x01 概念</h2><p>比特承诺是安全多方计算中最重要的基础协议之一，对构建更复杂的多方协议起着重要作用。</p><p>比特承诺(BitCommitment， BC)是密码学中的重要基础协议，其概念最早由 1995 年图灵奖得主 Blum提出。比特承诺方案可用于构建<strong>零知识证明、可验证秘密共享、硬币投掷等协议</strong>，同时和不经意传送一起构成两方安全计算的基础，是信息安全领域研究的热点。主要包含C,V两个算法。<br><img src="/img/commit_view.jpg"></p><h2 id="0x02-基本思想"><a href="#0x02-基本思想" class="headerlink" title="0x02 基本思想"></a>0x02 基本思想</h2><p>发送者 Alice 向接收者Bob 承诺一个比特b (如果是多个比特，即比特串t ，则称为比特 串承诺)，要求：</p><p>在第 1 阶段即承诺阶段 Alice 向 Bob 承诺这 个比特b ，但是 <strong>Bob 无法知道b 的信息</strong>；</p><p>在第 2 阶段即揭示阶段<strong>Alice 向 Bob 证实她在第 1 阶段承诺的确实是b</strong>，但是 Alice 无法欺骗 Bob(即不能在第 2 阶段篡改b的值)。</p><h2 id="0x03-经典环境示例"><a href="#0x03-经典环境示例" class="headerlink" title="0x03 经典环境示例"></a>0x03 经典环境示例</h2><p>Alice将待承诺的比特或秘密写在一张纸上，然后将这张纸锁进一个保险箱，该保险箱只有唯一的钥匙可以打开。</p><p>在承诺阶段， Alice将保险箱送给 Bob，但是保留钥匙；</p><p>到了揭示阶段，Alice将比特或秘密告诉 Bob，同时将钥匙传给 Bob 使其相信自己的承诺。</p><p>需要指出的是，保险箱不能被“暴力破解”的性质甚至允许Alice 在揭示阶段无需向 Bob 说明承诺的比特或秘密，只要将钥匙发送给 Bob 即可。</p><h2 id="0x04-性质"><a href="#0x04-性质" class="headerlink" title="0x04 性质"></a>0x04 性质</h2><p>一个比特承诺方案必须具备下列性质：</p><p>正确性：如果 Alice 和 Bob 均诚实地执行协议，那么在揭示阶段 Bob 将正确获得 Alice 承诺的比特b 。</p><p>保密性Hiding：在揭示阶段之前 Bob 不能获知b的信息。</p><p><img src="/img/hiding.jpg"></p><p>绑定性Binding ：在承诺阶段结束之后，Bob只能在揭示阶段获得唯一的b (即 Alice 无法将b 反转，就好像 Alice 与b “绑定”在一起一样)。<br>如果一个比特承诺协议同时满足保密性和绑定性，且没有对攻击者的计算能力做任何限制性假设，则称该比特承诺协议是无条件安全的。</p><p><img src="/img/binding.jpg"></p><h2 id="0x05-三方比特承诺"><a href="#0x05-三方比特承诺" class="headerlink" title="0x05 三方比特承诺"></a>0x05 三方比特承诺</h2><p>在该模型下，承诺者由一人变为二人Alice 与 Bob，由此<strong>二人共同向第三方Chris 承诺一个比特或比特串</strong>。</p><p>承诺阶段之前， Alice 与Bob 可以自由通信以商定承诺内容，但是在协议开始以后，要求 Alice 与 Bob 无法再进行通信。（考虑到量子计算环境，协议开始之后， Alice 与Bob 被物理隔离，无法再进行经典通信和量子通信，最多只允许对本地量子进行局域测量）。</p><p>该模型最重要的特点是揭示阶段由 Bob 负责向 Chris 揭示b 的信息，因此 Alice 没有任何作弊的可能，即无法破坏协议的绑定性。</p><h3 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h3><h4 id="囚徒困境"><a href="#囚徒困境" class="headerlink" title="囚徒困境"></a>囚徒困境</h4><p>三方参与的安全模型在实际生活中是有很多应用的，例如在博弈论的经典“囚徒困境”模型中，两个纵火嫌疑犯即可以视作证明者，他们在被抓住以前可以自由交流(例如商定问讯对策)，被抓以后将被警察(验证者)分开审讯。如果这两个嫌疑犯均“忠实”地在审讯过程中坚持否认纵火事实，那么他们将获得集体最优结果。又如，由两家单位合作来对某个大型项目进行投标(例如资金与技术的合作)，则这两家单位和招标方构成三方承诺模型。</p><h4 id="安全多方计算"><a href="#安全多方计算" class="headerlink" title="安全多方计算"></a>安全多方计算</h4><p>另外，一些安全多方计算的协议模型，其最基本的组成结构也经常是三方，而非两方。例如可验证秘密分享(Verifiable Secret Sharing，VSS)，除了一个秘密分发方外，秘密分享方至少是两方，因此一个秘密分享方案至少需要三方的参与。又如，在匿名通信的重要基础模型——密码学家就餐问题中，参与的密码学家至少为三个。</p><p>后续讲解Secret Sharing 秘密分享协议！</p><center>欢迎关注我的个人公众号</center><p><img src="/img/debug.jpg"></p>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>Blockchain</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>Go开发学习笔记 | 数据类型</title>
+    <link href="/2022/06/01/Golang-road/"/>
+    <url>/2022/06/01/Golang-road/</url>
+    
+    <content type="html"><![CDATA[<h2 id="GO的基本数据类型"><a href="#GO的基本数据类型" class="headerlink" title="GO的基本数据类型"></a>GO的基本数据类型</h2><p>uint int string等</p><h2 id="GO的类型零值"><a href="#GO的类型零值" class="headerlink" title="GO的类型零值"></a>GO的类型零值</h2><p>0还是false 还是nil</p><h2 id="类型别名"><a href="#类型别名" class="headerlink" title="类型别名"></a>类型别名</h2><p>起名字</p><h2 id="类型转换"><a href="#类型转换" class="headerlink" title="类型转换"></a>类型转换</h2><p>不允许隐式转换</p><h2 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h2><p>定义 声明 赋值</p>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>Go</tag>
+      
+      <tag>学习笔记</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>DH-keyexchange</title>
     <link href="/2022/05/27/DH-keyexchange/"/>
     <url>/2022/05/27/DH-keyexchange/</url>
@@ -191,25 +231,6 @@
       <tag>Database</tag>
       
       <tag>Redis</tag>
-      
-    </tags>
-    
-  </entry>
-  
-  
-  
-  <entry>
-    <title>Commitment Schema之比特承诺</title>
-    <link href="/2022/03/21/CommitmentSchema/"/>
-    <url>/2022/03/21/CommitmentSchema/</url>
-    
-    <content type="html"><![CDATA[<p>最近读论文，涉及到一个密码学概念：Commitment Schema。字面意思就是承诺方案。</p>]]></content>
-    
-    
-    
-    <tags>
-      
-      <tag>Blockchain</tag>
       
     </tags>
     
