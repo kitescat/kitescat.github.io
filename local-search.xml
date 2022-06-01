@@ -4,6 +4,29 @@
   
   
   <entry>
+    <title>论文扫读 | 以太坊智能合约分析工具综述</title>
+    <link href="/2022/06/01/SmartCon-Analysis/"/>
+    <url>/2022/06/01/SmartCon-Analysis/</url>
+    
+    <content type="html"><![CDATA[<pre><code class="hljs">原文标题：Ethereum Smart Contract Analysis Tools：A Systematic Review原文作者：SATPAL SINGH KUSHWAHA1, SANDEEP JOSHI1 et al.原文链接：DOI 10.1109/ACCESS.2022.3169902原文来源：IEEE Access</code></pre><h2 id="0X01-论文摘要"><a href="#0X01-论文摘要" class="headerlink" title="0X01 论文摘要"></a>0X01 论文摘要</h2><p>这篇论文主要讲智能合约存在的漏洞，并做了分类，对目前存在的智能合约分析工具（主要是以太坊solidity）做了总结，分为静态和动态。分别都有基于源码分析，基于EVM字节码分析以及基于两者分析的分析工具。目的是为了优化solidity代码的编写。</p><h2 id="0x02-智能合约流程"><a href="#0x02-智能合约流程" class="headerlink" title="0x02 智能合约流程"></a>0x02 智能合约流程</h2><p>这里值得注意的点就是<br><strong>1.从solidity到字节码;</strong><br><strong>2.发布合约得到智能合约地址;</strong><br><strong>3.每个节点都有账本副本，所以很难伪造</strong>。</p><h3 id="流程细节："><a href="#流程细节：" class="headerlink" title="流程细节："></a>流程细节：</h3><p><img src="/img/smartcon_flow.png"></p><p>以Alice和Bob之间的转账合同为例，如图5所示。<br>Alice和Bob达成了协议。</p><p>协议就是采用合同语言编写的（例如，以太坊中的solidity）。智能合约代码接下来通过编译器(例如，solc)编译，<strong>它生成机器码（或字节码）运行在智能合约客户端上的虚拟机</strong>(例如，EVM、JVM)或Docker容器之上。</p><p>智能合约客户端本质上是通过一个点对点的网络连接起来的。在区块链网络部署智能合约后，向客户端返回一个唯一的合同地址，以支持未来的交互。</p><p>此后，用户可以通过在智能合约中的交易与区块链网络互动(例如，从Alice的数字钱包中扣除指定数量的钱，增加对应鲍勃钱包里的钱)。</p><p>值得一提的是，每个交易都需要通过如图5所示的共识算法跨区块链网络进行验证。<br>验证交易，然后将操作附加到交易列表中。<strong>由于每个节点都有一个更新后的区块链的副本，因此很难伪造区块链数据</strong>。</p><h2 id="0x03-漏洞分析"><a href="#0x03-漏洞分析" class="headerlink" title="0x03 漏洞分析"></a>0x03 漏洞分析</h2><p>这里大概讲的都是历史上出现过的合约漏洞，还有就是累赘代码的使用。</p><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>通读下来，想得到的解答就是有没有可能实现智能合约代码审计并且输出修改意见，答案是有的；<br>还有就是Gas花费的优化也是可行的，目前看来就是删掉一些冗余代码；<br>至于这个方向有什么好做的，感觉还是得往深了看，我们还是站在外面浅尝则止吧！</p><center>欢迎关注我的个人公众号</center><p><img src="/img/debug.jpg"></p>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>区块链</tag>
+      
+      <tag>智能合约</tag>
+      
+      <tag>论文扫读</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>Commitment Schema之比特承诺</title>
     <link href="/2022/06/01/CommitmentSchema/"/>
     <url>/2022/06/01/CommitmentSchema/</url>
@@ -178,7 +201,7 @@
     <link href="/2022/05/16/how2builddev4bc/"/>
     <url>/2022/05/16/how2builddev4bc/</url>
     
-    <content type="html"><![CDATA[<h1 id="0x01-区块链介绍"><a href="#0x01-区块链介绍" class="headerlink" title="0x01 区块链介绍"></a>0x01 区块链介绍</h1><p>区块链与其他技术的区别<br>点对点网络 分布式网络 分布式文件系统 IPFS<br>区块链种类<br>比特币网络 和 以太坊网络 的区别是什么？<br>测试网络的存在</p><p>Fork 是什么？<br>最长链原则<br>挖矿是如何进行的<br>一些常见的区块链漏洞</p><p>共识算法<br>原理的核心<br>什么是账户<br>账户是如何产生的 占不占空间<br>什么是地址<br>什么是账本 Ledger<br>什么是交易 Transtraction TX<br>一次交易必须是一对一的吗 还是可以多对多？ 一个人给多个人转账？<br>区块链的数据是不断增长的 为什么不会有数据爆炸？<br>区块链上的区块存储的到底是什么？</p><p>一个地址可能是账户 可能是智能合约 查看某账户的交易记录<br>如何知道一个地址是合约还是账户<br>公私钥的作用</p><p>一个账户消亡之后 私钥会回收吗<br>地址呢？</p><p>什么是智能合约<br>数字签名<br>Merkle Tree<br>以太坊区块是如何打包的？区块里面是什么？<br>多条链是如何处理的？<br>DPOS 的几条准则和会遇到的情况？</p><h1 id="0x02-实验平台"><a href="#0x02-实验平台" class="headerlink" title="0x02 实验平台"></a>0x02 实验平台</h1><p>hardhhat<br>Remix IDE<br>Ganache</p><p>如何搭建私链？<br>什么是钱包？MetaMask<br>Solidity<br>开发语言<br>什么库 library</p><h1 id="0x03-Web-3-0"><a href="#0x03-Web-3-0" class="headerlink" title="0x03 Web 3.0"></a>0x03 Web 3.0</h1><h1 id="0x04-测试网络以及测试币水龙头"><a href="#0x04-测试网络以及测试币水龙头" class="headerlink" title="0x04 测试网络以及测试币水龙头"></a>0x04 测试网络以及测试币水龙头</h1><p>如何得到测试币<br>网站：<br>Rinkeby testnet<br><a href="https://faucets.chain.link/rinkeby">https://faucets.chain.link/rinkeby</a> 拿0.1ETH<br><a href="https://rinkebyfaucet.com/">https://rinkebyfaucet.com/</a> 拿0.5ETH<br>Ropsten testnet<br><a href="https://faucet.dimensions.network/">https://faucet.dimensions.network/</a> 拿1ETH<br><a href="https://faucet.egorfine.com/">https://faucet.egorfine.com/</a> 拿10ETH<br><a href="https://moonborrow.com/">https://moonborrow.com/</a> 拿一定数量的币</p>]]></content>
+    <content type="html"><![CDATA[<h1 id="0x01-区块链介绍"><a href="#0x01-区块链介绍" class="headerlink" title="0x01 区块链介绍"></a>0x01 区块链介绍</h1><p>区块链与其他技术的区别<br>点对点网络 分布式网络 分布式文件系统 IPFS<br>区块链种类<br>比特币网络 和 以太坊网络 的区别是什么？<br>测试网络的存在</p><p>Fork 是什么？<br>最长链原则<br>挖矿是如何进行的<br>一些常见的区块链漏洞</p><p>共识算法<br>原理的核心<br>什么是账户<br>账户是如何产生的 占不占空间<br>什么是地址<br>什么是账本 Ledger<br>什么是交易 Transtraction TX<br>一次交易必须是一对一的吗 还是可以多对多？ 一个人给多个人转账？<br>区块链的数据是不断增长的 为什么不会有数据爆炸？<br>区块链上的区块存储的到底是什么？</p><p>一个地址可能是账户 可能是智能合约 查看某账户的交易记录<br>如何知道一个地址是合约还是账户<br>公私钥的作用</p><p>一个账户消亡之后 私钥会回收吗<br>地址呢？</p><p>什么是智能合约<br>数字签名<br>Merkle Tree<br>以太坊区块是如何打包的？区块里面是什么？<br>多条链是如何处理的？<br>DPOS 的几条准则和会遇到的情况？</p><h1 id="0x02-实验平台"><a href="#0x02-实验平台" class="headerlink" title="0x02 实验平台"></a>0x02 实验平台</h1><p>hardhhat<br>Remix IDE<br>Ganache</p><p>如何搭建私链？<br>什么是钱包？MetaMask<br>Solidity<br>开发语言<br>什么库 library</p><h1 id="0x03-Web-3-0"><a href="#0x03-Web-3-0" class="headerlink" title="0x03 Web 3.0"></a>0x03 Web 3.0</h1><h1 id="0x04-测试网络以及测试币水龙头"><a href="#0x04-测试网络以及测试币水龙头" class="headerlink" title="0x04 测试网络以及测试币水龙头"></a>0x04 测试网络以及测试币水龙头</h1><p>如何得到测试币<br>网站：<br>Rinkeby testnet<br><a href="https://faucets.chain.link/rinkeby">https://faucets.chain.link/rinkeby</a> 拿0.1ETH<br><a href="https://rinkebyfaucet.com/">https://rinkebyfaucet.com/</a> 拿0.5ETH<br>Ropsten testnet<br><a href="https://faucet.dimensions.network/">https://faucet.dimensions.network/</a> 拿1ETH<br><a href="https://faucet.egorfine.com/">https://faucet.egorfine.com/</a> 拿10ETH<br><a href="https://moonborrow.com/">https://moonborrow.com/</a> 拿一定数量的币<br>水龙头整理链接<br><a href="https://faucetlink.to/">https://faucetlink.to/</a> </p>]]></content>
     
     
     

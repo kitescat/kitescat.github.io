@@ -16,24 +16,26 @@
   <meta name="author" content="kitescat">
   <meta name="keywords" content="web安全">
   
-    <meta name="description" content="承诺方案，一个密码学原语介绍">
+    <meta name="description" content="综述|| Ethereum Smart Contract Analysis Tools：A Systematic Review">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Commitment Schema之比特承诺">
-<meta property="og:url" content="https://kitescat.github.io/2022/06/01/CommitmentSchema/index.html">
+<meta property="og:title" content="论文扫读 | 以太坊智能合约分析工具综述">
+<meta property="og:url" content="https://kitescat.github.io/2022/06/01/SmartCon-Analysis/index.html">
 <meta property="og:site_name" content="kitescat 的博客">
-<meta property="og:description" content="承诺方案，一个密码学原语介绍">
+<meta property="og:description" content="综述|| Ethereum Smart Contract Analysis Tools：A Systematic Review">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://kitescat.github.io/img/bitcom.png">
-<meta property="article:published_time" content="2022-05-31T18:04:28.000Z">
-<meta property="article:modified_time" content="2022-05-31T18:11:38.951Z">
+<meta property="og:image" content="https://kitescat.github.io/img/con_vul.jpg">
+<meta property="article:published_time" content="2022-06-01T13:38:49.000Z">
+<meta property="article:modified_time" content="2022-06-01T14:09:04.732Z">
 <meta property="article:author" content="kitescat">
-<meta property="article:tag" content="Blockchain">
+<meta property="article:tag" content="区块链">
+<meta property="article:tag" content="智能合约">
+<meta property="article:tag" content="论文扫读">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://kitescat.github.io/img/bitcom.png">
+<meta name="twitter:image" content="https://kitescat.github.io/img/con_vul.jpg">
   
   
   
-  <title>Commitment Schema之比特承诺 - kitescat 的博客</title>
+  <title>论文扫读 | 以太坊智能合约分析工具综述 - kitescat 的博客</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -196,7 +198,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="Commitment Schema之比特承诺"></span>
+            <span id="subtitle" data-typed-text="论文扫读 | 以太坊智能合约分析工具综述"></span>
           
         </div>
 
@@ -207,8 +209,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-06-01 02:04" pubdate>
-          2022年6月1日 凌晨
+        <time datetime="2022-06-01 21:38" pubdate>
+          2022年6月1日 晚上
         </time>
       </span>
     
@@ -220,7 +222,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          1.8k 字
+          892 字
         
       </span>
     
@@ -232,7 +234,7 @@
         
         
           <!-- compatible with older versions-->
-          15 分钟
+          8 分钟
         
       </span>
     
@@ -278,33 +280,28 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">Commitment Schema之比特承诺</h1>
+            <h1 style="display: none">论文扫读 | 以太坊智能合约分析工具综述</h1>
             
             <div class="markdown-body">
               
-              <h1 id="比特承诺"><a href="#比特承诺" class="headerlink" title="比特承诺"></a>比特承诺</h1><p>最近读论文，涉及到一个密码学概念：Commitment Schema。字面意思就是承诺方案。<br>很难理解，查阅了相关资料，搜集了一些有用的资料，下面搬运一篇来自公众号：包罗万想 的推文，链接为：<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/Oc9mKmyDxzfyK6bulHmVyw">GCAC08 3.12比特承诺</a></p>
-<h2 id="抛出问题："><a href="#抛出问题：" class="headerlink" title="抛出问题："></a>抛出问题：</h2><p>Alice和Bob约会。爱丽丝想看一部电影，鲍勃想看另一部电影。他们决定随机掷硬币选择电影。如果硬币正面朝上，它们将由爱丽丝选择；否则，他们将选择鲍勃的选择。当爱丽丝和鲍勃非常接近时，这很容易。他们都能验证结果。<br>但是当他们离得很远并且在电话里讲话时，这会变得更加困难。<br>鲍勃可以抛硬币，将结果告诉爱丽丝，但爱丽丝没有理由相信结果。<br>那么有什么办法来解决：让对方相信自己抛硬币的结果，并且<strong>自己无法篡改结果</strong>，在揭晓阶段又<strong>向对方证明自己确实是抛的正面/反面</strong>。<br>答案是 比特承诺！</p>
-<h2 id="0x01-概念"><a href="#0x01-概念" class="headerlink" title="0x01 概念"></a>0x01 概念</h2><p>比特承诺是安全多方计算中最重要的基础协议之一，对构建更复杂的多方协议起着重要作用。</p>
-<p>比特承诺(BitCommitment， BC)是密码学中的重要基础协议，其概念最早由 1995 年图灵奖得主 Blum提出。比特承诺方案可用于构建<strong>零知识证明、可验证秘密共享、硬币投掷等协议</strong>，同时和不经意传送一起构成两方安全计算的基础，是信息安全领域研究的热点。主要包含C,V两个算法。<br><img src="/img/commit_view.jpg" srcset="/img/loading.gif" lazyload></p>
-<h2 id="0x02-基本思想"><a href="#0x02-基本思想" class="headerlink" title="0x02 基本思想"></a>0x02 基本思想</h2><p>发送者 Alice 向接收者Bob 承诺一个比特b (如果是多个比特，即比特串t ，则称为比特 串承诺)，要求：</p>
-<p>在第 1 阶段即承诺阶段 Alice 向 Bob 承诺这 个比特b ，但是 <strong>Bob 无法知道b 的信息</strong>；</p>
-<p>在第 2 阶段即揭示阶段<strong>Alice 向 Bob 证实她在第 1 阶段承诺的确实是b</strong>，但是 Alice 无法欺骗 Bob(即不能在第 2 阶段篡改b的值)。</p>
-<h2 id="0x03-经典环境示例"><a href="#0x03-经典环境示例" class="headerlink" title="0x03 经典环境示例"></a>0x03 经典环境示例</h2><p>Alice将待承诺的比特或秘密写在一张纸上，然后将这张纸锁进一个保险箱，该保险箱只有唯一的钥匙可以打开。</p>
-<p>在承诺阶段， Alice将保险箱送给 Bob，但是保留钥匙；</p>
-<p>到了揭示阶段，Alice将比特或秘密告诉 Bob，同时将钥匙传给 Bob 使其相信自己的承诺。</p>
-<p>需要指出的是，保险箱不能被“暴力破解”的性质甚至允许Alice 在揭示阶段无需向 Bob 说明承诺的比特或秘密，只要将钥匙发送给 Bob 即可。</p>
-<h2 id="0x04-性质"><a href="#0x04-性质" class="headerlink" title="0x04 性质"></a>0x04 性质</h2><p>一个比特承诺方案必须具备下列性质：</p>
-<p>正确性：如果 Alice 和 Bob 均诚实地执行协议，那么在揭示阶段 Bob 将正确获得 Alice 承诺的比特b 。</p>
-<p>保密性Hiding：在揭示阶段之前 Bob 不能获知b的信息。</p>
-<p><img src="/img/hiding.jpg" srcset="/img/loading.gif" lazyload></p>
-<p>绑定性Binding ：在承诺阶段结束之后，Bob只能在揭示阶段获得唯一的b (即 Alice 无法将b 反转，就好像 Alice 与b “绑定”在一起一样)。<br>如果一个比特承诺协议同时满足保密性和绑定性，且没有对攻击者的计算能力做任何限制性假设，则称该比特承诺协议是无条件安全的。</p>
-<p><img src="/img/binding.jpg" srcset="/img/loading.gif" lazyload></p>
-<h2 id="0x05-三方比特承诺"><a href="#0x05-三方比特承诺" class="headerlink" title="0x05 三方比特承诺"></a>0x05 三方比特承诺</h2><p>在该模型下，承诺者由一人变为二人Alice 与 Bob，由此<strong>二人共同向第三方Chris 承诺一个比特或比特串</strong>。</p>
-<p>承诺阶段之前， Alice 与Bob 可以自由通信以商定承诺内容，但是在协议开始以后，要求 Alice 与 Bob 无法再进行通信。（考虑到量子计算环境，协议开始之后， Alice 与Bob 被物理隔离，无法再进行经典通信和量子通信，最多只允许对本地量子进行局域测量）。</p>
-<p>该模型最重要的特点是揭示阶段由 Bob 负责向 Chris 揭示b 的信息，因此 Alice 没有任何作弊的可能，即无法破坏协议的绑定性。</p>
-<h3 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h3><h4 id="囚徒困境"><a href="#囚徒困境" class="headerlink" title="囚徒困境"></a>囚徒困境</h4><p>三方参与的安全模型在实际生活中是有很多应用的，例如在博弈论的经典“囚徒困境”模型中，两个纵火嫌疑犯即可以视作证明者，他们在被抓住以前可以自由交流(例如商定问讯对策)，被抓以后将被警察(验证者)分开审讯。如果这两个嫌疑犯均“忠实”地在审讯过程中坚持否认纵火事实，那么他们将获得集体最优结果。又如，由两家单位合作来对某个大型项目进行投标(例如资金与技术的合作)，则这两家单位和招标方构成三方承诺模型。</p>
-<h4 id="安全多方计算"><a href="#安全多方计算" class="headerlink" title="安全多方计算"></a>安全多方计算</h4><p>另外，一些安全多方计算的协议模型，其最基本的组成结构也经常是三方，而非两方。例如可验证秘密分享(Verifiable Secret Sharing，VSS)，除了一个秘密分发方外，秘密分享方至少是两方，因此一个秘密分享方案至少需要三方的参与。又如，在匿名通信的重要基础模型——密码学家就餐问题中，参与的密码学家至少为三个。</p>
-<p>后续讲解Secret Sharing 秘密分享协议！</p>
+              <pre><code class="hljs">原文标题：Ethereum Smart Contract Analysis Tools：A Systematic Review
+
+原文作者：SATPAL SINGH KUSHWAHA1, SANDEEP JOSHI1 et al.
+
+原文链接：DOI 10.1109/ACCESS.2022.3169902
+
+原文来源：IEEE Access
+</code></pre>
+<h2 id="0X01-论文摘要"><a href="#0X01-论文摘要" class="headerlink" title="0X01 论文摘要"></a>0X01 论文摘要</h2><p>这篇论文主要讲智能合约存在的漏洞，并做了分类，对目前存在的智能合约分析工具（主要是以太坊solidity）做了总结，分为静态和动态。分别都有基于源码分析，基于EVM字节码分析以及基于两者分析的分析工具。目的是为了优化solidity代码的编写。</p>
+<h2 id="0x02-智能合约流程"><a href="#0x02-智能合约流程" class="headerlink" title="0x02 智能合约流程"></a>0x02 智能合约流程</h2><p>这里值得注意的点就是<br><strong>1.从solidity到字节码;</strong><br><strong>2.发布合约得到智能合约地址;</strong><br><strong>3.每个节点都有账本副本，所以很难伪造</strong>。</p>
+<h3 id="流程细节："><a href="#流程细节：" class="headerlink" title="流程细节："></a>流程细节：</h3><p><img src="/img/smartcon_flow.png" srcset="/img/loading.gif" lazyload></p>
+<p>以Alice和Bob之间的转账合同为例，如图5所示。<br>Alice和Bob达成了协议。</p>
+<p>协议就是采用合同语言编写的（例如，以太坊中的solidity）。智能合约代码接下来通过编译器(例如，solc)编译，<strong>它生成机器码（或字节码）运行在智能合约客户端上的虚拟机</strong>(例如，EVM、JVM)或Docker容器之上。</p>
+<p>智能合约客户端本质上是通过一个点对点的网络连接起来的。在区块链网络部署智能合约后，向客户端返回一个唯一的合同地址，以支持未来的交互。</p>
+<p>此后，用户可以通过在智能合约中的交易与区块链网络互动(例如，从Alice的数字钱包中扣除指定数量的钱，增加对应鲍勃钱包里的钱)。</p>
+<p>值得一提的是，每个交易都需要通过如图5所示的共识算法跨区块链网络进行验证。<br>验证交易，然后将操作附加到交易列表中。<strong>由于每个节点都有一个更新后的区块链的副本，因此很难伪造区块链数据</strong>。</p>
+<h2 id="0x03-漏洞分析"><a href="#0x03-漏洞分析" class="headerlink" title="0x03 漏洞分析"></a>0x03 漏洞分析</h2><p>这里大概讲的都是历史上出现过的合约漏洞，还有就是累赘代码的使用。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>通读下来，想得到的解答就是有没有可能实现智能合约代码审计并且输出修改意见，答案是有的；<br>还有就是Gas花费的优化也是可行的，目前看来就是删掉一些冗余代码；<br>至于这个方向有什么好做的，感觉还是得往深了看，我们还是站在外面浅尝则止吧！</p>
 <center>欢迎关注我的个人公众号</center>
 
 <p><img src="/img/debug.jpg" srcset="/img/loading.gif" lazyload></p>
@@ -319,7 +316,11 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/Blockchain/">#Blockchain</a>
+        <a href="/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/">#区块链</a>
+      
+        <a href="/tags/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6/">#智能合约</a>
+      
+        <a href="/tags/%E8%AE%BA%E6%96%87%E6%89%AB%E8%AF%BB/">#论文扫读</a>
       
     </div>
   
@@ -331,8 +332,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>Commitment Schema之比特承诺</div>
-      <div>https://kitescat.github.io/2022/06/01/CommitmentSchema/</div>
+      <div>论文扫读 | 以太坊智能合约分析工具综述</div>
+      <div>https://kitescat.github.io/2022/06/01/SmartCon-Analysis/</div>
     </div>
     <div class="license-meta">
       
@@ -374,18 +375,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/06/01/SmartCon-Analysis/" title="论文扫读 | 以太坊智能合约分析工具综述">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">论文扫读 | 以太坊智能合约分析工具综述</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/06/01/Golang-road/" title="Go开发学习笔记 | 数据类型">
-                        <span class="hidden-mobile">Go开发学习笔记 | 数据类型</span>
+                      <a href="/2022/06/01/CommitmentSchema/" title="Commitment Schema之比特承诺">
+                        <span class="hidden-mobile">Commitment Schema之比特承诺</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
