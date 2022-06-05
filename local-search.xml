@@ -4,6 +4,44 @@
   
   
   <entry>
+    <title>论文扫读 | 智能合约安全漏洞检测技术研究综述</title>
+    <link href="/2022/06/05/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E%E6%A3%80%E6%B5%8B%E6%8A%80%E6%9C%AF%E7%A0%94%E7%A9%B6%E7%BB%BC%E8%BF%B0/"/>
+    <url>/2022/06/05/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E%E6%A3%80%E6%B5%8B%E6%8A%80%E6%9C%AF%E7%A0%94%E7%A9%B6%E7%BB%BC%E8%BF%B0/</url>
+    
+    <content type="html"><![CDATA[<pre><code class="hljs">原文标题：智能合约安全漏洞检测技术研究综述 Smart Contract Vulnerability Detection Technique: A Survey原文作者：钱 鹏, 刘振广,何钦铭等原文链接：DOI 10.13328/j.cnki.jos.006375原文来源：软件学报 ISSN</code></pre><h2 id="0X01-论文摘要"><a href="#0X01-论文摘要" class="headerlink" title="0X01 论文摘要"></a>0X01 论文摘要</h2><ol><li>从 <strong>Solidity 代码层、EVM 执行层、区块链系统层</strong>这 3 个层面介绍了智能合约常见的漏洞类型和典型案例</li><li>从<strong>形式化验证法、符号执行法、模糊测试法、中间表示法、深度学习法</strong>这 5 类方法综述了智能合约漏洞检测</li><li>对可检测漏洞类型、准确率、时间消耗等方面进行了详细的对比，提出了改进建议</li></ol><h2 id="0x02-主要漏洞和相关事件"><a href="#0x02-主要漏洞和相关事件" class="headerlink" title="0x02 主要漏洞和相关事件"></a>0x02 主要漏洞和相关事件</h2><p>我印象深刻的主要是可重入漏洞，拒绝服务和未知服务漏洞三个。</p><p><img src="/img/sc_vuls.png"></p><p>文章在讲分析工具的时候，好像没有仔细讲解基于EVM字节码，opcode以及solidity代码 三种检测的区别。</p><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ol><li>很好地给出了漏洞类型分类以及对应的实际案例，用简单的例子说明了漏洞如何被利用;</li><li>比较好的是论文提到的内容和这几天看到的一些智能合约漏洞刚好契合,能比较简单的理解入门;</li><li>论文多次提到通过fallback函数实现攻击，不知道现在解决方案如何，值得考究；</li><li>还有就是权限漏洞那部分，require修饰器等，还得仔细看看，入门solidity看过但又忘记了；</li><li>启发点就是实际上就是代码审计的研究 如何把代码规范做好和如何实现自动化审计（深度学习）等方向。</li></ol><p>总的来说，这篇综述是很好的，对于想入门的同学，可以仔细研究一下。<br>而且我们实验室目前好像只听说过有做入侵检测，攻击识别之类的，没听说有代码审计自动化这个方向。  </p><center>欢迎关注我的个人公众号</center><p><img src="/img/debug.jpg"></p>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>Blockchain</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>区块链网站/公众号整理推荐</title>
+    <link href="/2022/06/05/%E5%8C%BA%E5%9D%97%E9%93%BE%E7%BD%91%E7%AB%99%E6%8E%A8%E8%8D%90/"/>
+    <url>/2022/06/05/%E5%8C%BA%E5%9D%97%E9%93%BE%E7%BD%91%E7%AB%99%E6%8E%A8%E8%8D%90/</url>
+    
+    <content type="html"><![CDATA[<h1 id="区块链网站或者公众号等推荐"><a href="#区块链网站或者公众号等推荐" class="headerlink" title="区块链网站或者公众号等推荐"></a>区块链网站或者公众号等推荐</h1><p>登链社区 <a href="https://learnblockchain.cn/">https://learnblockchain.cn/</a><br>零时科技博客 <a href="https://blog.csdn.net/m0_37598434?type=blog">https://blog.csdn.net/m0_37598434?type=blog</a><br>智能合约审计学习 CTF <a href="https://github.com/blockthreat/blocksec-ctfs">https://github.com/blockthreat/blocksec-ctfs</a><br>以太坊Go 开发 <a href="https://ethereum.org/zh/developers/docs/programming-languages/golang/">https://ethereum.org/zh/developers/docs/programming-languages/golang/</a><br>比赛 可信区块链安全攻防大赛<br>web3.py 入门学习</p>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>Blockchain</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>论文扫读 | 以太坊智能合约分析工具综述</title>
     <link href="/2022/06/01/SmartCon-Analysis/"/>
     <url>/2022/06/01/SmartCon-Analysis/</url>
@@ -201,7 +239,7 @@
     <link href="/2022/05/16/how2builddev4bc/"/>
     <url>/2022/05/16/how2builddev4bc/</url>
     
-    <content type="html"><![CDATA[<h1 id="0x01-区块链介绍"><a href="#0x01-区块链介绍" class="headerlink" title="0x01 区块链介绍"></a>0x01 区块链介绍</h1><p>区块链与其他技术的区别<br>点对点网络 分布式网络 分布式文件系统 IPFS<br>区块链种类<br>比特币网络 和 以太坊网络 的区别是什么？<br>测试网络的存在</p><p>Fork 是什么？<br>最长链原则<br>挖矿是如何进行的<br>一些常见的区块链漏洞</p><p>共识算法<br>原理的核心<br>什么是账户<br>账户是如何产生的 占不占空间<br>什么是地址<br>什么是账本 Ledger<br>什么是交易 Transtraction TX<br>一次交易必须是一对一的吗 还是可以多对多？ 一个人给多个人转账？<br>区块链的数据是不断增长的 为什么不会有数据爆炸？<br>区块链上的区块存储的到底是什么？</p><p>一个地址可能是账户 可能是智能合约 查看某账户的交易记录<br>如何知道一个地址是合约还是账户<br>公私钥的作用</p><p>一个账户消亡之后 私钥会回收吗<br>地址呢？</p><p>什么是智能合约<br>数字签名<br>Merkle Tree<br>以太坊区块是如何打包的？区块里面是什么？<br>多条链是如何处理的？<br>DPOS 的几条准则和会遇到的情况？</p><h1 id="0x02-实验平台"><a href="#0x02-实验平台" class="headerlink" title="0x02 实验平台"></a>0x02 实验平台</h1><p>hardhhat<br>Remix IDE<br>Ganache</p><p>如何搭建私链？<br>什么是钱包？MetaMask<br>Solidity<br>开发语言<br>什么库 library</p><h1 id="0x03-Web-3-0"><a href="#0x03-Web-3-0" class="headerlink" title="0x03 Web 3.0"></a>0x03 Web 3.0</h1><h1 id="0x04-测试网络以及测试币水龙头"><a href="#0x04-测试网络以及测试币水龙头" class="headerlink" title="0x04 测试网络以及测试币水龙头"></a>0x04 测试网络以及测试币水龙头</h1><p>如何得到测试币<br>网站：<br>Rinkeby testnet<br><a href="https://faucets.chain.link/rinkeby">https://faucets.chain.link/rinkeby</a> 拿0.1ETH<br><a href="https://rinkebyfaucet.com/">https://rinkebyfaucet.com/</a> 拿0.5ETH<br>Ropsten testnet<br><a href="https://faucet.dimensions.network/">https://faucet.dimensions.network/</a> 拿1ETH<br><a href="https://faucet.egorfine.com/">https://faucet.egorfine.com/</a> 拿10ETH<br><a href="https://moonborrow.com/">https://moonborrow.com/</a> 拿一定数量的币<br>水龙头整理链接<br><a href="https://faucetlink.to/">https://faucetlink.to/</a> </p>]]></content>
+    <content type="html"><![CDATA[<h1 id="0x01-区块链介绍"><a href="#0x01-区块链介绍" class="headerlink" title="0x01 区块链介绍"></a>0x01 区块链介绍</h1><p>区块链与其他技术的区别<br>点对点网络 分布式网络 分布式文件系统 IPFS<br>区块链种类<br>比特币网络 和 以太坊网络 的区别是什么？<br>测试网络的存在</p><p>Fork 是什么？<br>最长链原则<br>挖矿是如何进行的<br>一些常见的区块链漏洞</p><p>共识算法<br>原理的核心<br>什么是账户<br>账户是如何产生的 占不占空间<br>什么是地址<br>什么是账本 Ledger<br>什么是交易 Transtraction TX<br>一次交易必须是一对一的吗 还是可以多对多？ 一个人给多个人转账？<br>区块链的数据是不断增长的 为什么不会有数据爆炸？<br>区块链上的区块存储的到底是什么？</p><p>一个地址可能是账户 可能是智能合约 查看某账户的交易记录<br>如何知道一个地址是合约还是账户<br>公私钥的作用</p><p>一个账户消亡之后 私钥会回收吗<br>地址呢？</p><p>什么是智能合约<br>数字签名<br>Merkle Tree<br>以太坊区块是如何打包的？区块里面是什么？<br>多条链是如何处理的？<br>DPOS 的几条准则和会遇到的情况？</p><h1 id="0x02-实验平台"><a href="#0x02-实验平台" class="headerlink" title="0x02 实验平台"></a>0x02 实验平台</h1><p>Ganache Geth？ 什么关系<br>Geth Go-ethereum 以太坊客户端GO语言编写 主网络<br>Ganache GUI 以太坊私链 本地环境<br>Truffle Hardhat 以太坊开发框架 集成了一些库<br>Remix IDE solc solidity IDE<br>js web3.js ethers.js javascript的web3库<br>python web3.py<br>rpc节点 API<br>infura alchemy 提供测试网络和主网络的xx？ API json rpc</p><p>json-rpc<br>json<br>rpc<br>API<br>client<br>全节点 轻节点</p><p>如何搭建私链？<br>什么是钱包？MetaMask<br>Solidity</p><h1 id="0x03-Web-3-0"><a href="#0x03-Web-3-0" class="headerlink" title="0x03 Web 3.0"></a>0x03 Web 3.0</h1><h1 id="0x04-测试网络以及测试币水龙头"><a href="#0x04-测试网络以及测试币水龙头" class="headerlink" title="0x04 测试网络以及测试币水龙头"></a>0x04 测试网络以及测试币水龙头</h1><p>如何得到测试币<br>网站：<br>Rinkeby testnet<br><a href="https://faucets.chain.link/rinkeby">https://faucets.chain.link/rinkeby</a> 拿0.1ETH<br><a href="https://rinkebyfaucet.com/">https://rinkebyfaucet.com/</a> 拿0.5ETH<br>Ropsten testnet<br><a href="https://faucet.dimensions.network/">https://faucet.dimensions.network/</a> 拿1ETH<br><a href="https://faucet.egorfine.com/">https://faucet.egorfine.com/</a> 拿10ETH<br><a href="https://moonborrow.com/">https://moonborrow.com/</a> 拿一定数量的币<br>水龙头整理链接<br><a href="https://faucetlink.to/">https://faucetlink.to/</a> </p>]]></content>
     
     
     
