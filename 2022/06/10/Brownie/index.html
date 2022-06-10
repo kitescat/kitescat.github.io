@@ -16,24 +16,24 @@
   <meta name="author" content="kitescat">
   <meta name="keywords" content="web安全">
   
-    <meta name="description" content="智能合约漏洞分类和常见分析工具的整理">
+    <meta name="description" content="万物皆可Python，以太坊也不例外！">
 <meta property="og:type" content="article">
-<meta property="og:title" content="论文扫读 | 智能合约安全漏洞检测技术研究综述">
-<meta property="og:url" content="https://kitescat.github.io/2022/06/05/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E%E6%A3%80%E6%B5%8B%E6%8A%80%E6%9C%AF%E7%A0%94%E7%A9%B6%E7%BB%BC%E8%BF%B0/index.html">
+<meta property="og:title" content="以太坊开发之 Python Brownie框架">
+<meta property="og:url" content="https://kitescat.github.io/2022/06/10/Brownie/index.html">
 <meta property="og:site_name" content="kitescat 的博客">
-<meta property="og:description" content="智能合约漏洞分类和常见分析工具的整理">
+<meta property="og:description" content="万物皆可Python，以太坊也不例外！">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://kitescat.github.io/img/code_ql.jpg">
-<meta property="article:published_time" content="2022-06-05T14:39:05.000Z">
-<meta property="article:modified_time" content="2022-06-05T15:05:57.880Z">
+<meta property="og:image" content="https://kitescat.github.io/img/brownie.jpg">
+<meta property="article:published_time" content="2022-06-10T14:41:26.000Z">
+<meta property="article:modified_time" content="2022-06-10T14:55:16.240Z">
 <meta property="article:author" content="kitescat">
 <meta property="article:tag" content="Blockchain">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://kitescat.github.io/img/code_ql.jpg">
+<meta name="twitter:image" content="https://kitescat.github.io/img/brownie.jpg">
   
   
   
-  <title>论文扫读 | 智能合约安全漏洞检测技术研究综述 - kitescat 的博客</title>
+  <title>以太坊开发之 Python Brownie框架 - kitescat 的博客</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -196,7 +196,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="论文扫读 | 智能合约安全漏洞检测技术研究综述"></span>
+            <span id="subtitle" data-typed-text="以太坊开发之 Python Brownie框架"></span>
           
         </div>
 
@@ -207,8 +207,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-06-05 22:39" pubdate>
-          2022年6月5日 晚上
+        <time datetime="2022-06-10 22:41" pubdate>
+          2022年6月10日 晚上
         </time>
       </span>
     
@@ -220,7 +220,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          682 字
+          477 字
         
       </span>
     
@@ -232,7 +232,7 @@
         
         
           <!-- compatible with older versions-->
-          6 分钟
+          4 分钟
         
       </span>
     
@@ -278,37 +278,15 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">论文扫读 | 智能合约安全漏洞检测技术研究综述</h1>
+            <h1 style="display: none">以太坊开发之 Python Brownie框架</h1>
             
             <div class="markdown-body">
               
-              <pre><code class="hljs">原文标题：智能合约安全漏洞检测技术研究综述 Smart Contract Vulnerability Detection Technique: A Survey
-
-原文作者：钱 鹏, 刘振广,何钦铭等
-
-原文链接：DOI 10.13328/j.cnki.jos.006375
-
-原文来源：软件学报 ISSN
-</code></pre>
-<h2 id="0X01-论文摘要"><a href="#0X01-论文摘要" class="headerlink" title="0X01 论文摘要"></a>0X01 论文摘要</h2><ol>
-<li>从 <strong>Solidity 代码层、EVM 执行层、区块链系统层</strong>这 3 个层面介绍了智能合约常见的漏洞类型和典型案例</li>
-<li>从<strong>形式化验证法、符号执行法、模糊测试法、中间表示法、深度学习法</strong>这 5 类方法综述了智能合约漏洞检测</li>
-<li>对可检测漏洞类型、准确率、时间消耗等方面进行了详细的对比，提出了改进建议</li>
-</ol>
-<h2 id="0x02-主要漏洞和相关事件"><a href="#0x02-主要漏洞和相关事件" class="headerlink" title="0x02 主要漏洞和相关事件"></a>0x02 主要漏洞和相关事件</h2><p>我印象深刻的主要是可重入漏洞，拒绝服务和未知服务漏洞三个。</p>
-<p><img src="/img/sc_vuls.png" srcset="/img/loading.gif" lazyload></p>
-<p>文章在讲分析工具的时候，好像没有仔细讲解基于EVM字节码，opcode以及solidity代码 三种检测的区别。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ol>
-<li>很好地给出了漏洞类型分类以及对应的实际案例，用简单的例子说明了漏洞如何被利用;</li>
-<li>比较好的是论文提到的内容和这几天看到的一些智能合约漏洞刚好契合,能比较简单的理解入门;</li>
-<li>论文多次提到通过fallback函数实现攻击，不知道现在解决方案如何，值得考究；</li>
-<li>还有就是权限漏洞那部分，require修饰器等，还得仔细看看，入门solidity看过但又忘记了；</li>
-<li>启发点就是实际上就是代码审计的研究 如何把代码规范做好和如何实现自动化审计（深度学习）等方向。</li>
-</ol>
-<p>总的来说，这篇综述是很好的，对于想入门的同学，可以仔细研究一下。<br>而且我们实验室目前好像只听说过有做入侵检测，攻击识别之类的，没听说有代码审计自动化这个方向。  </p>
-<center>欢迎关注我的个人公众号</center>
-
-<p><img src="/img/debug.jpg" srcset="/img/loading.gif" lazyload></p>
+              <h1 id="利用Python部署智能合约到以太坊区块链上"><a href="#利用Python部署智能合约到以太坊区块链上" class="headerlink" title="利用Python部署智能合约到以太坊区块链上"></a>利用Python部署智能合约到以太坊区块链上</h1><p>我们知道的以太坊Dapp开发物件包括 Javascript的 web3.js ；java的 web3j ；以及Python的web3.py<br>其中Python不仅提供了python实现的以太坊client，还有以太坊开发框架和<strong>智能合约安全检测包MythX</strong>等</p>
+<h2 id="Brownie"><a href="#Brownie" class="headerlink" title="Brownie"></a>Brownie</h2><p>其实我最近一直在找一个可以替代hardhat的平台，发现这个框架还是可以很好地替代的<br>但是目前仍然在学习其开放的API和功能，目前实现了一个简单的智能合约部署，本地私链实现以及测试网实现</p>
+<h2 id="Ganache"><a href="#Ganache" class="headerlink" title="Ganache"></a>Ganache</h2><p>Ganache是一个封装好的本地私链，有Gui界面，傻瓜操作，提供了http连接，使得本地测试很方便<br>这里需要注意以太坊Dapp开发过程中，有许多不同的连接方式，如wss，https，http(rpc)等等</p>
+<p>这里提一下，与Ganache看起来很像的Geth，Geth是一个Go实现的以太坊客户端，全称为Go-ethereum，<br>可以运行一个以太坊节点，运行方式有轻节点的形式，解决了以太坊节点运行同步存储消耗大的问题。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>如果想要入门以太坊开发，这个框架可以看看</p>
 
               
             </div>
@@ -332,8 +310,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>论文扫读 | 智能合约安全漏洞检测技术研究综述</div>
-      <div>https://kitescat.github.io/2022/06/05/智能合约安全漏洞检测技术研究综述/</div>
+      <div>以太坊开发之 Python Brownie框架</div>
+      <div>https://kitescat.github.io/2022/06/10/Brownie/</div>
     </div>
     <div class="license-meta">
       
@@ -345,7 +323,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2022年6月5日</div>
+          <div>2022年6月10日</div>
         </div>
       
       
@@ -375,18 +353,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/06/10/Brownie/" title="以太坊开发之 Python Brownie框架">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">以太坊开发之 Python Brownie框架</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/06/05/%E5%8C%BA%E5%9D%97%E9%93%BE%E7%BD%91%E7%AB%99%E6%8E%A8%E8%8D%90/" title="区块链网站/公众号整理推荐">
-                        <span class="hidden-mobile">区块链网站/公众号整理推荐</span>
+                      <a href="/2022/06/05/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E%E6%A3%80%E6%B5%8B%E6%8A%80%E6%9C%AF%E7%A0%94%E7%A9%B6%E7%BB%BC%E8%BF%B0/" title="论文扫读 | 智能合约安全漏洞检测技术研究综述">
+                        <span class="hidden-mobile">论文扫读 | 智能合约安全漏洞检测技术研究综述</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

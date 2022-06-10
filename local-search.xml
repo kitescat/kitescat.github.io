@@ -4,6 +4,25 @@
   
   
   <entry>
+    <title>以太坊开发之 Python Brownie框架</title>
+    <link href="/2022/06/10/Brownie/"/>
+    <url>/2022/06/10/Brownie/</url>
+    
+    <content type="html"><![CDATA[<h1 id="利用Python部署智能合约到以太坊区块链上"><a href="#利用Python部署智能合约到以太坊区块链上" class="headerlink" title="利用Python部署智能合约到以太坊区块链上"></a>利用Python部署智能合约到以太坊区块链上</h1><p>我们知道的以太坊Dapp开发物件包括 Javascript的 web3.js ；java的 web3j ；以及Python的web3.py<br>其中Python不仅提供了python实现的以太坊client，还有以太坊开发框架和<strong>智能合约安全检测包MythX</strong>等</p><h2 id="Brownie"><a href="#Brownie" class="headerlink" title="Brownie"></a>Brownie</h2><p>其实我最近一直在找一个可以替代hardhat的平台，发现这个框架还是可以很好地替代的<br>但是目前仍然在学习其开放的API和功能，目前实现了一个简单的智能合约部署，本地私链实现以及测试网实现</p><h2 id="Ganache"><a href="#Ganache" class="headerlink" title="Ganache"></a>Ganache</h2><p>Ganache是一个封装好的本地私链，有Gui界面，傻瓜操作，提供了http连接，使得本地测试很方便<br>这里需要注意以太坊Dapp开发过程中，有许多不同的连接方式，如wss，https，http(rpc)等等</p><p>这里提一下，与Ganache看起来很像的Geth，Geth是一个Go实现的以太坊客户端，全称为Go-ethereum，<br>可以运行一个以太坊节点，运行方式有轻节点的形式，解决了以太坊节点运行同步存储消耗大的问题。</p><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>如果想要入门以太坊开发，这个框架可以看看</p>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>Blockchain</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>论文扫读 | 智能合约安全漏洞检测技术研究综述</title>
     <link href="/2022/06/05/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E%E6%A3%80%E6%B5%8B%E6%8A%80%E6%9C%AF%E7%A0%94%E7%A9%B6%E7%BB%BC%E8%BF%B0/"/>
     <url>/2022/06/05/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E5%AE%89%E5%85%A8%E6%BC%8F%E6%B4%9E%E6%A3%80%E6%B5%8B%E6%8A%80%E6%9C%AF%E7%A0%94%E7%A9%B6%E7%BB%BC%E8%BF%B0/</url>
