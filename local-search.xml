@@ -4,6 +4,27 @@
   
   
   <entry>
+    <title>给区块链实验初学者的启示(二)</title>
+    <link href="/2022/06/24/Solidity%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
+    <url>/2022/06/24/Solidity%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</url>
+    
+    <content type="html"><![CDATA[<p>最近对于自己的研究方向有些迷茫，会进入觉得自己做的东西是没有意义的怪圈里。<br>写完了专利，又陷入了没有方向的境地，于是想想不如好好做点开发的东西吧。<br>承接上一篇<a href="https://kitescat.github.io/2022/05/16/how2builddev4bc/">给区块链初学者的实验启示（一）</a></p><h2 id="0x01-Brownie的配置"><a href="#0x01-Brownie的配置" class="headerlink" title="0x01 Brownie的配置"></a>0x01 Brownie的配置</h2><ol><li>首先新建项目，新建虚拟环境，在虚拟环境中 pip install brownie</li><li>brownie init 新建 brownie 项目，生成框架</li><li>框架脚手架包括 合约文件夹，编译文件夹build等，测试文件夹 test，脚本文件夹 scripts<br>具体介绍详见Brownie 官网文档介绍</li><li>正常顺序应该是brownie console （控制台的意思）连接本地以太坊私链<br>比如开启你的Ganache控制台 通过 <a href="https://127.0.0.1:8045/">https://127.0.0.1:8045</a> 连接</li><li>开始编写你的智能合约solidity文件，再写测试python代码</li></ol><p>tips:.env文件的配置 测试网络的配置 infura key或者account的导入，这些对于初学者来说估计都是难点。<br>一时间无法马上配好 或者经常出错 建议仔仔细细泡一下流程，配置好环境依赖。</p><h2 id="0x02-智能合约的编写"><a href="#0x02-智能合约的编写" class="headerlink" title="0x02 智能合约的编写"></a>0x02 智能合约的编写</h2><p>本项目我们写一个最简单的智能合约，对智能合约变量进行Set和Get操作：<br>    pragma solidity ^0.8.15;//solidity版本号的设置<br>    //simple storage<br>    contract helloworld{<br>        uint storedData;//变量</p><pre><code class="hljs">    function set(uint x) external&#123;//external 表明函数只能被外部合约或账户调用        storedData = x;    &#125;    function get() external view returns (uint retVal) &#123;//view 表明函数可以对外部变量进行简单的读取操作 但不能修改外部变量        return storedData;    &#125;&#125;</code></pre><h2 id="0x03-智能合约变量和函数的修饰符"><a href="#0x03-智能合约变量和函数的修饰符" class="headerlink" title="0x03 智能合约变量和函数的修饰符"></a>0x03 智能合约变量和函数的修饰符</h2><p>public<br>private<br>external<br>internal<br>pure<br>view</p><p>值得一提的是 编译器一般会告诉你什么时候该加什么关键词 这是很方便的。</p><h2 id="0x04-脚本编写"><a href="#0x04-脚本编写" class="headerlink" title="0x04 脚本编写"></a>0x04 脚本编写</h2><p>开头引入helloworld 智能合约和network，accounts等关键词</p><pre><code class="hljs">from brownie import helloworld, network, accounts# simple storage 简单存储def deploy():    print(&quot;---------deploy-----------&quot;)    private_key = 0x86b2875a1982e37e3fffbc564efe4fbf0b9ed12af3570266f653e7831d53a152    accounts.add(private_key) # 这里对项目添加账户才能执行发送交易等操作    storage_contract = helloworld.deploy(&#123;&quot;from&quot;: accounts[0]&#125;)    print(f&quot;storage contract deployed on &#123;network.show_active()&#125; network at : &#123;storage_contract.address&#125;&quot;)    print(&quot;---------set 1 和get 1 -----------&quot;)    storage_contract.set(1) # 由deploy() 得到智能合约 .set(1) 表明调用这个智能合约的函数    print(&quot;---------get----------&quot;)    output = storage_contract.get() # 注意独立运行get() 并不会输出任何信息 因为它设置的是return 我们没有print是不会输出的    print(output)def main():# main函数为程序的入口    deploy()</code></pre><h2 id="0x05-总结"><a href="#0x05-总结" class="headerlink" title="0x05 总结"></a>0x05 总结</h2><p>智能合约简单存取操作还是很容易理解的，注意这里set 会发送一个交易，调用智能合约的set函数。<br>然而你get操作 却不需要发送交易 因为它不改变区块链智能合约的内容 因此不需要发送交易。</p>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>Blockchain</tag>
+      
+      <tag>区块链实验</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>以太坊开发之 Python Brownie框架</title>
     <link href="/2022/06/10/Brownie/"/>
     <url>/2022/06/10/Brownie/</url>
@@ -268,6 +289,8 @@
       
       <tag>Ethereum</tag>
       
+      <tag>区块链实验</tag>
+      
     </tags>
     
   </entry>
@@ -323,9 +346,15 @@
     <link href="/2022/03/20/ECC%E6%A4%AD%E5%9C%86%E6%9B%B2%E7%BA%BF%E5%AF%86%E7%A0%81/"/>
     <url>/2022/03/20/ECC%E6%A4%AD%E5%9C%86%E6%9B%B2%E7%BA%BF%E5%AF%86%E7%A0%81/</url>
     
-    <content type="html"><![CDATA[]]></content>
+    <content type="html"><![CDATA[<h2 id="原理概述："><a href="#原理概述：" class="headerlink" title="原理概述："></a>原理概述：</h2><p><img src="/img/ecc.png"></p><p><img src="/img/eccflow.png"></p><h2 id="相关视频："><a href="#相关视频：" class="headerlink" title="相关视频："></a>相关视频：</h2><p><a href="https://www.bilibili.com/video/BV1v44y1b7Fd?spm_id_from=333.999.0.0">https://www.bilibili.com/video/BV1v44y1b7Fd?spm_id_from=333.999.0.0</a></p>]]></content>
     
     
+    
+    <tags>
+      
+      <tag>Crypto</tag>
+      
+    </tags>
     
   </entry>
   
