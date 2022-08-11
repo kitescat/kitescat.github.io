@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://kitescat.github.io/img/DH_banner.jpg">
 <meta property="article:published_time" content="2022-05-27T14:07:36.000Z">
-<meta property="article:modified_time" content="2022-05-27T14:25:19.845Z">
+<meta property="article:modified_time" content="2022-07-13T16:51:17.709Z">
 <meta property="article:author" content="kitescat">
 <meta property="article:tag" content="Crypto">
 <meta property="article:tag" content="Key Exchange">
@@ -221,7 +221,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          1.4k 字
+          1.5k 字
         
       </span>
     
@@ -283,7 +283,7 @@
             
             <div class="markdown-body">
               
-              <h1 id="安全地交换共享密钥！"><a href="#安全地交换共享密钥！" class="headerlink" title="安全地交换共享密钥！"></a>安全地交换共享密钥！</h1><p>1976年，Diffie和Hellman在其题为《密码学的新方向》的论文中给出了公钥密码学的定义，并提出了DH密钥交换算法。<br>该算法解决了对称密码体制中的密钥分发问题，使得通信双方可以通过公开信道安全地交换共享密钥。其安全性建立在离散对数问题的困难性之上。</p>
+              <h1 id="安全地交换共享密钥！"><a href="#安全地交换共享密钥！" class="headerlink" title="安全地交换共享密钥！"></a>安全地交换共享密钥！</h1><p>1976年，Diffie和Hellman在其题为《密码学的新方向》的论文中给出了公钥密码学的定义，并提出了DH密钥交换算法。<br>该算法解决了对称密码体制中的密钥分发问题，使得通信双方可以通过公开信道安全地交换共享密钥，将此共享密钥用于会话加密。<br>其安全性建立在离散对数问题的困难性之上。</p>
 <p>为了更好地说明密钥交换协议的作用，我将会以自己的语言讲一遍<strong>为什么我们需要DH key exchange</strong></p>
 <h2 id="0x01-跟我一起设计密钥方案！"><a href="#0x01-跟我一起设计密钥方案！" class="headerlink" title="0x01 跟我一起设计密钥方案！"></a>0x01 跟我一起设计密钥方案！</h2><p>假设有两个人Alice 和 Bob 他们要传递信息<br><strong>分为对称密码学和非对称密码学的角度来设计</strong></p>
 <h3 id="1-1-第一回合"><a href="#1-1-第一回合" class="headerlink" title="1.1 第一回合"></a>1.1 第一回合</h3><p>最简单没有任何措施的方法，就是直接传信息，比如 Alice：“今天天气晴朗！” Bob就会收到该信息。<br>但是这有很大的问题，最大的问题就是没有保密性，任何监听他们通信信道的人都能回去该消息的明文。</p>
