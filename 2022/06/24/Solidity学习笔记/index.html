@@ -25,13 +25,16 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://kitescat.github.io/img/eth.png">
 <meta property="article:published_time" content="2022-06-24T14:27:21.000Z">
-<meta property="article:modified_time" content="2022-06-24T14:57:42.719Z">
+<meta property="article:modified_time" content="2022-11-17T16:11:31.287Z">
 <meta property="article:author" content="kitescat">
 <meta property="article:tag" content="Blockchain">
+<meta property="article:tag" content="区块链开发">
 <meta property="article:tag" content="区块链实验">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://kitescat.github.io/img/eth.png">
   
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
   
   
   <title>给区块链实验初学者的启示(二) - kitescat 的博客</title>
@@ -233,7 +236,7 @@
         
         
           <!-- compatible with older versions-->
-          15 分钟
+          14 分钟
         
       </span>
     
@@ -241,9 +244,9 @@
     
     
       
-        <span id="leancloud-page-views-container" class="post-meta" style="display: none">
+        <span id="busuanzi_container_page_pv" style="display: none">
           <i class="iconfont icon-eye" aria-hidden="true"></i>
-          <span id="leancloud-page-views"></span> 次
+          <span id="busuanzi_value_page_pv"></span> 次
         </span>
         
       
@@ -310,7 +313,7 @@
 # simple storage 简单存储
 def deploy():
     print(&quot;---------deploy-----------&quot;)
-    private_key = 0x86b2875a1982e37e3fffbc564efe4fbf0b9ed12af3570266f653e7831d53a152
+    private_key = # 填入你的私钥
     accounts.add(private_key) # 这里对项目添加账户才能执行发送交易等操作
     storage_contract = helloworld.deploy(&#123;&quot;from&quot;: accounts[0]&#125;)
     print(f&quot;storage contract deployed on &#123;network.show_active()&#125; network at : &#123;storage_contract.address&#125;&quot;)
@@ -331,11 +334,34 @@ def main():# main函数为程序的入口
             <div>
               <div class="post-metas my-3">
   
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%8C%BA%E5%9D%97%E9%93%BE/" class="category-chain-item">区块链</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
   
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
         <a href="/tags/Blockchain/">#Blockchain</a>
+      
+        <a href="/tags/%E5%8C%BA%E5%9D%97%E9%93%BE%E5%BC%80%E5%8F%91/">#区块链开发</a>
       
         <a href="/tags/%E5%8C%BA%E5%9D%97%E9%93%BE%E5%AE%9E%E9%AA%8C/">#区块链实验</a>
       
@@ -518,21 +544,20 @@ def main():# main函数为程序的入口
 
   
     
-      <span id="leancloud-site-pv-container" style="display: none">
+      <span id="busuanzi_container_site_pv" style="display: none">
         总访问量 
-        <span id="leancloud-site-pv"></span>
+        <span id="busuanzi_value_site_pv"></span>
          次
       </span>
     
     
-      <span id="leancloud-site-uv-container" style="display: none">
+      <span id="busuanzi_container_site_uv" style="display: none">
         总访客数 
-        <span id="leancloud-site-uv"></span>
+        <span id="busuanzi_value_site_uv"></span>
          人
       </span>
     
     
-
   
 </div>
 
@@ -739,6 +764,8 @@ def main():# main函数为程序的入口
   <script>Fluid.plugins.imageCaption();</script>
 
   <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
 
   <script defer src="/js/leancloud.js" ></script>
 

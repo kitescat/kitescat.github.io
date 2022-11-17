@@ -11,6 +11,12 @@
     <content type="html"><![CDATA[<h2 id="Unix类-kali-ubuntu"><a href="#Unix类-kali-ubuntu" class="headerlink" title="Unix类 kali ubuntu"></a>Unix类 kali ubuntu</h2><h2 id="Windows"><a href="#Windows" class="headerlink" title="Windows"></a>Windows</h2><p>如何查看当前用户及权限<br>如何查看网络地址和主机等</p>]]></content>
     
     
+    <categories>
+      
+      <category>计算机基础知识</category>
+      
+    </categories>
+    
     
     <tags>
       
@@ -29,6 +35,12 @@
     
     <content type="html"><![CDATA[]]></content>
     
+    
+    <categories>
+      
+      <category>渗透测试</category>
+      
+    </categories>
     
     
     <tags>
@@ -49,6 +61,12 @@
     <content type="html"><![CDATA[]]></content>
     
     
+    <categories>
+      
+      <category>渗透测试</category>
+      
+    </categories>
+    
     
     <tags>
       
@@ -67,6 +85,12 @@
     
     <content type="html"><![CDATA[<h1 id="SQL注入"><a href="#SQL注入" class="headerlink" title="SQL注入"></a>SQL注入</h1><p>数据库类型 MSSQL Mysql Oracle等</p><h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><h2 id="类型"><a href="#类型" class="headerlink" title="类型"></a>类型</h2><h2 id="SQLmap的使用"><a href="#SQLmap的使用" class="headerlink" title="SQLmap的使用"></a>SQLmap的使用</h2><h2 id="防护建议"><a href="#防护建议" class="headerlink" title="防护建议"></a>防护建议</h2><p>php函数</p>]]></content>
     
+    
+    <categories>
+      
+      <category>渗透测试</category>
+      
+    </categories>
     
     
     <tags>
@@ -87,6 +111,12 @@
     <content type="html"><![CDATA[<h1 id="渗透测试之信息搜集（一）"><a href="#渗透测试之信息搜集（一）" class="headerlink" title="渗透测试之信息搜集（一）"></a>渗透测试之信息搜集（一）</h1><h2 id="0x01-针对域名的信息搜集"><a href="#0x01-针对域名的信息搜集" class="headerlink" title="0x01 针对域名的信息搜集"></a>0x01 针对域名的信息搜集</h2><p>子域名枚举</p><h2 id="0x02-针对IP的信息搜集"><a href="#0x02-针对IP的信息搜集" class="headerlink" title="0x02 针对IP的信息搜集"></a>0x02 针对IP的信息搜集</h2><p>C段 旁段<br>MSSCAN</p><h2 id="0x04-服务识别"><a href="#0x04-服务识别" class="headerlink" title="0x04 服务识别"></a>0x04 服务识别</h2><p>指纹识别<br>    主机信息<br>    CMS识别<br>目录爆破 dirsearch<br>端口扫描</p><p>资产扫描 Fofa Hunter Zoomeye</p><p><a href="https://search.censys.io/">https://search.censys.io</a>      //端口收集扫描比较全<br><a href="https://hunter.qianxin.com/">https://hunter.qianxin.com</a>    //可视化图形资产，可与fofa结合使用<br><a href="https://duckduckgo.com/">https://duckduckgo.com</a>        //找后台比较无助的时候可以尝试site:xxx.com login<br><a href="https://fofa.info/">https://fofa.info</a>             //资产测绘<br><a href="https://ww.shodan.io/">https://ww.shodan.io</a>          //shodan</p>]]></content>
     
     
+    <categories>
+      
+      <category>渗透测试</category>
+      
+    </categories>
+    
     
     <tags>
       
@@ -106,6 +136,12 @@
     <content type="html"><![CDATA[<p>“我是郭冬临。”长着秀气头发的青年程序员对着面试官介绍自己<br>而面试官并不会觉得他在假冒小品演员“郭冬临”，因为面试之前，小郭已经出具身份证证明自己是程序员郭冬临。<br>现代化社会，我们习惯于提供身份证件，账号密码等信息来证明“我是我”，从而不会把你我错认成公民彭于晏，你也无法冒充微信用户林俊杰或是微博用户郭冬临。</p><p>然而，目前的身份管理系统有几个缺陷：</p><p>中心化的机构如数字认证中心CA,公钥基础设施PKI等存储着这些用户数据或者密钥，提供服务。然而使得恶意攻击者可以窃取这些信息，盗用你的身份证明进而冒用你的身份。<br>区块链为身份认证的去中心化提供了解决方案：去中心化的标识符被存储在分布式账本和区块链上，它们是防篡改的，安全的，并且可以被任何人即时验证。</p><p>这减少了在服务器中存储身份信息的需要，使用户通过区块链账户登录，无缝访问Web3服务。<br>本文粗略地介绍了去中心化身份的概念，涵盖数字签名等密码学知识，提出笔者的一些思考，并且浅显地讨论去中心化身份及去中心化身份认证的解决方案。</p><h2 id="1-去中心化身份意味着什么？"><a href="#1-去中心化身份意味着什么？" class="headerlink" title="1 去中心化身份意味着什么？"></a>1 去中心化身份意味着什么？</h2><p>通俗地说，去中心化身份允许你拥有自己的身份。<br>一个组织（交通警察大队）想给你（用户）发一个证书（驾驶执照）。你发送你的钱包地址，这是分布式账本或区块链上用于存储数据的特定位置。然后交通警察大队用其私钥签署交易，将凭证发送到你的数字钱包。</p><p>现在，你可以在任何时候分享这个凭证，以确定你的身份：例如，在完成贷款申请时。对方使用算法验证，检查公钥和交易细节，以确认你的证件有效性。<br>在去中心化身份管理中，用户在 数字钱包中存储凭证和个人信息，就像现实生活中的钱包一样，数字钱包保存着你的身份证明，如你的执照或身份证。去中心化身份标识将身份信息的存储在分布式账本或区块链中，满足了防篡改，可验证，透明可追溯等特性。</p><h2 id="2-为何提出去中心化身份认证？"><a href="#2-为何提出去中心化身份认证？" class="headerlink" title="2 为何提出去中心化身份认证？"></a>2 为何提出去中心化身份认证？</h2><p>传统的身份认证方案，如常见的CA数字认证中心通过发放包含你公钥和信息绑定的数字证书，可以向他人证明你的公钥的有效性：PK-ID。<br>然而仅仅向他人发送一个被CA签名过的数字证书，会被中间人利用，冒充你的身份，此称为中间人攻击（MIMT）。</p><p>那么如何防止MIMT呢？</p><p>让第四方签署这个CA证书显然是不实际的，于是就衍生了许多方案，如PKI，信任链的概念来解决数字证书或者数字签名中间人攻击的问题。<br>去中心化身份便可用于替代这些中心化的方案。去中心化身份管理可以保证数据安全，同时不需要你去记那么多的ID，密码，一个账户满足所有应用登录。</p><h2 id="3-Inspiration灵光一现"><a href="#3-Inspiration灵光一现" class="headerlink" title="3 Inspiration灵光一现"></a>3 Inspiration灵光一现</h2><p>通过上传PK与身份信息，如ID的绑定到区块链上，可以实现替代CA的作用，由区块链承担身份验证；</p><p>在单点登录场景下，只有拥有区块链账户私钥的，才能发送交易进行登录操作。因此，即使攻击者窃取ID，密码等信息，仍然无法替代该账户发送交易进行登录。智能合约可以通过判断交易发起者的身份，进行登录验证，使得MIMT不可能实现！</p><p>因此Dapp不用公钥密码学进行身份认证也是可行的，只需要加入地址的判断，筛选掉攻击者。</p><h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p>[1] <a href="https://mp.weixin.qq.com/s/IJ-nYrFXUVl7ok76gM79EQ">https://mp.weixin.qq.com/s/IJ-nYrFXUVl7ok76gM79EQ</a></p><p>[2] <a href="https://web3.hashnode.com/what-is-decentralized-identity">https://web3.hashnode.com/what-is-decentralized-identity</a></p>]]></content>
     
     
+    <categories>
+      
+      <category>区块链</category>
+      
+    </categories>
+    
     
     <tags>
       
@@ -122,13 +158,21 @@
     <link href="/2022/06/24/Solidity%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/"/>
     <url>/2022/06/24/Solidity%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/</url>
     
-    <content type="html"><![CDATA[<p>最近对于自己的研究方向有些迷茫，会进入觉得自己做的东西是没有意义的怪圈里。<br>写完了专利，又陷入了没有方向的境地，于是想想不如好好做点开发的东西吧。<br>承接上一篇<a href="https://kitescat.github.io/2022/05/16/how2builddev4bc/">给区块链初学者的实验启示（一）</a></p><h2 id="0x01-Brownie的配置"><a href="#0x01-Brownie的配置" class="headerlink" title="0x01 Brownie的配置"></a>0x01 Brownie的配置</h2><ol><li>首先新建项目，新建虚拟环境，在虚拟环境中 pip install brownie</li><li>brownie init 新建 brownie 项目，生成框架</li><li>框架脚手架包括 合约文件夹，编译文件夹build等，测试文件夹 test，脚本文件夹 scripts<br>具体介绍详见Brownie 官网文档介绍</li><li>正常顺序应该是brownie console （控制台的意思）连接本地以太坊私链<br>比如开启你的Ganache控制台 通过 <a href="https://127.0.0.1:8045/">https://127.0.0.1:8045</a> 连接</li><li>开始编写你的智能合约solidity文件，再写测试python代码</li></ol><p>tips:.env文件的配置 测试网络的配置 infura key或者account的导入，这些对于初学者来说估计都是难点。<br>一时间无法马上配好 或者经常出错 建议仔仔细细泡一下流程，配置好环境依赖。</p><h2 id="0x02-智能合约的编写"><a href="#0x02-智能合约的编写" class="headerlink" title="0x02 智能合约的编写"></a>0x02 智能合约的编写</h2><p>本项目我们写一个最简单的智能合约，对智能合约变量进行Set和Get操作：<br>    pragma solidity ^0.8.15;//solidity版本号的设置<br>    //simple storage<br>    contract helloworld{<br>        uint storedData;//变量</p><pre><code class="hljs">    function set(uint x) external&#123;//external 表明函数只能被外部合约或账户调用        storedData = x;    &#125;    function get() external view returns (uint retVal) &#123;//view 表明函数可以对外部变量进行简单的读取操作 但不能修改外部变量        return storedData;    &#125;&#125;</code></pre><h2 id="0x03-智能合约变量和函数的修饰符"><a href="#0x03-智能合约变量和函数的修饰符" class="headerlink" title="0x03 智能合约变量和函数的修饰符"></a>0x03 智能合约变量和函数的修饰符</h2><p>public<br>private<br>external<br>internal<br>pure<br>view</p><p>值得一提的是 编译器一般会告诉你什么时候该加什么关键词 这是很方便的。</p><h2 id="0x04-脚本编写"><a href="#0x04-脚本编写" class="headerlink" title="0x04 脚本编写"></a>0x04 脚本编写</h2><p>开头引入helloworld 智能合约和network，accounts等关键词</p><pre><code class="hljs">from brownie import helloworld, network, accounts# simple storage 简单存储def deploy():    print(&quot;---------deploy-----------&quot;)    private_key = 0x86b2875a1982e37e3fffbc564efe4fbf0b9ed12af3570266f653e7831d53a152    accounts.add(private_key) # 这里对项目添加账户才能执行发送交易等操作    storage_contract = helloworld.deploy(&#123;&quot;from&quot;: accounts[0]&#125;)    print(f&quot;storage contract deployed on &#123;network.show_active()&#125; network at : &#123;storage_contract.address&#125;&quot;)    print(&quot;---------set 1 和get 1 -----------&quot;)    storage_contract.set(1) # 由deploy() 得到智能合约 .set(1) 表明调用这个智能合约的函数    print(&quot;---------get----------&quot;)    output = storage_contract.get() # 注意独立运行get() 并不会输出任何信息 因为它设置的是return 我们没有print是不会输出的    print(output)def main():# main函数为程序的入口    deploy()</code></pre><h2 id="0x05-总结"><a href="#0x05-总结" class="headerlink" title="0x05 总结"></a>0x05 总结</h2><p>智能合约简单存取操作还是很容易理解的，注意这里set 会发送一个交易，调用智能合约的set函数。<br>然而你get操作 却不需要发送交易 因为它不改变区块链智能合约的内容 因此不需要发送交易。</p>]]></content>
+    <content type="html"><![CDATA[<p>最近对于自己的研究方向有些迷茫，会进入觉得自己做的东西是没有意义的怪圈里。<br>写完了专利，又陷入了没有方向的境地，于是想想不如好好做点开发的东西吧。<br>承接上一篇<a href="https://kitescat.github.io/2022/05/16/how2builddev4bc/">给区块链初学者的实验启示（一）</a></p><h2 id="0x01-Brownie的配置"><a href="#0x01-Brownie的配置" class="headerlink" title="0x01 Brownie的配置"></a>0x01 Brownie的配置</h2><ol><li>首先新建项目，新建虚拟环境，在虚拟环境中 pip install brownie</li><li>brownie init 新建 brownie 项目，生成框架</li><li>框架脚手架包括 合约文件夹，编译文件夹build等，测试文件夹 test，脚本文件夹 scripts<br>具体介绍详见Brownie 官网文档介绍</li><li>正常顺序应该是brownie console （控制台的意思）连接本地以太坊私链<br>比如开启你的Ganache控制台 通过 <a href="https://127.0.0.1:8045/">https://127.0.0.1:8045</a> 连接</li><li>开始编写你的智能合约solidity文件，再写测试python代码</li></ol><p>tips:.env文件的配置 测试网络的配置 infura key或者account的导入，这些对于初学者来说估计都是难点。<br>一时间无法马上配好 或者经常出错 建议仔仔细细泡一下流程，配置好环境依赖。</p><h2 id="0x02-智能合约的编写"><a href="#0x02-智能合约的编写" class="headerlink" title="0x02 智能合约的编写"></a>0x02 智能合约的编写</h2><p>本项目我们写一个最简单的智能合约，对智能合约变量进行Set和Get操作：<br>    pragma solidity ^0.8.15;//solidity版本号的设置<br>    //simple storage<br>    contract helloworld{<br>        uint storedData;//变量</p><pre><code class="hljs">    function set(uint x) external&#123;//external 表明函数只能被外部合约或账户调用        storedData = x;    &#125;    function get() external view returns (uint retVal) &#123;//view 表明函数可以对外部变量进行简单的读取操作 但不能修改外部变量        return storedData;    &#125;&#125;</code></pre><h2 id="0x03-智能合约变量和函数的修饰符"><a href="#0x03-智能合约变量和函数的修饰符" class="headerlink" title="0x03 智能合约变量和函数的修饰符"></a>0x03 智能合约变量和函数的修饰符</h2><p>public<br>private<br>external<br>internal<br>pure<br>view</p><p>值得一提的是 编译器一般会告诉你什么时候该加什么关键词 这是很方便的。</p><h2 id="0x04-脚本编写"><a href="#0x04-脚本编写" class="headerlink" title="0x04 脚本编写"></a>0x04 脚本编写</h2><p>开头引入helloworld 智能合约和network，accounts等关键词</p><pre><code class="hljs">from brownie import helloworld, network, accounts# simple storage 简单存储def deploy():    print(&quot;---------deploy-----------&quot;)    private_key = # 填入你的私钥    accounts.add(private_key) # 这里对项目添加账户才能执行发送交易等操作    storage_contract = helloworld.deploy(&#123;&quot;from&quot;: accounts[0]&#125;)    print(f&quot;storage contract deployed on &#123;network.show_active()&#125; network at : &#123;storage_contract.address&#125;&quot;)    print(&quot;---------set 1 和get 1 -----------&quot;)    storage_contract.set(1) # 由deploy() 得到智能合约 .set(1) 表明调用这个智能合约的函数    print(&quot;---------get----------&quot;)    output = storage_contract.get() # 注意独立运行get() 并不会输出任何信息 因为它设置的是return 我们没有print是不会输出的    print(output)def main():# main函数为程序的入口    deploy()</code></pre><h2 id="0x05-总结"><a href="#0x05-总结" class="headerlink" title="0x05 总结"></a>0x05 总结</h2><p>智能合约简单存取操作还是很容易理解的，注意这里set 会发送一个交易，调用智能合约的set函数。<br>然而你get操作 却不需要发送交易 因为它不改变区块链智能合约的内容 因此不需要发送交易。</p>]]></content>
     
+    
+    <categories>
+      
+      <category>区块链</category>
+      
+    </categories>
     
     
     <tags>
       
       <tag>Blockchain</tag>
+      
+      <tag>区块链开发</tag>
       
       <tag>区块链实验</tag>
       
@@ -146,10 +190,18 @@
     <content type="html"><![CDATA[<h1 id="利用Python部署智能合约到以太坊区块链上"><a href="#利用Python部署智能合约到以太坊区块链上" class="headerlink" title="利用Python部署智能合约到以太坊区块链上"></a>利用Python部署智能合约到以太坊区块链上</h1><p>我们知道的以太坊Dapp开发物件包括 Javascript的 web3.js ；java的 web3j ；以及Python的web3.py<br>其中Python不仅提供了python实现的以太坊client，还有以太坊开发框架和<strong>智能合约安全检测包MythX</strong>等</p><h2 id="Brownie"><a href="#Brownie" class="headerlink" title="Brownie"></a>Brownie</h2><p>其实我最近一直在找一个可以替代hardhat的平台，发现这个框架还是可以很好地替代的<br>但是目前仍然在学习其开放的API和功能，目前实现了一个简单的智能合约部署，本地私链实现以及测试网实现</p><h2 id="Ganache"><a href="#Ganache" class="headerlink" title="Ganache"></a>Ganache</h2><p>Ganache是一个封装好的本地私链，有Gui界面，傻瓜操作，提供了http连接，使得本地测试很方便<br>这里需要注意以太坊Dapp开发过程中，有许多不同的连接方式，如wss，https，http(rpc)等等</p><p>这里提一下，与Ganache看起来很像的Geth，Geth是一个Go实现的以太坊客户端，全称为Go-ethereum，<br>可以运行一个以太坊节点，运行方式有轻节点的形式，解决了以太坊节点运行同步存储消耗大的问题。</p><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>如果想要入门以太坊开发，这个框架可以看看</p>]]></content>
     
     
+    <categories>
+      
+      <category>区块链</category>
+      
+    </categories>
+    
     
     <tags>
       
       <tag>Blockchain</tag>
+      
+      <tag>区块链开发</tag>
       
     </tags>
     
@@ -164,6 +216,12 @@
     
     <content type="html"><![CDATA[<pre><code class="hljs">原文标题：智能合约安全漏洞检测技术研究综述 Smart Contract Vulnerability Detection Technique: A Survey原文作者：钱 鹏, 刘振广,何钦铭等原文链接：DOI 10.13328/j.cnki.jos.006375原文来源：软件学报 ISSN</code></pre><h2 id="0X01-论文摘要"><a href="#0X01-论文摘要" class="headerlink" title="0X01 论文摘要"></a>0X01 论文摘要</h2><ol><li>从 <strong>Solidity 代码层、EVM 执行层、区块链系统层</strong>这 3 个层面介绍了智能合约常见的漏洞类型和典型案例</li><li>从<strong>形式化验证法、符号执行法、模糊测试法、中间表示法、深度学习法</strong>这 5 类方法综述了智能合约漏洞检测</li><li>对可检测漏洞类型、准确率、时间消耗等方面进行了详细的对比，提出了改进建议</li></ol><h2 id="0x02-主要漏洞和相关事件"><a href="#0x02-主要漏洞和相关事件" class="headerlink" title="0x02 主要漏洞和相关事件"></a>0x02 主要漏洞和相关事件</h2><p>我印象深刻的主要是可重入漏洞，拒绝服务和未知服务漏洞三个。</p><p><img src="/img/sc_vuls.png"></p><p>文章在讲分析工具的时候，好像没有仔细讲解基于EVM字节码，opcode以及solidity代码 三种检测的区别。</p><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><ol><li>很好地给出了漏洞类型分类以及对应的实际案例，用简单的例子说明了漏洞如何被利用;</li><li>比较好的是论文提到的内容和这几天看到的一些智能合约漏洞刚好契合,能比较简单的理解入门;</li><li>论文多次提到通过fallback函数实现攻击，不知道现在解决方案如何，值得考究；</li><li>还有就是权限漏洞那部分，require修饰器等，还得仔细看看，入门solidity看过但又忘记了；</li><li>启发点就是实际上就是代码审计的研究 如何把代码规范做好和如何实现自动化审计（深度学习）等方向。</li></ol><p>总的来说，这篇综述是很好的，对于想入门的同学，可以仔细研究一下。<br>而且我们实验室目前好像只听说过有做入侵检测，攻击识别之类的，没听说有代码审计自动化这个方向。  </p><center>欢迎关注我的个人公众号</center><p><img src="/img/debug.jpg"></p>]]></content>
     
+    
+    <categories>
+      
+      <category>区块链</category>
+      
+    </categories>
     
     
     <tags>
@@ -184,6 +242,12 @@
     <content type="html"><![CDATA[<h1 id="区块链网站或者公众号等推荐"><a href="#区块链网站或者公众号等推荐" class="headerlink" title="区块链网站或者公众号等推荐"></a>区块链网站或者公众号等推荐</h1><p>登链社区 <a href="https://learnblockchain.cn/">https://learnblockchain.cn/</a><br>零时科技博客 <a href="https://blog.csdn.net/m0_37598434?type=blog">https://blog.csdn.net/m0_37598434?type=blog</a><br>智能合约审计学习 CTF <a href="https://github.com/blockthreat/blocksec-ctfs">https://github.com/blockthreat/blocksec-ctfs</a><br>以太坊Go 开发 <a href="https://ethereum.org/zh/developers/docs/programming-languages/golang/">https://ethereum.org/zh/developers/docs/programming-languages/golang/</a><br>比赛 可信区块链安全攻防大赛<br>web3.py 入门学习</p>]]></content>
     
     
+    <categories>
+      
+      <category>区块链</category>
+      
+    </categories>
+    
     
     <tags>
       
@@ -202,6 +266,12 @@
     
     <content type="html"><![CDATA[<pre><code class="hljs">原文标题：Ethereum Smart Contract Analysis Tools：A Systematic Review原文作者：SATPAL SINGH KUSHWAHA1, SANDEEP JOSHI1 et al.原文链接：DOI 10.1109/ACCESS.2022.3169902原文来源：IEEE Access</code></pre><h2 id="0X01-论文摘要"><a href="#0X01-论文摘要" class="headerlink" title="0X01 论文摘要"></a>0X01 论文摘要</h2><p>这篇论文主要讲智能合约存在的漏洞，并做了分类，对目前存在的智能合约分析工具（主要是以太坊solidity）做了总结，分为静态和动态。分别都有基于源码分析，基于EVM字节码分析以及基于两者分析的分析工具。目的是为了优化solidity代码的编写。</p><h2 id="0x02-智能合约流程"><a href="#0x02-智能合约流程" class="headerlink" title="0x02 智能合约流程"></a>0x02 智能合约流程</h2><p>这里值得注意的点就是<br><strong>1.从solidity到字节码;</strong><br><strong>2.发布合约得到智能合约地址;</strong><br><strong>3.每个节点都有账本副本，所以很难伪造</strong>。</p><h3 id="流程细节："><a href="#流程细节：" class="headerlink" title="流程细节："></a>流程细节：</h3><p><img src="/img/smartcon_flow.png"></p><p>以Alice和Bob之间的转账合同为例，如图5所示。<br>Alice和Bob达成了协议。</p><p>协议就是采用合同语言编写的（例如，以太坊中的solidity）。智能合约代码接下来通过编译器(例如，solc)编译，<strong>它生成机器码（或字节码）运行在智能合约客户端上的虚拟机</strong>(例如，EVM、JVM)或Docker容器之上。</p><p>智能合约客户端本质上是通过一个点对点的网络连接起来的。在区块链网络部署智能合约后，向客户端返回一个唯一的合同地址，以支持未来的交互。</p><p>此后，用户可以通过在智能合约中的交易与区块链网络互动(例如，从Alice的数字钱包中扣除指定数量的钱，增加对应鲍勃钱包里的钱)。</p><p>值得一提的是，每个交易都需要通过如图5所示的共识算法跨区块链网络进行验证。<br>验证交易，然后将操作附加到交易列表中。<strong>由于每个节点都有一个更新后的区块链的副本，因此很难伪造区块链数据</strong>。</p><h2 id="0x03-漏洞分析"><a href="#0x03-漏洞分析" class="headerlink" title="0x03 漏洞分析"></a>0x03 漏洞分析</h2><p>这里大概讲的都是历史上出现过的合约漏洞，还有就是累赘代码的使用。</p><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>通读下来，想得到的解答就是有没有可能实现智能合约代码审计并且输出修改意见，答案是有的；<br>还有就是Gas花费的优化也是可行的，目前看来就是删掉一些冗余代码；<br>至于这个方向有什么好做的，感觉还是得往深了看，我们还是站在外面浅尝则止吧！</p><center>欢迎关注我的个人公众号</center><p><img src="/img/debug.jpg"></p>]]></content>
     
+    
+    <categories>
+      
+      <category>区块链</category>
+      
+    </categories>
     
     
     <tags>
@@ -226,6 +296,12 @@
     <content type="html"><![CDATA[<h1 id="比特承诺"><a href="#比特承诺" class="headerlink" title="比特承诺"></a>比特承诺</h1><p>最近读论文，涉及到一个密码学概念：Commitment Schema。字面意思就是承诺方案。<br>很难理解，查阅了相关资料，搜集了一些有用的资料，下面搬运一篇来自公众号：包罗万想 的推文，链接为：<a href="https://mp.weixin.qq.com/s/Oc9mKmyDxzfyK6bulHmVyw">GCAC08 3.12比特承诺</a></p><h2 id="抛出问题："><a href="#抛出问题：" class="headerlink" title="抛出问题："></a>抛出问题：</h2><p>Alice和Bob约会。爱丽丝想看一部电影，鲍勃想看另一部电影。他们决定随机掷硬币选择电影。如果硬币正面朝上，它们将由爱丽丝选择；否则，他们将选择鲍勃的选择。当爱丽丝和鲍勃非常接近时，这很容易。他们都能验证结果。<br>但是当他们离得很远并且在电话里讲话时，这会变得更加困难。<br>鲍勃可以抛硬币，将结果告诉爱丽丝，但爱丽丝没有理由相信结果。<br>那么有什么办法来解决：让对方相信自己抛硬币的结果，并且<strong>自己无法篡改结果</strong>，在揭晓阶段又<strong>向对方证明自己确实是抛的正面/反面</strong>。<br>答案是 比特承诺！</p><h2 id="0x01-概念"><a href="#0x01-概念" class="headerlink" title="0x01 概念"></a>0x01 概念</h2><p>比特承诺是安全多方计算中最重要的基础协议之一，对构建更复杂的多方协议起着重要作用。</p><p>比特承诺(BitCommitment， BC)是密码学中的重要基础协议，其概念最早由 1995 年图灵奖得主 Blum提出。比特承诺方案可用于构建<strong>零知识证明、可验证秘密共享、硬币投掷等协议</strong>，同时和不经意传送一起构成两方安全计算的基础，是信息安全领域研究的热点。主要包含C,V两个算法。<br><img src="/img/commit_view.jpg"></p><h2 id="0x02-基本思想"><a href="#0x02-基本思想" class="headerlink" title="0x02 基本思想"></a>0x02 基本思想</h2><p>发送者 Alice 向接收者Bob 承诺一个比特b (如果是多个比特，即比特串t ，则称为比特 串承诺)，要求：</p><p>在第 1 阶段即承诺阶段 Alice 向 Bob 承诺这 个比特b ，但是 <strong>Bob 无法知道b 的信息</strong>；</p><p>在第 2 阶段即揭示阶段<strong>Alice 向 Bob 证实她在第 1 阶段承诺的确实是b</strong>，但是 Alice 无法欺骗 Bob(即不能在第 2 阶段篡改b的值)。</p><h2 id="0x03-经典环境示例"><a href="#0x03-经典环境示例" class="headerlink" title="0x03 经典环境示例"></a>0x03 经典环境示例</h2><p>Alice将待承诺的比特或秘密写在一张纸上，然后将这张纸锁进一个保险箱，该保险箱只有唯一的钥匙可以打开。</p><p>在承诺阶段， Alice将保险箱送给 Bob，但是保留钥匙；</p><p>到了揭示阶段，Alice将比特或秘密告诉 Bob，同时将钥匙传给 Bob 使其相信自己的承诺。</p><p>需要指出的是，保险箱不能被“暴力破解”的性质甚至允许Alice 在揭示阶段无需向 Bob 说明承诺的比特或秘密，只要将钥匙发送给 Bob 即可。</p><h2 id="0x04-性质"><a href="#0x04-性质" class="headerlink" title="0x04 性质"></a>0x04 性质</h2><p>一个比特承诺方案必须具备下列性质：</p><p>正确性：如果 Alice 和 Bob 均诚实地执行协议，那么在揭示阶段 Bob 将正确获得 Alice 承诺的比特b 。</p><p>保密性Hiding：在揭示阶段之前 Bob 不能获知b的信息。</p><p><img src="/img/hiding.jpg"></p><p>绑定性Binding ：在承诺阶段结束之后，Bob只能在揭示阶段获得唯一的b (即 Alice 无法将b 反转，就好像 Alice 与b “绑定”在一起一样)。<br>如果一个比特承诺协议同时满足保密性和绑定性，且没有对攻击者的计算能力做任何限制性假设，则称该比特承诺协议是无条件安全的。</p><p><img src="/img/binding.jpg"></p><h2 id="0x05-三方比特承诺"><a href="#0x05-三方比特承诺" class="headerlink" title="0x05 三方比特承诺"></a>0x05 三方比特承诺</h2><p>在该模型下，承诺者由一人变为二人Alice 与 Bob，由此<strong>二人共同向第三方Chris 承诺一个比特或比特串</strong>。</p><p>承诺阶段之前， Alice 与Bob 可以自由通信以商定承诺内容，但是在协议开始以后，要求 Alice 与 Bob 无法再进行通信。（考虑到量子计算环境，协议开始之后， Alice 与Bob 被物理隔离，无法再进行经典通信和量子通信，最多只允许对本地量子进行局域测量）。</p><p>该模型最重要的特点是揭示阶段由 Bob 负责向 Chris 揭示b 的信息，因此 Alice 没有任何作弊的可能，即无法破坏协议的绑定性。</p><h3 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h3><h4 id="囚徒困境"><a href="#囚徒困境" class="headerlink" title="囚徒困境"></a>囚徒困境</h4><p>三方参与的安全模型在实际生活中是有很多应用的，例如在博弈论的经典“囚徒困境”模型中，两个纵火嫌疑犯即可以视作证明者，他们在被抓住以前可以自由交流(例如商定问讯对策)，被抓以后将被警察(验证者)分开审讯。如果这两个嫌疑犯均“忠实”地在审讯过程中坚持否认纵火事实，那么他们将获得集体最优结果。又如，由两家单位合作来对某个大型项目进行投标(例如资金与技术的合作)，则这两家单位和招标方构成三方承诺模型。</p><h4 id="安全多方计算"><a href="#安全多方计算" class="headerlink" title="安全多方计算"></a>安全多方计算</h4><p>另外，一些安全多方计算的协议模型，其最基本的组成结构也经常是三方，而非两方。例如可验证秘密分享(Verifiable Secret Sharing，VSS)，除了一个秘密分发方外，秘密分享方至少是两方，因此一个秘密分享方案至少需要三方的参与。又如，在匿名通信的重要基础模型——密码学家就餐问题中，参与的密码学家至少为三个。</p><p>后续讲解Secret Sharing 秘密分享协议！</p><center>欢迎关注我的个人公众号</center><p><img src="/img/debug.jpg"></p>]]></content>
     
     
+    <categories>
+      
+      <category>密码学</category>
+      
+    </categories>
+    
     
     <tags>
       
@@ -245,6 +321,12 @@
     <content type="html"><![CDATA[<h2 id="GO的基本数据类型"><a href="#GO的基本数据类型" class="headerlink" title="GO的基本数据类型"></a>GO的基本数据类型</h2><p>uint int string等</p><h2 id="GO的类型零值"><a href="#GO的类型零值" class="headerlink" title="GO的类型零值"></a>GO的类型零值</h2><p>0还是false 还是nil</p><h2 id="类型别名"><a href="#类型别名" class="headerlink" title="类型别名"></a>类型别名</h2><p>起名字</p><h2 id="类型转换"><a href="#类型转换" class="headerlink" title="类型转换"></a>类型转换</h2><p>不允许隐式转换</p><h2 id="变量"><a href="#变量" class="headerlink" title="变量"></a>变量</h2><p>定义 声明 赋值</p>]]></content>
     
     
+    <categories>
+      
+      <category>开发</category>
+      
+    </categories>
+    
     
     <tags>
       
@@ -259,12 +341,18 @@
   
   
   <entry>
-    <title>DH-keyexchange</title>
+    <title>Diffie Hellman key exchange || 密钥交换协议</title>
     <link href="/2022/05/27/DH-keyexchange/"/>
     <url>/2022/05/27/DH-keyexchange/</url>
     
     <content type="html"><![CDATA[<h1 id="安全地交换共享密钥！"><a href="#安全地交换共享密钥！" class="headerlink" title="安全地交换共享密钥！"></a>安全地交换共享密钥！</h1><p>1976年，Diffie和Hellman在其题为《密码学的新方向》的论文中给出了公钥密码学的定义，并提出了DH密钥交换算法。<br>该算法解决了对称密码体制中的密钥分发问题，使得通信双方可以通过公开信道安全地交换共享密钥，将此共享密钥用于会话加密。<br>其安全性建立在离散对数问题的困难性之上。</p><p>为了更好地说明密钥交换协议的作用，我将会以自己的语言讲一遍<strong>为什么我们需要DH key exchange</strong></p><h2 id="0x01-跟我一起设计密钥方案！"><a href="#0x01-跟我一起设计密钥方案！" class="headerlink" title="0x01 跟我一起设计密钥方案！"></a>0x01 跟我一起设计密钥方案！</h2><p>假设有两个人Alice 和 Bob 他们要传递信息<br><strong>分为对称密码学和非对称密码学的角度来设计</strong></p><h3 id="1-1-第一回合"><a href="#1-1-第一回合" class="headerlink" title="1.1 第一回合"></a>1.1 第一回合</h3><p>最简单没有任何措施的方法，就是直接传信息，比如 Alice：“今天天气晴朗！” Bob就会收到该信息。<br>但是这有很大的问题，最大的问题就是没有保密性，任何监听他们通信信道的人都能回去该消息的明文。</p><h3 id="1-2-第二回合"><a href="#1-2-第二回合" class="headerlink" title="1.2 第二回合"></a>1.2 第二回合</h3><p>那么我们升级方案，对该消息加密，利用对称密码学进行加密。<br>对称密码学的大白话意思就是：加密和解密都是同一个密钥。<br>这里双方决定以k为对称密钥，Alice对m用k加密，Bob对c用k解密得到m。</p><p>假设这里密钥提前确定，且双方都不泄露密钥，那么该协议就是安全的。</p><p>但是这里问题来了，如果Alice和Bob两人距离很远，不能提前商定用什么作为对称密钥，就又得传输该密钥。这样显然是不安全的。<br>为了传递消息，还需要传输密钥，方案不可行。</p><h3 id="1-3-第三回合"><a href="#1-3-第三回合" class="headerlink" title="1.3 第三回合"></a>1.3 第三回合</h3><p>使用非对称密钥学。即加密和解密的密钥是不一样的，<strong>公钥加密，私钥解密</strong>。<br>    Alice Pk1，Sk1<br>    Bob   Pk2, Sk2</p><p>Alice发送m，先用公钥对m加密得到c<br>Bob得到c，之后用Alice的私钥解密的到m。</p><p>这里好像也是可行的，但显然用Alice的私钥解密是很理想的状态，事实就是私钥不会随意传输给对方。（长期密钥的话）<br>我们对m用Pk1加密之后，就必须要用Sk1解密，那问题来了，怎么传输Sk1给Bob，这里又是一个死结。<br><strong>因为私钥一旦暴露，传递信息也就暴露，所以我们不能传输私钥。</strong></p><h3 id="1-4-第四回合"><a href="#1-4-第四回合" class="headerlink" title="1.4 第四回合"></a>1.4 第四回合</h3><p>终于我们引出了DH key exchange协议！<br>DH密钥交换协议的目的是，在不传输私钥的情况下，双方得到一个共享秘密，该秘密可以作为对称密钥进行加密。<br>也就是说，在传递m之前，Alice和Bob必须先进行密钥交换，得到共享秘密shared secret。<br><img src="/img/DH1.jpg"></p><h2 id="0x02-DH-密钥交换协议的介绍"><a href="#0x02-DH-密钥交换协议的介绍" class="headerlink" title="0x02 DH 密钥交换协议的介绍"></a>0x02 DH 密钥交换协议的介绍</h2><h3 id="2-1-为什么需要该协议？"><a href="#2-1-为什么需要该协议？" class="headerlink" title="2.1 为什么需要该协议？"></a>2.1 为什么需要该协议？</h3><p>为了解决对称密码体制中的密钥分发问题，使得通信双方可以通过公开信道安全地交换共享密钥。<br>提出了公钥密码学的概念，共享的是公钥，收到对方公钥之后，在对方公钥的基础上运算得到共享密钥。</p><h3 id="2-2-协议细节"><a href="#2-2-协议细节" class="headerlink" title="2.2 协议细节"></a>2.2 协议细节</h3><p><img src="/img/DH2.png"></p><h3 id="最终实现了什么目的"><a href="#最终实现了什么目的" class="headerlink" title="最终实现了什么目的"></a>最终实现了什么目的</h3><p>最终，Alice和Bob在一个非安全信道上实现了一个安全的秘密共享。并获得一个密钥，可以加密他们的对话。</p><h3 id="2-3-应用场景"><a href="#2-3-应用场景" class="headerlink" title="2.3 应用场景"></a>2.3 应用场景</h3><h3 id="2-4-DH密钥交换协议存在的漏洞"><a href="#2-4-DH密钥交换协议存在的漏洞" class="headerlink" title="2.4 DH密钥交换协议存在的漏洞"></a>2.4 DH密钥交换协议存在的漏洞</h3><p>然而，没有相互身份认证的DH密钥交换协议可能会遭受<strong>中间人攻击、模拟攻击和重播攻击</strong><br>于是在这个基础之上就衍生出了AKE。认证密钥交换协议，交换密钥的双方必须提前获得身份认证才能进行密钥交换。</p><p>这个认证是如何完成的？<br>如CA 第三方认证机构颁发数字证书Certificate，证明Alice是Alice，Bob是Bob。<br>如何去除CA，是去中心化需要解决的问题，实现DAKE。</p><h3 id="2-5-安全属性-待完善"><a href="#2-5-安全属性-待完善" class="headerlink" title="2.5 安全属性(待完善)"></a>2.5 安全属性(待完善)</h3><p>中间人攻击、模拟攻击和重播攻击</p><h2 id="0x03-参考链接"><a href="#0x03-参考链接" class="headerlink" title="0x03 参考链接"></a>0x03 参考链接</h2><p><a href="https://blog.csdn.net/weixin_43255133/article/details/84757675?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522165365604016780357292666%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=165365604016780357292666&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~blog~sobaiduend~default-2-84757675-null-null.nonecase&utm_term=%E5%AF%86%E9%92%A5%E4%BA%A4%E6%8D%A2%E5%8D%8F%E8%AE%AE&spm=1018.2226.3001.4450">一文彻底搞懂加密、数字签名和数字证书，看不懂你打我！</a></p><p><a href="https://blog.csdn.net/TheSkyLee/article/details/108699243?ops_request_misc=%257B%2522request%255Fid%2522%253A%2522165365046016782425117461%2522%252C%2522scm%2522%253A%252220140713.130102334..%2522%257D&request_id=165365046016782425117461&biz_id=0&utm_medium=distribute.pc_search_result.none-task-blog-2~all~top_positive~default-1-108699243-null-null.142%5Ev11%5Econtrol,157%5Ev12%5Econtrol&utm_term=%E6%95%B0%E5%AD%97%E7%AD%BE%E5%90%8D&spm=1018.2226.3001.4187">Diffie-Hellman密钥交换协议</a></p><p><a href="https://en.wikipedia.org/wiki/Diffie%E2%80%93Hellman_key_exchange">维基百科Diffie–Hellman key exchange</a></p><center>欢迎关注我的个人公众号</center><p><img src="/img/debug.jpg"></p>]]></content>
     
+    
+    <categories>
+      
+      <category>密码学</category>
+      
+    </categories>
     
     
     <tags>
@@ -287,14 +375,20 @@
     <content type="html"><![CDATA[<p>这篇文章主要整理了我的一些疑惑和解答，仅供参考，本人还在学习。</p><h2 id="0x01-什么是智能合约？"><a href="#0x01-什么是智能合约？" class="headerlink" title="0x01 什么是智能合约？"></a>0x01 什么是智能合约？</h2><p>以太坊的智能合约并非现实中常见的合同，而是存在区块链上，可以被触发执行的一段<strong>程序代码</strong>，这些代码实现了某种预定的规则，是存在于以太坊执行环境中的“自治代理”。</p><h2 id="0x02-没有智能合约之前是如何运作的？"><a href="#0x02-没有智能合约之前是如何运作的？" class="headerlink" title="0x02 没有智能合约之前是如何运作的？"></a>0x02 没有智能合约之前是如何运作的？</h2><p>我们知道区块链简单可以分为三个发展阶段。</p><ol><li><p>Blockchain 1.0<br>加密货币概念开始：第一代技术始于2009年的比特币网络，它被称为区块链1.0。在这一代中，引入了第一个加密货币的创造。<br>这一阶段的想法都是关于<strong>支付及生成加密货币</strong>的功能。</p></li><li><p>Blockchain 2.0<br>智能合约的出现：在区块链技术的第二阶段，2010年引入了各种应用的智能合约和金融服务。<strong>以太坊和超级账本</strong>在这一代中出现。</p></li><li><p>Blockchain 3.0</p></li></ol><p><strong>去中心化应用程序Dapp</strong>的兴起：在这一代区块链中，引入了对分散应用的收敛性。各种研究领域，如卫生、监管、物联网、供应链、商业和智能计算机被考虑用来构建去中心化的应用程序。<br>在这个级别上，使用了以太坊、超级账本和其他一些能够为各种应用程序编写智能合约的平台</p><p>由此我们得知，<strong>没有智能合约之前，区块链技术只能实现很简单的交易等，并不能实现去中心化服务</strong>。</p><h2 id="0x03-智能合约是如何发布和运行的？有什么用"><a href="#0x03-智能合约是如何发布和运行的？有什么用" class="headerlink" title="0x03 智能合约是如何发布和运行的？有什么用?"></a>0x03 智能合约是如何发布和运行的？有什么用?</h2><h3 id="3-1-智能合约的创建："><a href="#3-1-智能合约的创建：" class="headerlink" title="3.1 智能合约的创建："></a>3.1 智能合约的创建：</h3><p>外部账户发起一个转账交易到0x0地址，合约的代码在data域里。<br><img src="/img/contract_new.png"></p><h3 id="3-2-智能合约的部署："><a href="#3-2-智能合约的部署：" class="headerlink" title="3.2 智能合约的部署："></a>3.2 智能合约的部署：</h3><p>主要流程包括以下4个步骤：<br>（1）启动一个以太坊节点/在本地安装hardhat、truffle等平台，他们是solidity编译器；<br>（2）编写智能合约；<br>（3）编写后的智能合约经以太坊虚拟机的编译，成为计算机可运行的字节码；<br>（4）外部账户（合约发起者）发起一个转账交易到0x0地址，编译好的字节码文件在data域里。最终，通过发起交易的形式广播到区块链网络中，由矿工挖矿确认后即可将智能合约存入区块链中，并得到智能合约所在地址及调用合约所需接口。<br>以上就是智能合约的部署方式。</p><p><strong>tips:</strong><br>(1)不是必须的，不一定非要有一个节点 普通用户编写完智能合约之后，在hardhat或者remix等平台本地编译，发送一个新建智能合约的交易到网关节点，由网关节点发送交易到0x0地址，并以广播形式… 重复以上。<br>data域是交易的其中一个内容。</p><h3 id="3-3-智能合约的执行："><a href="#3-3-智能合约的执行：" class="headerlink" title="3.3 智能合约的执行："></a>3.3 智能合约的执行：</h3><p>智能合约可以被外部调用，也可以被另一个合约调用。<br>外部即外部账户，普通用户想要调用智能合约的某个功能,他会</p><pre><code class="hljs">(1) 首先 ，发起一个智能合约交易，data中存储调用的函数。相应的有Gas消耗(2) 交易发送到比如网关节点 infura之类的infura节点对该交易进行验证，加入自己的交易池中，并向其他节点广播该交易(3) 其他节点收到交易之后,也进行验证,并加入交易池,广播给其他节点重复以上直到该交易广播到全网 （这个过程时间多少？）(4) 矿工节点除了有广播和验证的功能之外，还有打包区块的功能。最终，该交易会被一个矿工节点打包到区块上，添加到区块链上。(5) 新的区块不断广播，节点验证每个区块，加入到自己本地存储的区块链，也就是账本上。注意：每个节点都会执行新产生的区块中的智能合约操作，在EVM中执行。</code></pre><p>tips:<br>Infura是一个托管的以太坊节点集群，可以将你开发的以太坊智能合约部署到infura提供的节点上，而无需搭建自己的以太坊节点。通过api调用，可以执行交易，合约交易产生的结果输出到程序中。</p><h2 id="0x04-EVM的作用"><a href="#0x04-EVM的作用" class="headerlink" title="0x04 EVM的作用"></a>0x04 EVM的作用</h2><p>以太坊虚拟机是在沙盒中运行，这是和区块链主链完全隔离的，并且完美地作为测试环境运行。因此，任何想要使用EVM创建智能合约的人，都可以在不受到其他区块链操作的影响下完成。</p><p>注意EVM和节点主机是隔离的，所以智能合约的运行和运行节点客户端的主机之间无关。<br>个人理解：主机运行客户端，所以成为节点。客户端中有EVM和区块链等。<br>至于节点客户端和主机之间有什么交互，我们后续再解答，笔者还未了解详细。</p><h2 id="0x05-以太坊的交易"><a href="#0x05-以太坊的交易" class="headerlink" title="0x05 以太坊的交易"></a>0x05 以太坊的交易</h2><h3 id="5-1-交易的执行"><a href="#5-1-交易的执行" class="headerlink" title="5.1 交易的执行"></a>5.1 交易的执行</h3><p><strong>以太坊一个普通交易是如何执行的？</strong></p><ol><li>用户从Dapp或者钱包初始化一笔交易，比如发送资金或者调用合约。这个类似弹出了MetaMask交易界面。</li><li>用户使用它们的钱包（私钥）签名这个交易。这个例如我们在第一步弹出的交易界面点击确定按钮（签名交易）。</li><li>钱包将签名后的交易发送到连接到以太坊网络的一个节点，通常叫着网关节点。比如我们常用的Infura节点。</li><li>网关节点验证该交易有效并将它放入自己的内存池（交易池/交易队列）中。此时，该交易为Pending状态，所有人都可以读取（前提是提供该项服务）。具体的对象名称在Geth和Parity客户并不相同。进入pending状态的交易代表着将要被交易，具体交易区块由打包矿工决定。</li><li>网关节点将该交易向其它节点（邻近节点）扩散（广播）。这是个Pending交易传播过程。<br>它节点接收到该交易后也验证有效性，然后放入自己的内存池中。然后再向其它节点扩散。这是其它节点将pending放入自己的内存池中。</li><li>重复上述步骤，直到该交易扩散到整个网络。<br>矿工是一种特殊节点，它们除了接收交易和验证它以外，还试图把它加入一个区块。矿工特权，具有打包交易的权利。</li><li>最终，会有一个矿工将该交易打包到区块中（这里假定交易成功并且会被打包）并添加到区块链上（产生一个新区块）。这就是通常所说的挖矿（出块）。<br>新产生的区块向全网广播。（以太坊大概13秒左右出一个块，基本上能够全网广播）。</li><li>所有节点接收到该区块，查看其中包含的交易并将其从自己的内存池中移除。</li></ol><p>当然，这里是有前提的，假定该交易一定被打包，实际上，交易有可能不会被打包，还有可能会被挤出内存池，因为矿工遵循利益最大化原则，谁出的价格高（gasPrice)，先给谁打包，这个原则也催生了跟随交易和抢先交易。</p><h3 id="5-2-交易的种类"><a href="#5-2-交易的种类" class="headerlink" title="5.2 交易的种类"></a>5.2 交易的种类</h3><p><strong>以太坊区块链可以托管三种类型的交易：</strong></p><ol><li><p>首先，你可以将以太坊从一个账户转移到另一个账户。这些转账和比特币转账差不多。例如，你可以转3ETH到房东的账户，作为房租。这些转账记录会包含以下内容：转账生效时的时间戳，转出资金者的地址作为资金的来源，接受者的地址，当然还有资金的数额。</p></li><li><p>用户还可以不给特定对象转账。这类转账就是创建智能合约。例如，假如Jackson和James很聪明，他们打算为特定赌注的条件创建智能合约。这种转账就会包含转出者的账户地址以及时间戳。</p></li><li><p>从外部账户转账到智能合约。每次账户想要执行智能合约，转账就会根据智能合约完成，而且相关的执行规则会记录在数据中，来指导这个合约如何运行。<br>每次上述的转账发生，网络中的节点就会通过EVM来运行特定的代码。</p></li></ol><p><strong>以下内容我并未整理清楚，等待我后续补全！</strong></p><ol><li>智能合约的调用和交易流程</li><li>智能合约有什么新的发展方向</li><li>Solidity 智能合约审计</li><li>其他关于以太坊的知识</li></ol><h2 id="0x06-一些有用的课程和笔记"><a href="#0x06-一些有用的课程和笔记" class="headerlink" title="0x06 一些有用的课程和笔记"></a>0x06 一些有用的课程和笔记</h2><p><a href="https://blog.csdn.net/Mu_Xiaoye/article/details/104299664?spm=1001.2014.3001.5506">https://blog.csdn.net/Mu_Xiaoye/article/details/104299664?spm=1001.2014.3001.5506</a><br><a href="https://www.bilibili.com/video/BV1Vt411X7JF?p=22">https://www.bilibili.com/video/BV1Vt411X7JF?p=22</a></p><h2 id="0x07-参考链接："><a href="#0x07-参考链接：" class="headerlink" title="0x07 参考链接："></a>0x07 参考链接：</h2><p><a href="https://blog.csdn.net/XYlittlework/article/details/118026479">https://blog.csdn.net/XYlittlework/article/details/118026479</a><br><a href="https://www.jb51.net/blockchain/768106.html">https://www.jb51.net/blockchain/768106.html</a><br><a href="https://blog.csdn.net/weixin_39430411/article/details/118197937">https://blog.csdn.net/weixin_39430411/article/details/118197937</a><br><a href="https://blog.csdn.net/Mu_Xiaoye/article/details/104299664?spm=1001.2014.3001.5506">https://blog.csdn.net/Mu_Xiaoye/article/details/104299664?spm=1001.2014.3001.5506</a><br><a href="https://www.bilibili.com/video/BV1Vt411X7JF?p=22">https://www.bilibili.com/video/BV1Vt411X7JF?p=22</a></p><center>欢迎关注我的个人公众号</center><p><img src="/img/debug.jpg"></p>]]></content>
     
     
+    <categories>
+      
+      <category>区块链</category>
+      
+    </categories>
+    
     
     <tags>
       
       <tag>区块链</tag>
       
-      <tag>以太坊</tag>
-      
       <tag>智能合约</tag>
+      
+      <tag>以太坊</tag>
       
     </tags>
     
@@ -309,6 +403,12 @@
     
     <content type="html"><![CDATA[<p>首先你必须知道什么是加密，什么是签名。<br>加密是对一段明文做分组，混淆等操作之后，即使变成密文，经过密钥解密也能恢复的数学操作。<br>签名是对消息的哈希用私钥进行签名，并用公钥进行验证的一种操作。<br>而哈希是一种压缩的操作，对消息已经有了一定损失，无法恢复。</p><h1 id="数字签名"><a href="#数字签名" class="headerlink" title="数字签名"></a>数字签名</h1><p>签名是对消息的哈希用私钥进行签名，并用公钥进行验证的一种操作。用于消息的身份验证，避免冒充和伪造。<br>一个数字签名的简单流程如下:<br><img src="/img/DS_flow.jpg"></p><h2 id="分类"><a href="#分类" class="headerlink" title="分类"></a>分类</h2><p>介绍其各自使用的加密算法，数学知识等</p><h3 id="盲签名-匿名性"><a href="#盲签名-匿名性" class="headerlink" title="盲签名 匿名性"></a>盲签名 匿名性</h3><h3 id="DSA-数字签名"><a href="#DSA-数字签名" class="headerlink" title="DSA 数字签名"></a>DSA 数字签名</h3><h3 id="Schnorr-signature"><a href="#Schnorr-signature" class="headerlink" title="Schnorr signature"></a>Schnorr signature</h3><h3 id="ElGamal-signature"><a href="#ElGamal-signature" class="headerlink" title="ElGamal signature"></a>ElGamal signature</h3><h3 id="环签名-匿名"><a href="#环签名-匿名" class="headerlink" title="环签名 匿名"></a>环签名 匿名</h3><h3 id="多方签名"><a href="#多方签名" class="headerlink" title="多方签名"></a>多方签名</h3><p>多方见证 但是速度慢</p><h3 id="群签名"><a href="#群签名" class="headerlink" title="群签名"></a>群签名</h3><center>欢迎关注我的个人公众号</center><p><img src="/img/debug.jpg">s</p>]]></content>
     
+    
+    <categories>
+      
+      <category>密码学</category>
+      
+    </categories>
     
     
     <tags>
@@ -333,6 +433,12 @@
     <content type="html"><![CDATA[<h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>-假设一种场景，对某文件签名，而不让签名者看到文件内容，怎么做呢？</p><p>-有同学会说：我知道！让签名者把眼睛闭起来。是的，这也其实是一种办法。<br> 当然更优化的方案是：把文件放到信封里，在信封里放一张复写纸，签名者在信封上签名时，<br> 他的签名便透过复写纸签到文件上。</p><p>此时实现了让签名者不知道内容的同时，实现了数字签名，保护了文件的内容安全。<br>这里只是做一个简单的类比，实际情况中，信封就是消息的盲化操作。<br>（没耐心的人请直接阅读0x04 本文搬运自@Weisswire 大佬的博客 <a href="https://www.cnblogs.com/Severus-Cavendish/p/15587538.html">https://www.cnblogs.com/Severus-Cavendish/p/15587538.html</a>)</p><h1 id="0x01-盲签名的定义"><a href="#0x01-盲签名的定义" class="headerlink" title="0x01 盲签名的定义"></a>0x01 盲签名的定义</h1><p>是一种数字签名的方式，在消息内容被签名之前，对于签名者来说消息内容是不可见的，也就是盲化。</p><h1 id="0x02-性质"><a href="#0x02-性质" class="headerlink" title="0x02 性质"></a>0x02 性质</h1><pre><code class="hljs">不可伪造性：除了签名者本人外，任何人都不能以他的名义生成有效的盲签名。这是一条最基本的性质。不可抵赖性：签名者一旦签署了某个消息，他无法否认自己对消息的签名。盲性：签名者虽然对某个消息进行了签名，但他不可能得到消息的具体内容。不可跟踪性：一旦消息的签名公开后，签名者不能确定自己何时签署的这条消息。即签名者仅知sig(m&#39;)，而不知sig(m）。即使签名者保留sig(m&#39;)及其他有关数据，仍难以找出sig(m)和、sig(m&#39;)之间的内在联系，不可对消息m的拥有者进行追踪</code></pre><h1 id="0x03-流程"><a href="#0x03-流程" class="headerlink" title="0x03 流程"></a>0x03 流程</h1><ol><li>接收者首先将待签数据进行盲变换，把变换后的盲数据发给签名者。</li><li>经签名者签名后再发给接收者。</li><li>接收者对签名再作去盲变换，得出的便是签名者对原数据的盲签名。</li></ol><p><img src="/img/blindvsnormal.png"></p><h1 id="0x04-具体步骤"><a href="#0x04-具体步骤" class="headerlink" title="0x04 具体步骤"></a>0x04 具体步骤</h1><p>1.消息盲化。甲将原消息m进行盲化处理得m’，然后将盲消息m’传送给乙。进行盲化处理的方法很多，例如，可随机选取某个数，称该随机数为盲因子，把原消息数值化后，与盲因子相乘即可得到盲消息。</p><p>2.对盲消息签名。乙应用通常的数字签名方法对盲消息进行签名，并将其签名sig(m’)送给甲。</p><p>3.恢复签名。甲通过除去盲因子的方法，从盲签名sig(m’)中得到相关原消息m的签名：sig(m)。将来出现纠纷时，当甲拿出乙的盲签名，而乙显然不能否认其签名，这样就可以证明原消息的真实性。</p><p>传统的方案主要是RSA方案，区块链中多数时候会用到椭圆曲线进行签名。</p><h1 id="0x05-应用场景"><a href="#0x05-应用场景" class="headerlink" title="0x05 应用场景"></a>0x05 应用场景</h1><p>一切需要匿名签名的情况，比如</p><ol><li>匿名投票</li><li>电子现金：一般的签名，签名者对自己发出的签名，必须是记得的，比如，在何时何地对谁发的，他自己可以记下来。<br>但是，如果把签名看作是电子现金的话，就涉及到一个匿名性的问题。<br>我们也不希望银行通过追踪自己发出签名，来获得用户的消费情况，于是就设计出盲签名。</li></ol><center>欢迎关注我的个人公众号</center><p><img src="/img/debug.jpg"></p>]]></content>
     
     
+    <categories>
+      
+      <category>密码学</category>
+      
+    </categories>
+    
     
     <tags>
       
@@ -356,6 +462,12 @@
     <content type="html"><![CDATA[<h1 id="密码学方案概述"><a href="#密码学方案概述" class="headerlink" title="密码学方案概述"></a>密码学方案概述</h1><h2 id="0x01-密码学分类"><a href="#0x01-密码学分类" class="headerlink" title="0x01 密码学分类"></a>0x01 密码学分类</h2><p>对称密码学<br>非对称密码学<br>RSA DES AES 椭圆曲线 Elgama<br>ABE 是什么 如何实现的 可以怎么利用和优化于方案中<br>基于什么的加解密</p><h2 id="0x02-基于身份加密-可否认加密-配对加密"><a href="#0x02-基于身份加密-可否认加密-配对加密" class="headerlink" title="0x02 基于身份加密 可否认加密 配对加密"></a>0x02 基于身份加密 可否认加密 配对加密</h2><p>在基于身份加密出现之前的解决方案是？</p><h2 id="0x03-常见的hash算法"><a href="#0x03-常见的hash算法" class="headerlink" title="0x03 常见的hash算法"></a>0x03 常见的hash算法</h2><p>MD5<br>sha1<br>sha256<br>什么是哈希碰撞<br>哈希算法的应用场景<br>为什么要用哈希而不是其他算法  他的优缺点是什么？</p><p>关于哈希算法的疑惑</p><p>1.单向性的意思是：一个固定的输入会得到一个固定的输出吗？<br>2.如果一个固定的输入会得到固定的输出 那这有什么不可破解的难度存在 我只需要找摘要对应的是哪个明文不就行了吗<br>3.或许一个hash值对应着许多个不同的明文？</p><h2 id="0x04-常见的密码学攻击方式"><a href="#0x04-常见的密码学攻击方式" class="headerlink" title="0x04 常见的密码学攻击方式"></a>0x04 常见的密码学攻击方式</h2><p>频率攻击</p><h1 id="0x05-密码学应用"><a href="#0x05-密码学应用" class="headerlink" title="0x05 密码学应用"></a>0x05 密码学应用</h1><p>数字签名？原理是什么？怎么用 盲签名 环签名 群签名 多签名<br>什么是布隆过滤器？</p>]]></content>
     
     
+    <categories>
+      
+      <category>密码学</category>
+      
+    </categories>
+    
     
     <tags>
       
@@ -377,6 +489,12 @@
     <content type="html"><![CDATA[<h1 id="0x01-什么是IPFS"><a href="#0x01-什么是IPFS" class="headerlink" title="0x01 什么是IPFS"></a>0x01 什么是IPFS</h1><h1 id="0x02-IPFS-文件的上传和下载"><a href="#0x02-IPFS-文件的上传和下载" class="headerlink" title="0x02 IPFS 文件的上传和下载"></a>0x02 IPFS 文件的上传和下载</h1><h1 id="0x03-IPFS-网关"><a href="#0x03-IPFS-网关" class="headerlink" title="0x03 IPFS 网关"></a>0x03 IPFS 网关</h1><h1 id="0x04-如何搭建自己的ipfs服务"><a href="#0x04-如何搭建自己的ipfs服务" class="headerlink" title="0x04 如何搭建自己的ipfs服务"></a>0x04 如何搭建自己的ipfs服务</h1><p>多种方式，如Desktop 通过<a href="http://127.0.0.1:8080/ipfs/hash">http://127.0.0.1:8080/ipfs/hash</a> 访问文件 有一些是https:// 访问</p><h1 id="0x05-有趣的发现"><a href="#0x05-有趣的发现" class="headerlink" title="0x05 有趣的发现"></a>0x05 有趣的发现</h1><p>发现去一些公开的IPFS网关 也可以通过hash值访问到特定文件，而且即使你本地的文件删除了<br>该文件仍然会在其他节点上存在着副本，隔段时间再消失（应该是）<br>这就颇有  数据永存  的味道了<br>这样，一个只要能联网，就可以访问某文件的神奇的世界就实现了（bushi</p>]]></content>
     
     
+    <categories>
+      
+      <category>区块链</category>
+      
+    </categories>
+    
     
     <tags>
       
@@ -396,14 +514,20 @@
     <content type="html"><![CDATA[<h1 id="0x01-区块链介绍"><a href="#0x01-区块链介绍" class="headerlink" title="0x01 区块链介绍"></a>0x01 区块链介绍</h1><p>区块链与其他技术的区别<br>点对点网络 分布式网络 分布式文件系统 IPFS<br>区块链种类<br>比特币网络 和 以太坊网络 的区别是什么？<br>测试网络的存在</p><p>Fork 是什么？<br>最长链原则<br>挖矿是如何进行的<br>一些常见的区块链漏洞</p><p>共识算法<br>原理的核心<br>什么是账户<br>账户是如何产生的 占不占空间<br>什么是地址<br>什么是账本 Ledger<br>什么是交易 Transtraction TX<br>一次交易必须是一对一的吗 还是可以多对多？ 一个人给多个人转账？<br>区块链的数据是不断增长的 为什么不会有数据爆炸？<br>区块链上的区块存储的到底是什么？</p><p>一个地址可能是账户 可能是智能合约 查看某账户的交易记录<br>如何知道一个地址是合约还是账户<br>公私钥的作用</p><p>一个账户消亡之后 私钥会回收吗<br>地址呢？</p><p>什么是智能合约<br>数字签名<br>Merkle Tree<br>以太坊区块是如何打包的？区块里面是什么？<br>多条链是如何处理的？<br>DPOS 的几条准则和会遇到的情况？</p><h1 id="0x02-实验平台"><a href="#0x02-实验平台" class="headerlink" title="0x02 实验平台"></a>0x02 实验平台</h1><p>Ganache Geth？ 什么关系<br>Geth Go-ethereum 以太坊客户端GO语言编写 主网络<br>Ganache GUI 以太坊私链 本地环境<br>Truffle Hardhat 以太坊开发框架 集成了一些库<br>Remix IDE solc solidity IDE<br>js web3.js ethers.js javascript的web3库<br>python web3.py<br>rpc节点 API<br>infura alchemy 提供测试网络和主网络的xx？ API json rpc</p><p>json-rpc<br>json<br>rpc<br>API<br>client<br>全节点 轻节点</p><p>如何搭建私链？<br>什么是钱包？MetaMask<br>Solidity</p><h1 id="0x03-Web-3-0"><a href="#0x03-Web-3-0" class="headerlink" title="0x03 Web 3.0"></a>0x03 Web 3.0</h1><h1 id="0x04-测试网络以及测试币水龙头"><a href="#0x04-测试网络以及测试币水龙头" class="headerlink" title="0x04 测试网络以及测试币水龙头"></a>0x04 测试网络以及测试币水龙头</h1><p>如何得到测试币<br>网站：<br>Rinkeby testnet<br><a href="https://faucets.chain.link/rinkeby">https://faucets.chain.link/rinkeby</a> 拿0.1ETH<br><a href="https://rinkebyfaucet.com/">https://rinkebyfaucet.com/</a> 拿0.5ETH<br>Ropsten testnet<br><a href="https://faucet.dimensions.network/">https://faucet.dimensions.network/</a> 拿1ETH<br><a href="https://faucet.egorfine.com/">https://faucet.egorfine.com/</a> 拿10ETH<br><a href="https://moonborrow.com/">https://moonborrow.com/</a> 拿一定数量的币<br>水龙头整理链接<br><a href="https://faucetlink.to/">https://faucetlink.to/</a> </p>]]></content>
     
     
+    <categories>
+      
+      <category>区块链</category>
+      
+    </categories>
+    
     
     <tags>
       
       <tag>Blockchain</tag>
       
-      <tag>Ethereum</tag>
-      
       <tag>区块链实验</tag>
+      
+      <tag>Ethereum</tag>
       
     </tags>
     
@@ -418,6 +542,12 @@
     
     <content type="html"><![CDATA[<h1 id="MongoDB遭遇删库勒索漏洞"><a href="#MongoDB遭遇删库勒索漏洞" class="headerlink" title="MongoDB遭遇删库勒索漏洞"></a>MongoDB遭遇删库勒索漏洞</h1><p>申明：本地测试，请遵守法律，切勿对未授权网站进行恶意攻击渗透</p><h2 id="0X01-漏洞介绍"><a href="#0X01-漏洞介绍" class="headerlink" title="0X01 漏洞介绍"></a>0X01 漏洞介绍</h2><p>最近在看的项目源代码用到很多类型的数据库，除了上次我们讲到redis数据库<br>这次我又发现，除了已知的redis之外，MongoDB数据库也可能存在未授权登录<br><img src="/img/mongo.png"></p><p>这里我们对MongoDB不做特别介绍，只需要知道该漏洞，和上次的redis漏洞一样初始化运行时候，默认都是没有密码的<br>且没有严格的访问控制，容易造成任意用户登录等问题</p><h2 id="0X02-漏洞利用"><a href="#0X02-漏洞利用" class="headerlink" title="0X02 漏洞利用"></a>0X02 漏洞利用</h2><p>信息搜集一番，安装MongoDB Compass，根据ip和端口号尝试连接<br><img src="/img/mongo_connect.png"><br>通过输入ip:port连接成功!<br><img src="/img/mongo_login.png"></p><p>查看数据库 Database，发现有三个admin，config和一个显著的Readme to recover your data<br><img src="/img/mondb_cont.png"></p><p>查看ReadMe和其他数据库，发现该数据库已经被dump了<br>且攻击者留下信息，要求48h内汇款比特币交易，才会将数据还给你</p><pre><code class="hljs">All your data is a backed up. You must pay 0.03 BTC to 1322TfVUsgwNkWupVwEdceyRYbEZeN9qCu 48 hours for recover it.After 48 hours expiration we will leaked and exposed all your data. In case of refusal to pay, we will contact the General Data Protection Regulation, GDPR and notify them that youstore user data in an open form and is not safe. Under the rules of the law, you face a heavy fine or arrest andyour base dump will be dropped from our server! You can buy bitcoin here, does not take much time to buy https://localbitcoins.com or https://buy.moonpay.io/ After paying write to me in the mail with your DB IP: recmydb+1vqt9@onionmail.org and you will receive a link to download your database dump.</code></pre><p>到目前为止，我们已经展示了两个数据库相关的利用手段特别傻瓜的漏洞，均为未授权访问类型的漏洞<br>即通过远程连接无密码登录服务器数据库，并可以对数据库进行若干操作</p><p>灵机一动，我们去fofa(网络空间扫描)看看其他机器是否有类似的漏洞<br><img src="/img/fofa_mongo.png"><br>果不其然，很多ip都存在，且相当一部分机器已经被删库，并留下勒索信息<br><img src="/img/fofa_mongobug.png"></p><h2 id="0X03-可能造成的影响："><a href="#0X03-可能造成的影响：" class="headerlink" title="0X03 可能造成的影响："></a>0X03 可能造成的影响：</h2><p>首先数据库内容若非敏感信息，损失不严重<br>但我们发现任意登陆者都可以任意上传文件，推测可以造成服务器内存异常<br>这样就会使得原本正常运行在该服务器上的服务无法很好地运行</p><h2 id="0X04-可能造成的影响："><a href="#0X04-可能造成的影响：" class="headerlink" title="0X04 可能造成的影响："></a>0X04 可能造成的影响：</h2><p>若不需要mongodb可以将其卸载 然后设置好权限 去掉外网访问权限<br>其他修复意见见网络</p><h2 id="0X05-相关博客"><a href="#0X05-相关博客" class="headerlink" title="0X05 相关博客"></a>0X05 相关博客</h2><p><a href="https://www.cnblogs.com/lzkalislw/p/15991123.html">https://www.cnblogs.com/lzkalislw/p/15991123.html</a> </p>]]></content>
     
+    
+    <categories>
+      
+      <category>渗透测试</category>
+      
+    </categories>
     
     
     <tags>
@@ -439,6 +569,12 @@
     
     <content type="html"><![CDATA[<h1 id="关于Redis未授权访问漏洞引发挖矿漏洞的渗透经历"><a href="#关于Redis未授权访问漏洞引发挖矿漏洞的渗透经历" class="headerlink" title="关于Redis未授权访问漏洞引发挖矿漏洞的渗透经历"></a>关于Redis未授权访问漏洞引发挖矿漏洞的渗透经历</h1><p>申明：本地测试，请遵守法律，切勿对未授权网站进行恶意攻击渗透</p><h2 id="漏洞：Redis未授权访问漏洞及门罗币挖矿漏洞"><a href="#漏洞：Redis未授权访问漏洞及门罗币挖矿漏洞" class="headerlink" title="漏洞：Redis未授权访问漏洞及门罗币挖矿漏洞"></a>漏洞：Redis未授权访问漏洞及门罗币挖矿漏洞</h2><h2 id="1-测试条件：建议本地测试-源码安装开源项目"><a href="#1-测试条件：建议本地测试-源码安装开源项目" class="headerlink" title="1.测试条件：建议本地测试 源码安装开源项目"></a>1.测试条件：建议本地测试 源码安装开源项目</h2><p>漏洞存在的原因是服务器开放redis服务，6379端口打开，且未设置数据库访问密码；<br>攻击者可以任意连接，攻击者通过连接redis服务，在有root权限启动redis服务的情况下，<br>使用特殊指令能够修改服务器密钥或者运行恶意脚本，达到植入挖矿脚本等目的</p><h2 id="2-细节："><a href="#2-细节：" class="headerlink" title="2.细节："></a>2.细节：</h2><p>通过任意pc端，安装redis-cli；<br>在redis目录命令行输入redis-cli -h  ip -p 端口连接到该服务器redis服务（本地测试）；<br><img src="/img/redis_login.png"><br>成功连接redis服务，接下来查看redis中存储的内容；</p><h3 id="2-1-输入info获取服务器敏感信息"><a href="#2-1-输入info获取服务器敏感信息" class="headerlink" title="2.1 输入info获取服务器敏感信息"></a>2.1 输入info获取服务器敏感信息</h3><p><img src="/img/redis_info.png"></p><h3 id="2-2-输入config命令；"><a href="#2-2-输入config命令；" class="headerlink" title="2.2 输入config命令；"></a>2.2 输入config命令；</h3><p><img src="/img/redis_eg.png"></p><h3 id="2-3-尝试查看redis数据库存储内容；"><a href="#2-3-尝试查看redis数据库存储内容；" class="headerlink" title="2.3 尝试查看redis数据库存储内容；"></a>2.3 尝试查看redis数据库存储内容；</h3><p><img src="/img/redis_keys.png"><br>发现异常脚本存储backup等；<br><img src="/img/novel_shell.png"><br>此处仔细查看发现他们的格式都很整齐一致，一开始我以为只是简单的指令，可是明明没有root权限；<br>为何要在redis里面存储需要用到root权限的shell脚本，本身数据库存脚本就已经很可疑了。</p><p>这时候谷歌大法好，搜索一波，发现有类似利用漏洞手段，门罗币挖矿相关的；<br><img src="/img/lost_keys.png"><br>发现上面的backup和网络中出现的一模一样，即使他用oracle做障眼法，还是难逃法眼。<br><img src="/img/wakuang.png"></p><p>———————————–END——————————————–</p><h2 id="3-结论"><a href="#3-结论" class="headerlink" title="3.结论"></a>3.结论</h2><p>漏洞已被利用，且脚本可能不定时自动运行，进行门罗币挖矿；<br>可利用“top”指令查看cpu占用率，查看是否有异常进程。</p><h2 id="4-修复建议："><a href="#4-修复建议：" class="headerlink" title="4.修复建议："></a>4.修复建议：</h2><p>删除挖矿脚本，杀死异常进程；<br>删除多余的ssh密钥；<br>重装redis服务，设置严格密码，关闭6379端口；<br>以下为网络对该漏洞修复提供的建议：</p><h2 id="5-相关博客"><a href="#5-相关博客" class="headerlink" title="5.相关博客"></a>5.相关博客</h2><p><a href="https://www.cnblogs.com/Cl0ud/p/13873085.html">https://www.cnblogs.com/Cl0ud/p/13873085.html</a></p>]]></content>
     
+    
+    <categories>
+      
+      <category>渗透测试</category>
+      
+    </categories>
     
     
     <tags>
@@ -463,6 +599,12 @@
     <content type="html"><![CDATA[<h2 id="原理概述："><a href="#原理概述：" class="headerlink" title="原理概述："></a>原理概述：</h2><p><img src="/img/ecc.png"></p><p><img src="/img/eccflow.png"></p><h2 id="相关视频："><a href="#相关视频：" class="headerlink" title="相关视频："></a>相关视频：</h2><p><a href="https://www.bilibili.com/video/BV1v44y1b7Fd?spm_id_from=333.999.0.0">https://www.bilibili.com/video/BV1v44y1b7Fd?spm_id_from=333.999.0.0</a></p>]]></content>
     
     
+    <categories>
+      
+      <category>密码学</category>
+      
+    </categories>
+    
     
     <tags>
       
@@ -486,6 +628,8 @@
     <tags>
       
       <tag>Blockchain</tag>
+      
+      <tag>区块链开发</tag>
       
     </tags>
     
@@ -520,10 +664,18 @@
     <content type="html"><![CDATA[<h1 id="序"><a href="#序" class="headerlink" title="序"></a>序</h1><p>本篇我们讲解一篇论文“Distributed Blockchain-Based Authentication and Authorization Protocol for Smart Grid”<br>翻译成中文是：基于区块链的智能电网分布式认证与授权协议<br>我们将通过六个部分讲解这篇论文，包含介绍，贡献，实验，结论等；并对这篇论文的实验进行了初步的复现。</p><h2 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1.Introduction"></a>1.Introduction</h2><h3 id="Smart-Grid-智能电网：传统的电网目前正沿着成为电力信息和通信网络的方向发展。"><a href="#Smart-Grid-智能电网：传统的电网目前正沿着成为电力信息和通信网络的方向发展。" class="headerlink" title="Smart Grid 智能电网：传统的电网目前正沿着成为电力信息和通信网络的方向发展。"></a>Smart Grid 智能电网：传统的电网目前正沿着成为电力信息和通信网络的方向发展。</h3><p><img src="/img/smartgrid.png"><br>智能电网的特点：1.供应商和用户可以实时动态调整电力传输；<br>               2.实现自我修复和自我恢复能力；<br>               3.提高可持续性和效率。</p><h3 id="Authentication-认证：实际就是一个登录和注册的过程"><a href="#Authentication-认证：实际就是一个登录和注册的过程" class="headerlink" title="Authentication 认证：实际就是一个登录和注册的过程"></a>Authentication 认证：实际就是一个登录和注册的过程</h3><h4 id="Authorization-授权：授予某种访问或操作权限："><a href="#Authorization-授权：授予某种访问或操作权限：" class="headerlink" title="Authorization 授权：授予某种访问或操作权限："></a>Authorization 授权：授予某种访问或操作权限：</h4><pre><code class="hljs">            确定用户授权成功后允许执行哪些操作和功能            一种建立对资源的访问的方法，例如功率、计算能力或网络带宽。授权协议还可以处理用户在系统或网络上的权限，包括一个特定的用户是否完全可以访问该系统。流程：可以通过在电力信息管理系统中提供正确的用户名/-密码来验证电力用户的身份。一旦用户经过身份验证，电力服务提供商定义了用户权限的访问策略，是否可以进一步授权他们执行各种功能</code></pre><h3 id="区块链的类型：根据访问机制分为"><a href="#区块链的类型：根据访问机制分为" class="headerlink" title="区块链的类型：根据访问机制分为"></a>区块链的类型：根据访问机制分为</h3><pre><code class="hljs">公有链：BTC、ETH 私有链：以太坊私链联盟链：FISCO BCOS，Hyperledger Fabric</code></pre><p><img src="/img/chaintype.png"></p><h3 id="我们使用的平台：FISCO-BCOS（type：联盟链）"><a href="#我们使用的平台：FISCO-BCOS（type：联盟链）" class="headerlink" title="我们使用的平台：FISCO BCOS（type：联盟链）"></a>我们使用的平台：FISCO BCOS（type：联盟链）</h3><p>相关链接：<a href="https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/installation.html">https://fisco-bcos-documentation.readthedocs.io/zh_CN/latest/docs/installation.html</a></p><h2 id="2-Motivation"><a href="#2-Motivation" class="headerlink" title="2.Motivation"></a>2.Motivation</h2><p>电网中出现的问题：<br>（1）中心化监督成本高<br>（2）信任问题<br>（3）信息安全问题</p><h2 id="3-Contributions"><a href="#3-Contributions" class="headerlink" title="3.Contributions"></a>3.Contributions</h2><p>（1）提出了一种基于区块链的分布式认证和授权协议<br>（2）第一个使用联盟区块链技术构建的A&amp;A协议<br>（3）通过算法来维护和记录智能合同，演示了一种使用FISCO平台实际部署我们的A&amp;A协议的方法</p><h2 id="4-Procedure"><a href="#4-Procedure" class="headerlink" title="4.Procedure"></a>4.Procedure</h2><h3 id="A1分布式认证：登录和注册"><a href="#A1分布式认证：登录和注册" class="headerlink" title="A1分布式认证：登录和注册"></a>A1分布式认证：登录和注册</h3><p><img src="/img/A1.jpg"></p><h3 id="A2分布式授权：资源注册和授权"><a href="#A2分布式授权：资源注册和授权" class="headerlink" title="A2分布式授权：资源注册和授权"></a>A2分布式授权：资源注册和授权</h3><p><img src="/img/A2.jpg"></p><h2 id="5-Experiment"><a href="#5-Experiment" class="headerlink" title="5.Experiment"></a>5.Experiment</h2><p>其中我们选择Fisco Bcos作为我们运行的平台，已有开发完善的JDK 接口，因此开发方便<br>源程序包括协议运行的由java编写的app以及实验程序</p><p>运行程序需首先部署Fisco链，运行节点。git下载项目源代码之后，用gradle build，<br>进入项目dist目录中，使用java -cp运行,具体请到github主页查看！</p><h3 id="实验结果："><a href="#实验结果：" class="headerlink" title="实验结果："></a>实验结果：</h3><h4 id="A1"><a href="#A1" class="headerlink" title="A1:"></a>A1:</h4><p><img src="/img/A1Exp1.jpg"><br><img src="/img/A1Exp2.png"><br><img src="/img/A1Exp3.png"></p><h4 id="A2"><a href="#A2" class="headerlink" title="A2:"></a>A2:</h4><p><img src="/img/A2Exp1.jpg"><br><img src="/img/A2Exp2.jpg"></p><h2 id="6-Conclusion"><a href="#6-Conclusion" class="headerlink" title="6.Conclusion"></a>6.Conclusion</h2><p>（1）协议安全可靠<br>（2）部署和实验证明协议的效率高<br>（3）未来方向：将区块链技术用于智能电网的数据统计与资源计算；<br>        对于分布式授权功能，加入角色访问控制<br>        对于数据加密协议，引入同态加密等方法</p><p>程序源代码链接：<a href="https://github.com/humuchuang/AAGrid">https://github.com/humuchuang/AAGrid</a> 或 <a href="https://gitee.com/kitescat/AAGrid">https://gitee.com/kitescat/AAGrid</a></p><h2 id="结尾"><a href="#结尾" class="headerlink" title="结尾"></a>结尾</h2><center>如有任何问题可发邮件联系我 </center><center>联系方式：kitescat@foxmail.com </center><center>欢迎关注我的个人公众号：打代码的猫</center><p><img src="/img/debug.jpg"></p>]]></content>
     
     
+    <categories>
+      
+      <category>区块链</category>
+      
+    </categories>
+    
     
     <tags>
       
       <tag>Blockchain</tag>
+      
+      <tag>区块链开发</tag>
       
     </tags>
     
@@ -538,6 +690,12 @@
     
     <content type="html"><![CDATA[<h2 id="tkscanner：面向web应用的漏洞扫描器"><a href="#tkscanner：面向web应用的漏洞扫描器" class="headerlink" title="tkscanner：面向web应用的漏洞扫描器"></a>tkscanner：面向web应用的漏洞扫描器</h2><p>记录一下web漏扫器的开发进度，目前已经写了一点简单的界面</p><h3 id="一、界面展示"><a href="#一、界面展示" class="headerlink" title="一、界面展示"></a>一、界面展示</h3><ol><li>登录界面<br><img src="/img/tk1.png"> </li><li>导航栏<br><img src="/img/tk2.png"></li><li>url输入框<br><img src="/img/tk3.png"></li><li>主页整体一览<br><img src="/img/tk4.png"></li></ol><p>   </p><h3 id="二、接下来可能遇到的困难："><a href="#二、接下来可能遇到的困难：" class="headerlink" title="二、接下来可能遇到的困难："></a>二、接下来可能遇到的困难：</h3><ol><li>爬虫和漏洞检测代码的实现 </li><li>其中redis我没接触过  </li><li>还有多线程和celery异步队列啥的，听起来还是很高深啊。不知道后面会怎么实现  </li><li>前端界面如何优化：Bootstrap框架的学习</li></ol>]]></content>
     
+    
+    <categories>
+      
+      <category>渗透测试</category>
+      
+    </categories>
     
     
     <tags>
