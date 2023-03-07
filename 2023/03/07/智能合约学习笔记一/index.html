@@ -16,26 +16,26 @@
   <meta name="author" content="kitescat">
   <meta name="keywords" content="web安全">
   
-    <meta name="description" content="SQL注入原理及类型详解">
+    <meta name="description" content="智能合约Solidity入门 数据类型、存储、修饰符、声明、函数（构造器，修饰器）、错误处理、事件eventGAS消耗优化生命周期">
 <meta property="og:type" content="article">
-<meta property="og:title" content="SQL注入：从0到1">
-<meta property="og:url" content="https://kitescat.github.io/2022/11/14/SQL%E6%B3%A8%E5%85%A5%EF%BC%9A%E4%BB%8E0%E5%88%B01/index.html">
+<meta property="og:title" content="智能合约学习笔记一">
+<meta property="og:url" content="https://kitescat.github.io/2023/03/07/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B8%80/index.html">
 <meta property="og:site_name" content="kitescat 的博客">
-<meta property="og:description" content="SQL注入原理及类型详解">
+<meta property="og:description" content="智能合约Solidity入门 数据类型、存储、修饰符、声明、函数（构造器，修饰器）、错误处理、事件eventGAS消耗优化生命周期">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://kitescat.github.io/img/sql_banner.jpg">
-<meta property="article:published_time" content="2022-11-14T15:06:08.000Z">
-<meta property="article:modified_time" content="2023-01-03T10:51:17.250Z">
+<meta property="og:image" content="https://kitescat.github.io/img/test.png">
+<meta property="article:published_time" content="2023-03-07T05:14:08.000Z">
+<meta property="article:modified_time" content="2023-03-07T05:25:34.426Z">
 <meta property="article:author" content="kitescat">
-<meta property="article:tag" content="渗透测试，SQL注入">
+<meta property="article:tag" content="Blockchain">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://kitescat.github.io/img/sql_banner.jpg">
+<meta name="twitter:image" content="https://kitescat.github.io/img/test.png">
   
   
     <meta name="referrer" content="no-referrer-when-downgrade">
   
   
-  <title>SQL注入：从0到1 - kitescat 的博客</title>
+  <title>智能合约学习笔记一 - kitescat 的博客</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -192,13 +192,13 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/sql_banner.jpg') no-repeat center center; background-size: cover;">
+     style="background: url('/img/test.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="SQL注入：从0到1"></span>
+            <span id="subtitle" data-typed-text="智能合约学习笔记一"></span>
           
         </div>
 
@@ -209,8 +209,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2022-11-14 23:06" pubdate>
-          2022年11月14日 晚上
+        <time datetime="2023-03-07 13:14" pubdate>
+          2023年3月7日 下午
         </time>
       </span>
     
@@ -222,7 +222,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          151 字
+          64 字
         
       </span>
     
@@ -234,7 +234,7 @@
         
         
           <!-- compatible with older versions-->
-          2 分钟
+          1 分钟
         
       </span>
     
@@ -280,16 +280,12 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">SQL注入：从0到1</h1>
+            <h1 style="display: none">智能合约学习笔记一</h1>
             
             <div class="markdown-body">
               
-              <h1 id="SQL注入"><a href="#SQL注入" class="headerlink" title="SQL注入"></a>SQL注入</h1><p>原理：</p>
-<h2 id="SQL注入检测"><a href="#SQL注入检测" class="headerlink" title="SQL注入检测"></a>SQL注入检测</h2><p>以通过多种方式检测注入。其中最简单的方法是在各种参数后添加’或”从而得到一个从Web服务器返回的数据库报错信息。</p>
-<h2 id="类型"><a href="#类型" class="headerlink" title="类型"></a>类型</h2><p>按参数类型分类<br>    整型注入<br>    字符型注入</p>
-<p>按注入方式分类<br>盲注：<br>布尔盲注<br>时间盲注<br>报错注入</p>
-<h2 id="SQLmap的使用"><a href="#SQLmap的使用" class="headerlink" title="SQLmap的使用"></a>SQLmap的使用</h2><h2 id="数据库类型"><a href="#数据库类型" class="headerlink" title="数据库类型"></a>数据库类型</h2><p>MSSQL Mysql Oracle等</p>
-<h2 id="防护建议"><a href="#防护建议" class="headerlink" title="防护建议"></a>防护建议</h2><p>php函数</p>
+              <h1 id="智能合约Solidity入门"><a href="#智能合约Solidity入门" class="headerlink" title="智能合约Solidity入门"></a>智能合约Solidity入门</h1><p><img src="/img/ContractMap.png" srcset="/img/loading.gif" lazyload></p>
+<p>数据类型、存储、修饰符、声明、函数（构造器，修饰器）、错误处理、事件event<br>GAS消耗优化<br>生命周期</p>
 
               
             </div>
@@ -307,7 +303,7 @@
     
       <span class="category-chain">
         
-  <a href="/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/" class="category-chain-item">渗透测试</a>
+  <a href="/categories/%E5%8C%BA%E5%9D%97%E9%93%BE/" class="category-chain-item">区块链</a>
   
   
 
@@ -322,7 +318,7 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95%EF%BC%8CSQL%E6%B3%A8%E5%85%A5/">#渗透测试，SQL注入</a>
+        <a href="/tags/Blockchain/">#Blockchain</a>
       
     </div>
   
@@ -334,8 +330,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>SQL注入：从0到1</div>
-      <div>https://kitescat.github.io/2022/11/14/SQL注入：从0到1/</div>
+      <div>智能合约学习笔记一</div>
+      <div>https://kitescat.github.io/2023/03/07/智能合约学习笔记一/</div>
     </div>
     <div class="license-meta">
       
@@ -347,7 +343,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2022年11月14日</div>
+          <div>2023年3月7日</div>
         </div>
       
       
@@ -377,18 +373,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/11/14/XSS%E6%B3%A8%E5%85%A5%EF%BC%9A%E4%BB%8E0%E5%88%B01/" title="XSS注入：从0到1">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">XSS注入：从0到1</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2022/11/14/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95%E4%B9%8B%E4%BF%A1%E6%81%AF%E6%90%9C%E9%9B%86%EF%BC%88%E4%B8%80%EF%BC%89/" title="渗透测试之信息搜集（一）">
-                        <span class="hidden-mobile">渗透测试之信息搜集（一）</span>
+                      <a href="/2022/11/15/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%B8%B8%E8%A7%81%E5%91%BD%E4%BB%A4%E6%80%BB%E7%BB%93/" title="操作系统常见命令总结">
+                        <span class="hidden-mobile">操作系统常见命令总结</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
