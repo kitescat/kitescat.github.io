@@ -4,11 +4,86 @@
   
   
   <entry>
-    <title>智能合约学习笔记一</title>
+    <title>【Web安全之sql注入篇】报错注入</title>
+    <link href="/2023/04/21/%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5/"/>
+    <url>/2023/04/21/%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5/</url>
+    
+    <content type="html"><![CDATA[<h1 id="sql注入漏洞概述"><a href="#sql注入漏洞概述" class="headerlink" title="sql注入漏洞概述"></a>sql注入漏洞概述</h1><p>本篇我们即将开启Web安全基础学习之旅，从我所整理的笔记中梳理常见Web漏洞的诸多知识点，包括漏洞原理，分类，利用场景及手段，渗透测试步骤，防御措施及常用工具等多个角度。本Web安全基础推文系列旨在以平白的语言讲解漏洞原理，文章多数内容为我本人的学习笔记与总结，汇总供大家参考。<br>首先，sql注入原理：存在输入口，使得用户输入的恶意sql语句拼接到正常语句中被后台执行。</p><h2 id="1-漏洞分类"><a href="#1-漏洞分类" class="headerlink" title="1 漏洞分类"></a>1 漏洞分类</h2><h3 id="1-1-按参数类型分类"><a href="#1-1-按参数类型分类" class="headerlink" title="1.1 按参数类型分类"></a>1.1 按参数类型分类</h3><p>SQL语句注入点的参数类型有数字型和字符型，如下：<br>1)数字型注入:SELECT * FROM users WHERE id=$id<br>参数$id为整型，即数字型。举例报错注入情况下，由payload：?id=1 and 1=1/?id=1 and 1=2，由于and 1=1使得整个逻辑表达式结果为1，and 1=2结果为0，这两种拼接的结果不同，势必会使页面有不同的回显，因此可以用来验证是否存在注入点。</p><p>2)字符型注入:SELECT * FROM users WHERE id=’$id’<br>参数’$id’为string类型， 如sqli-lab-Less-1  此时?id=1’ 发现报错，爆数据库名和mysql版本payload为：?id=1’ union select 1,database(),version()–+</p><h3 id="1-2-按注入方式分类"><a href="#1-2-按注入方式分类" class="headerlink" title="1.2 按注入方式分类"></a>1.2 按注入方式分类</h3><p>大致可以分为：报错注入，盲注，联合注入，HTTP注入，二次注入，堆叠注入，宽字节注入这几种。<br>报错注入<br>由于Mysql在执行语句的时候会抛出异常信息，而php+mysql架构的网站往往又将错误代码显示在页面，因此攻击者可以利用这一点从报错信息中获取数据库的私密数据。这种注入行为称为“报错注入”。报错注入是注入页面可显示数据库报错结果的情况下，利用函数报错使其输出错误结果来获取数据库的相关信息的一种sql注入类型。</p><p>1）数据类型溢出<br>当数值超出某个类型的最大范围时就会溢出报错。exp函数就会产生类似的溢出错误</p><p>mysql&gt; select ~0;<br>+———————-+<br>| ~0                   |<br>+———————-+<br>| 18446744073709551615 |<br>+———————-+<br>1 row in set (0.00 sec)</p><p>mysql&gt; select <del>0+1;<br>ERROR 1690 (22003): BIGINT UNSIGNED value is out of range in ‘(</del>(0) + 1)’</p><p>mysql&gt; select exp(710);</p><p>ERROR 1690 (22003): DOUBLE value is out of range in ‘exp(710)’</p><p>利用姿势<br>mysql&gt; select exp(<del>(select*from(select user())x));<br>ERROR 1690 (22003): DOUBLE value is out of range in ‘exp(</del>((select ‘root@localhost’ from dual)))’<br>这里的x是把user()取名为x的意思<br>2）xpath语法错误<br>利用xpath语法错误来进行报错注入主要利用extractvalue和updatexml两个函数。<br>extractvalue负责在xml文档中按照xpath语法查询节点内容，updatexml则负责修改查询到的内容<br>extractvalue<br>函数原型：extractvalue(xml_document,Xpath_string);<br>正常语法：extractvalue(xml_document,Xpath_string);<br>第一个参数：xml_document是string格式，为xml文档对象的名称<br>第二个参数：Xpath_string是xpath格式的字符串<br>作用：从目标xml中返回包含所查询值的字符串<br>updatexml<br> 函数原型：updatexml(xml_document,xpath_string,new_value)<br>第一个参数：xml_document是string格式，为xml文档对象的名称<br>第二个参数：xpath_string是xpath格式的字符串<br>第三个参数：new_value是string格式，替换查找到的负荷条件的数据<br>作用：改变文档中符合条件的节点的值<br>利用姿势<br>mysql&gt; select updatexml(1,concat(0x7e,(select @@version),0x7e),1);<br>ERROR 1105 (HY000): XPATH syntax error: ‘<del>5.7.17</del>‘<br>mysql&gt; select extractvalue(1,concat(0x7e,(select @@version),0x7e));<br>ERROR 1105 (HY000): XPATH syntax error: ‘<del>5.7.17</del>‘<br>3）主键重复错误<br>count()+rand()+group by导致主键重复，count()和group by在遇到rand()产生的重复值时报错<br>我们基于sql语句：Select count(*) from test group by floor(rand(0)*2)，查看下面的分析：</p><p>原理：group by key的原理是循环读取数据的每一行，将结果保存于临时表中。读取每一行的key时，如果key存在于临时表中，则不在临时表中更新临时表的数据；如果key不在临时表中，则在临时表中插入key所在行的数据。</p><p>而rand(0)是个稳定的序列，floor(rand(0)<em>2)则会固定得到011011…的序列，插入的时候就会报主键重复的错误。<br>利用姿势<br>mysql&gt; select count(</em>) from test group by concat(version(),floor(rand(0)<em>2));<br>ERROR 1062 (23000): Duplicate entry ‘5.7.171’ for key ‘<group_key>‘<br>mysql&gt; select count(</em>),concat(version(),floor(rand(0)*2))x from information_schema.tables group by x;<br>ERROR 1062 (23000): Duplicate entry ‘5.7.171’ for key ‘<group_key>‘<br>4）列名重复报错<br>mysql列名重复会报错，可以利用name_const（const）来制造一个列：</p><p>mysql&gt; select * from (select NAME_CONST(version(),1),NAME_CONST(version(),1))x;<br>ERROR 1060 (42S21): Duplicate column name ‘5.7.17’<br>mysql&gt; select *  from(select * from test a join test b)c;<br>ERROR 1060 (42S21): Duplicate column name ‘id’<br>mysql&gt; select *  from(select * from test a join test b using(id))c;<br>ERROR 1060 (42S21): Duplicate column name ‘name’<br>5）几何函数报错</p><p>mysql有些几何函数，例如geometrycollection()，multipoint()，polygon()，multipolygon()，linestring()，multilinestring()，这些函数对参数要求是形如(1 2,3 3,2 2 1)这样几何数据，如果不满足要求，则会报错。经测试，在版本号为5.5.47上可以用来注入，而在5.7.17上则不行。</p><h2 id="2-注入步骤及漏洞利用"><a href="#2-注入步骤及漏洞利用" class="headerlink" title="2 注入步骤及漏洞利用"></a>2 注入步骤及漏洞利用</h2><p>① 找注入点</p><p>② 判断注入类型</p><p>③ 判断是整型还是字符型</p><p>④ 判断查询列数</p><p>⑤ 判断显示位</p><p>⑥ 获取所有数据库名</p><p>⑦ 获取表名</p><p>⑧ 获取列名</p><p>⑨ 获取列中信息</p><h2 id="3-常用函数说明"><a href="#3-常用函数说明" class="headerlink" title="3 常用函数说明"></a>3 常用函数说明</h2><p>① 0x7e=’<del>’<br>② concat(‘a’,‘b’)=“ab” 起到连接两个字符的作用；<br>③ version()等同于@@version<br>④ ‘</del>‘可以换成’#’、’$’等不满足xpath格式的字符<br>⑤ extractvalue()能查询字符串的最大长度为32，如果我们想要的结果超过32，就要用substring()函数截取或limit分页，一次查看最多32位<br>extractvalue(xml_document,Xpath_string) 两个参数<br>updatexml(xml_document,xpath_string,new_value) 有三个参数<br>一般在其参数里用concat() 去拼接更多内容报错<br>⑥ sql语句最后–+ 和# 是为了使语句闭合引入注释，使得sql语句提前闭合，成功注入我们的语句</p><h2 id="4-总结"><a href="#4-总结" class="headerlink" title="4 总结"></a>4 总结</h2><p>上两篇文章中我们总结了两个信息搜集过程常遇到的问题：CDN绕过和泛域名解析，本篇我们讲解了sql注入漏洞的报错注入类型，其中关于主键重复报错的细节我建议至参考链接查看。下期我们可能会讲解一些计算机网络基础，并继续整理sql注入的知识点。<br>最后闲聊几句，最近开始海投简历面试，希望暑假前能找到实习，忽然又开始做起了大厂梦，又开始有了peer pressure。<br>记得微博网友有句话说的蛮好：焦虑没有用，做才有用。</p><h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a href="https://xz.aliyun.com/t/253">https://xz.aliyun.com/t/253</a></p><p><a href="https://cloud.tencent.com/developer/article/2169033">https://cloud.tencent.com/developer/article/2169033</a></p><p>声明：本Web安全基础推文系列旨在以平白的语言讲解漏洞原理，文章多数内容为我本人的学习笔记与总结，汇总供大家参考。所有内容仅作为学习记录。请遵守中华人民共和国法律！</p>]]></content>
+    
+    
+    <categories>
+      
+      <category>渗透测试</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>渗透测试，SQL注入</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>【信息搜集】绕过CDN寻找真实IP</title>
+    <link href="/2023/03/29/%E7%BB%95%E8%BF%87CDN%E5%AF%BB%E6%89%BE%E7%9C%9F%E5%AE%9EIP/"/>
+    <url>/2023/03/29/%E7%BB%95%E8%BF%87CDN%E5%AF%BB%E6%89%BE%E7%9C%9F%E5%AE%9EIP/</url>
+    
+    <content type="html"><![CDATA[<p>渗透测试过程中，信息搜集是很重要的准备步骤。而信息搜集大致有域名搜集，C段及旁站扫描，指纹识别，端口扫描，目录扫描等。</p><p>其中域名搜集又分为一级域名和子域名搜集。上一篇文章我们讲解了子域名搜集过程遇到的泛解析问题，爆破得到的子域名可能会泛解析到同个IP。于是通过IP黑名单的方式，达到过滤冗余子域名的效果。本篇博客我们集中于解决域名搜集过程中，如何绕过CDN寻找真实IP的问题。</p><h2 id="1-前景知识"><a href="#1-前景知识" class="headerlink" title="1 前景知识"></a>1 前景知识</h2><p>通常来讲，通过cmd的ping或者nslookup命令，即能快速找到域名对应IP。但很多站点出于用户体验和安全的角度，使用CDN加速，将域名解析到CDN，这时候就需要绕过CDN来查找真实IP。那么什么是CDN？<br>CDN全称为Content Delivery Network-内容分发网络。简单理解，资源服务器比作快递发货店家，CDN节点即为各个快递网点。快递网点会寄存一些店家的库存以方便快速发货到用户手中。这种分包的概念即为CDN的核心思想：用户请求资源时，就近返回节点上缓存的资源，而不需要每个用户的请求都回源站获取，避免网络拥塞。<br>图片</p><h2 id="2-如何判断是否使用了CDN？"><a href="#2-如何判断是否使用了CDN？" class="headerlink" title="2 如何判断是否使用了CDN？"></a>2 如何判断是否使用了CDN？</h2><ol><li>多地 ping </li></ol><p>查看对应 IP 地址是否唯一，如果不唯一多半是使用了CDN， 多地 Ping 网站有：<a href="http://ping.chinaz.com/">http://ping.chinaz.com/</a> ，<a href="http://ping.aizhan.com/">http://ping.aizhan.com/</a> , <a href="http://ce.cloud.360.cn/">http://ce.cloud.360.cn/</a></p><ol start="2"><li>查询DNS记录-使用 nslookup 进行检测</li></ol><p>nslookup-name server lookup 用于查询DNS服务器上某域名的DNS记录。如下，我们nslookup <a href="http://www.163.com/">www.163.com</a> ，本地DNS服务器返回了多个地址</p><p>图片</p><p>第一部分：<br>这里是我们本机的DNS服务器信息。<br>第二部分：<br>非权威应答对应的英文是：Non-authoritative answer。什么叫非权威应答？假设某个DNS server没有域名test.com的记录信息，当有客户端通过它请求获取test.com的域名信息，此DNS Server会通过迭代递归的方式从test公司实际存储此记录信息的DNS server中获取test.com的域名信息，反馈给发出请求的客户端，同时会把test.com的记录信息放在自身缓存中放置一段时间，当又有客户端请求test.com域名解析时，此DNS server直接从自身缓存中提取返回给客户端，这个回答叫“非权威回答”，简言之凡是从非实际记录存储DNS server中获取的域名解析回答，都叫“非权威回答”。<br>Name:z163picipv6.v.bsgslb.cn 指的 <a href="http://www.163.com/">www.163.com</a> 域名实际对应的主机名记录。<br>第三部分：<br>Address有多个记录， 说明该域名实际对应多个物理主机，用户访问<a href="http://www.163.com时,按照一定规则由其中一台计算机进行应答.(cnd的作用)/">www.163.com时，按照一定规则由其中一台计算机进行应答。（CND的作用）</a><br>Aliase: DNS记录中的一个别名，方便我们记忆。</p><h2 id="3-Solution"><a href="#3-Solution" class="headerlink" title="3 Solution"></a>3 Solution</h2><p>1.查询DNS历史记录<br>查询域名的NS记录、MX记录、TXT记录等很有可能指向的是真实ip或同C段服务器。除了过去的DNS记录，即使是当前的记录也可能泄漏原始服务器IP。例如，MX记录是一种常见的查找IP的方式。如果网站在与web相同的服务器和IP上托管自己的邮件服务器，那么原始服务器IP将在MX记录中。<br>图片</p><p>DNS记录类型分为A,CNAME,NS和MX</p><p>图片</p><p>可以用 <a href="https://www.ip138.com/">https://www.ip138.com/</a> 查询域名历史解析记录 </p><ol start="2"><li>查询子域名</li></ol><p>毕竟 CDN 还是不便宜的，所以很多站长可能只会对主站或者流量大的子站点做了 CDN，而很多小站子站点又跟主站在同一台服务器或者同一个C段内，此时就可以通过查询子域名对应的 IP 来辅助查找网站的真实IP。<br>各种工具用于子域名爆破：Layer，Oneforall</p><ol start="3"><li>利用SSL证书寻找真实原始IP<br>在censy上进行搜索，语法：parsed.names: xxxx.com and tags.raw: trusted</li></ol><p>4.Http头<br>利用HTTP标头寻找真实原始IP</p><p>5.邮件测试<br>一般的邮件系统都在内部，没有经过CDN的解析，通过目标网站用户注册或者RSS订阅功能，查看邮件，寻找邮件头中的邮件服务器域名IP，ping这个邮件服务器的域名，就可以获得目标的真实IP(必须是目标自己的邮件服务器，第三方或者公共邮件服务器是没有用的）</p><p>6.国外地址请求<br>国内很多 CDN 厂商因为各种原因只做了国内的线路，而针对国外的线路可能几乎没有，此时我们使用国外的主机直接访问可能就能获取到真实IP</p><ol start="7"><li><p>网站敏感文件泄露，例如：Phpinfo 其中有Server IP信息</p></li><li><p>F5 LTM解码法（这个方法我不是很理解，但还是贴出来）<br>当服务器使用F5 LTM做负载均衡时，通过对set-cookie关键字的解码真实ip也可被获取，例如：Set-Cookie: BIGipServerpool_8.29_8030=487098378.24095.0000，先把第一小节的十进制数即487098378取出来，然后将其转为十六进制数1d08880a，接着从后至前，以此取四位数出来，也就是0a.88.08.1d，最后依次把他们转为十进制数10.136.8.29，也就是最后的真实ip。</p><h2 id="4-总结"><a href="#4-总结" class="headerlink" title="4 总结"></a>4 总结</h2><p>本篇博客核心介绍了CDN，DNS的概念以及nslookup这一工具的简易使用。还有其他绕过CDN的方法我们没有涉及，比如利用Fofa或者Shodan网络空间搜索引擎，这些工具我之前在【粗心程序员，后台惨遭删库勒索 】这篇文章有用到过，感兴趣的小伙伴可以去看看。知识靠积累，目前先总结如上信息。</p></li></ol><h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a href="https://blog.csdn.net/qq_60848021/article/details/128742979">https://blog.csdn.net/qq_60848021/article/details/128742979</a><br><a href="https://blog.csdn.net/Hacker_Q/article/details/113937586">https://blog.csdn.net/Hacker_Q/article/details/113937586</a><br><a href="https://blog.csdn.net/jklbnm12/article/details/122952255?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_baidulandingword~default-0-122952255-blog-113937586.235%5Ev27%5Epc_relevant_recovery_v2&amp;spm=1001.2101.3001.4242.1&amp;utm_relevant_index=3">https://blog.csdn.net/jklbnm12/article/details/122952255?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_baidulandingword~default-0-122952255-blog-113937586.235^v27^pc_relevant_recovery_v2&amp;spm=1001.2101.3001.4242.1&amp;utm_relevant_index=3</a><br><a href="https://www.cnblogs.com/ghj1976/p/3380477.html">https://www.cnblogs.com/ghj1976/p/3380477.html</a></p>]]></content>
+    
+    
+    <categories>
+      
+      <category>渗透测试</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>渗透测试，信息搜集，子域名爆破</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>【信息搜集】子域名爆破的泛解析问题</title>
+    <link href="/2023/03/28/%E5%AD%90%E5%9F%9F%E5%90%8D%E6%B3%9B%E8%A7%A3%E6%9E%90/"/>
+    <url>/2023/03/28/%E5%AD%90%E5%9F%9F%E5%90%8D%E6%B3%9B%E8%A7%A3%E6%9E%90/</url>
+    
+    <content type="html"><![CDATA[<h2 id="1-什么是泛解析？"><a href="#1-什么是泛解析？" class="headerlink" title="1 什么是泛解析？"></a>1 什么是泛解析？</h2><p>在子域名解析中，每个子域名都会解析为一个特定的IP地址。只有被设置解析，用户才能正常进行访问。一旦用户输入错误的子域名，就会造成无法访问。<br><img src="/img/baidu.png"><br>在网站运营中，域名持有者为了避免因为错误输入，而造成用户流失，就会使用泛域名解析。比如用户输入123.baidu.com，能正常访问到<a href="http://www.baidu.com./">www.baidu.com。</a><br>泛域名解析是一种特殊的域名解析方式。它使用通配符形式，设置域名解析。它可以将没有明确设置的子域名一律解析到一个IP地址上。这样，即使用户输入错误的子域名，也可以访问到域名持有者指定的IP地址。<br>通过过cmd命令行，ping该站点，确实印证了域名不同却指向了同个ip。<br><img src="/img/CDNbaidu.png"><br>此处还有一个知识点，即CDN的存在，a.shifen.com（CDN我们下篇文章解释)</p><h2 id="2-如何判断是否开启了泛解析？"><a href="#2-如何判断是否开启了泛解析？" class="headerlink" title="2 如何判断是否开启了泛解析？"></a>2 如何判断是否开启了泛解析？</h2><p>输入一个“模糊”域名，确定能正确解析，则说明该站点开启了泛解析。<br>比如打开cmd，ping一个站点，输入的是 w<a href="http://www.baiud.com.很明显,这个输入多了一个w,与正常的域名不符,但ping该域名过程却能正常返回ip地址,说明该站点开启了域名泛解析./">www.baiud.com。很明显，这个输入多了一个w，与正常的域名不符，但ping该域名过程却能正常返回ip地址，说明该站点开启了域名泛解析。</a></p><h2 id="3-Solution：IP-黑名单"><a href="#3-Solution：IP-黑名单" class="headerlink" title="3 Solution：IP 黑名单"></a>3 Solution：IP 黑名单</h2><p>目前最常见的解决方式是IP黑名单的方式。<br>首先访问一个随机的并不存在的域，通过返回的结果判断是否存在泛解析。确定存在泛解析后，（脚本实现）不断地生成随机域名并发送请求，将每次返回的IP和TTL记录下来，直到大部分的IP出现次数都大于两次，则IP黑名单收集完成。<br>而后使用域名字典进行爆破，爆破过程中根据IP黑名单进行过滤，同时比较TTL，在泛解析记录中TTL是相同的，如果TTL不相同，则不是泛解析记录。<br>这样就成功地过滤了那些爆破之后存在的泛解析域名。</p><h2 id="4-总结"><a href="#4-总结" class="headerlink" title="4 总结"></a>4 总结</h2><p>最近也是疯狂让自己忙起来的状态，很多事情搞得自己不开心。</p><p>Anyway, Suffering still persists, but blossoms too can’t resist. </p><h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a href="https://blog.csdn.net/Chu_Jian_Xiong/article/details/127496889">https://blog.csdn.net/Chu_Jian_Xiong/article/details/127496889</a></p>]]></content>
+    
+    
+    <categories>
+      
+      <category>渗透测试</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>渗透测试，信息搜集，子域名爆破</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>【智能合约】学习笔记（一）</title>
     <link href="/2023/03/07/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B8%80/"/>
     <url>/2023/03/07/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%E4%B8%80/</url>
     
-    <content type="html"><![CDATA[<h1 id="智能合约Solidity入门"><a href="#智能合约Solidity入门" class="headerlink" title="智能合约Solidity入门"></a>智能合约Solidity入门</h1><p><img src="/img/ContractMap.png"></p><p>数据类型、存储、修饰符、声明、函数（构造器，修饰器）、错误处理、事件event<br>GAS消耗优化<br>生命周期</p>]]></content>
+    <content type="html"><![CDATA[<h1 id="智能合约Solidity入门"><a href="#智能合约Solidity入门" class="headerlink" title="智能合约Solidity入门"></a>智能合约Solidity入门</h1><p><img src="/img/ContractMap.png"></p><h2 id="数据类型"><a href="#数据类型" class="headerlink" title="数据类型"></a>数据类型</h2><p>int<br>uint 无符号整型 多少位？256？<br>struct<br>mapping<br>string<br>address</p><h2 id="存储"><a href="#存储" class="headerlink" title="存储"></a>存储</h2><p>storage<br>memory</p><h2 id="修饰符"><a href="#修饰符" class="headerlink" title="修饰符"></a>修饰符</h2><p>pure<br>view<br>private</p><p>public</p><h2 id="声明"><a href="#声明" class="headerlink" title="声明"></a>声明</h2><p>paragm solidity ^0.8.17</p><h2 id="函数（构造器，修饰器）"><a href="#函数（构造器，修饰器）" class="headerlink" title="函数（构造器，修饰器）"></a>函数（构造器，修饰器）</h2><p>constructor<br>modifier</p><h2 id="错误处理"><a href="#错误处理" class="headerlink" title="错误处理"></a>错误处理</h2><p>require<br>assert</p><h2 id="事件event"><a href="#事件event" class="headerlink" title="事件event"></a>事件event</h2><h2 id="GAS消耗优化"><a href="#GAS消耗优化" class="headerlink" title="GAS消耗优化"></a>GAS消耗优化</h2><h2 id="生命周期"><a href="#生命周期" class="headerlink" title="生命周期"></a>生命周期</h2>]]></content>
     
     
     <categories>
@@ -29,7 +104,7 @@
   
   
   <entry>
-    <title>操作系统常见命令总结</title>
+    <title>【操作系统】常见命令总结</title>
     <link href="/2022/11/15/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%B8%B8%E8%A7%81%E5%91%BD%E4%BB%A4%E6%80%BB%E7%BB%93/"/>
     <url>/2022/11/15/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E5%B8%B8%E8%A7%81%E5%91%BD%E4%BB%A4%E6%80%BB%E7%BB%93/</url>
     
@@ -104,36 +179,11 @@
   
   
   <entry>
-    <title>SQL注入：从0到1</title>
-    <link href="/2022/11/14/SQL%E6%B3%A8%E5%85%A5%EF%BC%9A%E4%BB%8E0%E5%88%B01/"/>
-    <url>/2022/11/14/SQL%E6%B3%A8%E5%85%A5%EF%BC%9A%E4%BB%8E0%E5%88%B01/</url>
-    
-    <content type="html"><![CDATA[<h1 id="SQL注入"><a href="#SQL注入" class="headerlink" title="SQL注入"></a>SQL注入</h1><p>原理：</p><h2 id="SQL注入检测"><a href="#SQL注入检测" class="headerlink" title="SQL注入检测"></a>SQL注入检测</h2><p>以通过多种方式检测注入。其中最简单的方法是在各种参数后添加’或”从而得到一个从Web服务器返回的数据库报错信息。</p><h2 id="类型"><a href="#类型" class="headerlink" title="类型"></a>类型</h2><p>按参数类型分类<br>    整型注入<br>    字符型注入</p><p>按注入方式分类<br>盲注：<br>布尔盲注<br>时间盲注<br>报错注入</p><h2 id="SQLmap的使用"><a href="#SQLmap的使用" class="headerlink" title="SQLmap的使用"></a>SQLmap的使用</h2><h2 id="数据库类型"><a href="#数据库类型" class="headerlink" title="数据库类型"></a>数据库类型</h2><p>MSSQL Mysql Oracle等</p><h2 id="防护建议"><a href="#防护建议" class="headerlink" title="防护建议"></a>防护建议</h2><p>php函数</p>]]></content>
-    
-    
-    <categories>
-      
-      <category>渗透测试</category>
-      
-    </categories>
-    
-    
-    <tags>
-      
-      <tag>渗透测试，SQL注入</tag>
-      
-    </tags>
-    
-  </entry>
-  
-  
-  
-  <entry>
-    <title>渗透测试之信息搜集（一）</title>
+    <title>【渗透测试】信息搜集（一）</title>
     <link href="/2022/11/14/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95%E4%B9%8B%E4%BF%A1%E6%81%AF%E6%90%9C%E9%9B%86%EF%BC%88%E4%B8%80%EF%BC%89/"/>
     <url>/2022/11/14/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95%E4%B9%8B%E4%BF%A1%E6%81%AF%E6%90%9C%E9%9B%86%EF%BC%88%E4%B8%80%EF%BC%89/</url>
     
-    <content type="html"><![CDATA[<h1 id="渗透测试之信息搜集（一）"><a href="#渗透测试之信息搜集（一）" class="headerlink" title="渗透测试之信息搜集（一）"></a>渗透测试之信息搜集（一）</h1><h2 id="0x01-针对域名的信息搜集"><a href="#0x01-针对域名的信息搜集" class="headerlink" title="0x01 针对域名的信息搜集"></a>0x01 针对域名的信息搜集</h2><p>子域名枚举</p><h2 id="0x02-针对IP的信息搜集"><a href="#0x02-针对IP的信息搜集" class="headerlink" title="0x02 针对IP的信息搜集"></a>0x02 针对IP的信息搜集</h2><p>C段 旁段<br>MSSCAN</p><h2 id="0x04-服务识别"><a href="#0x04-服务识别" class="headerlink" title="0x04 服务识别"></a>0x04 服务识别</h2><p>指纹识别<br>    主机信息<br>    CMS识别<br>目录爆破 dirsearch<br>端口扫描</p><p>资产扫描 Fofa Hunter Zoomeye</p><p><a href="https://search.censys.io/">https://search.censys.io</a>      //端口收集扫描比较全<br><a href="https://hunter.qianxin.com/">https://hunter.qianxin.com</a>    //可视化图形资产，可与fofa结合使用<br><a href="https://duckduckgo.com/">https://duckduckgo.com</a>        //找后台比较无助的时候可以尝试site:xxx.com login<br><a href="https://fofa.info/">https://fofa.info</a>             //资产测绘<br><a href="https://ww.shodan.io/">https://ww.shodan.io</a>          //shodan</p>]]></content>
+    <content type="html"><![CDATA[<h1 id="渗透测试之信息搜集（一）"><a href="#渗透测试之信息搜集（一）" class="headerlink" title="渗透测试之信息搜集（一）"></a>渗透测试之信息搜集（一）</h1><h2 id="0x01-针对域名的信息搜集"><a href="#0x01-针对域名的信息搜集" class="headerlink" title="0x01 针对域名的信息搜集"></a>0x01 针对域名的信息搜集</h2><p>子域名枚举</p><h2 id="0x02-针对IP的信息搜集"><a href="#0x02-针对IP的信息搜集" class="headerlink" title="0x02 针对IP的信息搜集"></a>0x02 针对IP的信息搜集</h2><p>C段 旁段<br>MSSCAN</p><h2 id="0x04-服务识别"><a href="#0x04-服务识别" class="headerlink" title="0x04 服务识别"></a>0x04 服务识别</h2><p>指纹识别<br>    主机信息<br>    中间件<br>    CMS识别<br>    wapplyzer<br>目录爆破 dirsearch<br>端口扫描</p><p>资产扫描 Fofa Hunter Zoomeye</p><p><a href="https://search.censys.io/">https://search.censys.io</a>      //端口收集扫描比较全<br><a href="https://hunter.qianxin.com/">https://hunter.qianxin.com</a>    //可视化图形资产，可与fofa结合使用<br><a href="https://duckduckgo.com/">https://duckduckgo.com</a>        //找后台比较无助的时候可以尝试site:xxx.com login<br><a href="https://fofa.info/">https://fofa.info</a>             //资产测绘<br><a href="https://ww.shodan.io/">https://ww.shodan.io</a>          //shodan</p>]]></content>
     
     
     <categories>
@@ -244,7 +294,7 @@
     
     <categories>
       
-      <category>项目</category>
+      <category>论文阅读</category>
       
     </categories>
     
@@ -294,7 +344,7 @@
     
     <categories>
       
-      <category>区块链</category>
+      <category>论文阅读</category>
       
     </categories>
     
@@ -693,6 +743,8 @@
       
       <category>区块链</category>
       
+      <category>论文阅读</category>
+      
     </categories>
     
     
@@ -741,6 +793,12 @@
     <content type="html"><![CDATA[<h2 id="项目复盘（二）-innovation-LDA"><a href="#项目复盘（二）-innovation-LDA" class="headerlink" title="项目复盘（二）||innovation-LDA"></a>项目复盘（二）||innovation-LDA</h2><p>大创项目：基于Innovation-LDA的企业创新社区文本主题发现研究<br>时间：2019.11-2020.4  <br>由于复试需要复盘我的项目，想在就简单梳理一遍</p><h3 id="一、目的："><a href="#一、目的：" class="headerlink" title="一、目的："></a>一、目的：</h3><p>对小米社区的帖子进行分析，利用基于LDA原型算法改进的inno-LDA算法，提取帖子中的主题</p><h3 id="二、输入和输出"><a href="#二、输入和输出" class="headerlink" title="二、输入和输出"></a>二、输入和输出</h3><ol><li>数据来源：小米社区的数据  （不同时间段的）  </li><li>爬虫：已经有的数据 有不同时间段的帖子 每份大概3w条  <br>由于是老师提供的数据，都输出在excel里了，就没去仔细研究爬虫了<br>数据如图：<br><img src="/img/dataoflda.png"> </li><li>输出：每个算法程序的输出为每个帖子对应的主题 </li></ol><p>  例如帖子1：    </p><pre><code class="hljs">标题：单手模式改进意见_新功能建议_MIUI论坛        内容：单手模式能不能把显示区域居中靠右或者靠左...  输出为主题：单手模式   </code></pre><ol start="4"><li>实现：我们实现的lda类模型有LDA,local_LDA,sent_LDA,inno_LDA四种。  <br>我负责的是sent_lda。</li></ol><h3 id="三、方法和原理"><a href="#三、方法和原理" class="headerlink" title="三、方法和原理"></a>三、方法和原理</h3><p>LDA算法的原理：<br>Blei D M, Ng A Y, Jordan M I. Latent dirichlet allocation[J]. Journal of Machine Learning Research, 2012, 3:993-1022.</p><p>吉布斯采样和EM变分算法的区别：</p><p>Inno-LDA的原理：<br>local_LDA的原理：<br>出自论文：Brody S, Elhadad N. An unsupervised aspect-sentiment model for online reviews<br>sent_lda算法的原理：</p><h3 id="四、主要负责什么工作"><a href="#四、主要负责什么工作" class="headerlink" title="四、主要负责什么工作"></a>四、主要负责什么工作</h3><p>Sent-lda的输入脚本开发<br>数据清洗，用正则表达式 比如繁体 字母大小写 特殊字符<br>正则表达式哪些比较好用？特殊<br>中文分词 用的是百度的jieba分词<br>自定义字典 对一些特定的专业词汇自定义分词<br>数据展示：困惑度整合成条形图，词云跑过主题图<br>Sent-lda算法的复现（这个没做）<br>lda主题算法和其他变形讲解？</p><h3 id="五、遇到的问题如何解决"><a href="#五、遇到的问题如何解决" class="headerlink" title="五、遇到的问题如何解决"></a>五、遇到的问题如何解决</h3><p>有些参数上的错误，造成算法错误<br>困惑度的计算<br>多线程跑，数据量大<br>我自己遇到的问题：一开始需要我复现输入脚本的代码，我就去读论文。但是似乎需要固定的格式作者没给出。就通读了下算法变形的地方，在我们复现的lda上做修改。不过最后找到原作者用到了他的脚本和软件。<br>感谢来自上交的鲍杨老师提供了脚本：<br>老师说要避免出现过拟合的现象<br>最后的结果是我们人工标记打分主题的匹配程度，inno-lda优于lda，但sentlda可能更好，具体原因就没再深究，我就结束了我的工作。家里有事加上考研。<br>我自己遇到的问题就是预处理，多个版本总是不一致<br>因为一开始就和原作者那个不一样，所以要修改原作者的脚本和我们的一致才行</p><h3 id="六、参考文献"><a href="#六、参考文献" class="headerlink" title="六、参考文献"></a>六、参考文献</h3>]]></content>
     
     
+    <categories>
+      
+      <category>项目</category>
+      
+    </categories>
+    
     
     <tags>
       
@@ -761,6 +819,12 @@
     
     <content type="html"><![CDATA[<h1 id="对物体中心检测的-C-窗口程序的复盘"><a href="#对物体中心检测的-C-窗口程序的复盘" class="headerlink" title="对物体中心检测的 C# 窗口程序的复盘"></a>对物体中心检测的 C# 窗口程序的复盘</h1><h2 id="一、目的："><a href="#一、目的：" class="headerlink" title="一、目的："></a>一、目的：</h2><p>测物体的中心输出相对坐标 便于蛋糕机器人喷涂图案</p><h2 id="二、实现的输入和输出"><a href="#二、实现的输入和输出" class="headerlink" title="二、实现的输入和输出"></a>二、实现的输入和输出</h2><h3 id="输入："><a href="#输入：" class="headerlink" title="输入："></a>输入：</h3><p>照相机照相 光源干扰 反光灯因素如何避免</p><h3 id="对图像中的噪点如何处理？"><a href="#对图像中的噪点如何处理？" class="headerlink" title="对图像中的噪点如何处理？"></a>对图像中的噪点如何处理？</h3><p>加入蛋糕上面有多个圆形怎么办 取最外面的图像 不管是方形还是圆形<br>选择机制 加入轮廓最大的是方形就选择方形中心</p><h3 id="输出："><a href="#输出：" class="headerlink" title="输出："></a>输出：</h3><p>1.圆形的圆心坐标<br>2.方形的中心坐标 </p><h3 id="结果："><a href="#结果：" class="headerlink" title="结果："></a>结果：</h3><p>输出到窗口上面显示相对于图片左上角的相对坐标 便于与现实中喷头的参考系对照   </p><h2 id="三、方法："><a href="#三、方法：" class="headerlink" title="三、方法："></a>三、方法：</h2><p>高斯滤波–&gt;进行灰度处理–&gt;进行二值化–&gt;进行开运算–&gt;轮廓提取–&gt;计算中心点位<br>预处理：高斯滤波 二值化 灰度处理等等均可以<br>应用霍夫变换必须使用二值化图像<br>可以先执行边缘检测再执行霍夫变换<br>1.主要是用边缘检测中的Canny和霍夫变换中的霍夫圆，和线检测<br>2.圆形直接使用霍夫圆变换，方形使用Canny或者霍夫线变换<br>3.共同的方法是使用封装好的FindContours，找到轮廓，之后输入到ApproxPolyDP多边形拟合曲线，识别他是什么形状的，比如三角形，方形，圆形。（图像的矩）<br>4.轮廓优化：最后对于生成的轮廓，可以使用形态学进行优化 例如开运算 </p><h2 id="四、原理和基础知识："><a href="#四、原理和基础知识：" class="headerlink" title="四、原理和基础知识："></a>四、原理和基础知识：</h2><ol><li>高斯滤波filter：线性平滑滤波 为什么叫做高斯：处理高斯噪声 数值上符合正态分布<br>对像素邻域内各像素灰度值加权平均替代中心像素的灰度值<br>对整幅图像像素值进行加权平均，针对每一个像素点的值，都由其本身值和邻域内的其他像素值经过加权平均后得到。 </li><li>灰度处理 BGR2Gray 就是对BGR三个数值进行操作化为灰度值 取平均值 </li><li>图像分割：<br>边缘检测： 检测那些灰度值急剧变化的点<br>平滑滤波 边缘锐化 边缘判定 边缘连接<h3 id="Canny算法-对噪声和边缘检测的折中方案"><a href="#Canny算法-对噪声和边缘检测的折中方案" class="headerlink" title="Canny算法 对噪声和边缘检测的折中方案"></a>Canny算法 对噪声和边缘检测的折中方案</h3>Canny算子的步骤是：</li><li>先进行滤波降噪。</li><li>计算梯度幅值和方向（进行Sobel算子计算）。</li><li>非极大值抑制。将模糊（blurred）的边界变得清晰（sharp）。通俗的讲，就是保留了每个像素点上梯度强度的极大值，而删掉其他的值。</li><li>滞后阈值。设定一个阈值上界和阈值下界（opencv中通常由人为指定的），图像中的像素点如果大于阈值上界则认为必然是边界（称为强边界，strong edge），小于阈值下界则认为必然不是边界，两者之间的则认为是候选项（称为弱边界，weak edge）</li><li>霍夫变换  CvInvoke.HoughCircles HoughLines<br>霍夫圆变换的基本思路是认为图像上每一个非零像素点都有可能是一个潜在的圆上的一点，跟霍夫线变换一样，也是通过投票，生成累积坐标平面，设置一个累积权重来定位圆<br><a href="https://blog.csdn.net/flymoon87/article/details/82830608">https://blog.csdn.net/flymoon87/article/details/82830608</a></li></ol><h3 id="利用霍夫变换"><a href="#利用霍夫变换" class="headerlink" title="利用霍夫变换"></a>利用霍夫变换</h3><p>public static CircleF[] HoughCircles 取数组第一个元素 Center 输出点<br>public static LineSegment2D[] HoughLinesP 取lines 第一个元素 输出点P1  P1为起点<br>霍夫梯度法的缺点<br>&lt;1&gt; 在霍夫梯度法中，使用Sobel导数来计算局部梯度，其可以视作等同于一条局部切线，这不是一个数值稳定的做法。在大多数情况下，这样做会得到正确的结果，但或许会在输出中产生一些噪声。<br>&lt;2&gt; 在边缘图像中的整个非0像素集被看做每个中心的候选部分。因此，如果把累加器的阈值设置偏低，算法将要消耗比较长的时间。第三，因为每一个中心只选择一个圆，如果有同心圆，就只能选择其中的一个。<br>&lt;3&gt; 因为中心是按照其关联的累加器值的升序排列的，并且如果新的中心过于接近之前已经接受的中心的话，就不会被保留下来。且当有许多同心圆或者是近似的同心圆时，霍夫梯度法的倾向是保留最大的一个圆。可以说这是一种比较极端的做法，因为在这里默认Sobel导数会产生噪声，若是对于无穷分辨率的平滑图像而言的话，这才是必须的。</p>]]></content>
     
+    
+    <categories>
+      
+      <category>项目</category>
+      
+    </categories>
     
     
     <tags>
