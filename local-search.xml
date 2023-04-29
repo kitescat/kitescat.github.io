@@ -4,7 +4,32 @@
   
   
   <entry>
-    <title>【Web安全之sql注入篇】报错注入</title>
+    <title>【Sql注入】联合注入</title>
+    <link href="/2023/04/29/%E8%81%94%E5%90%88%E6%B3%A8%E5%85%A5/"/>
+    <url>/2023/04/29/%E8%81%94%E5%90%88%E6%B3%A8%E5%85%A5/</url>
+    
+    <content type="html"><![CDATA[<h1 id="联合注入：基于Union的注入"><a href="#联合注入：基于Union的注入" class="headerlink" title="联合注入：基于Union的注入"></a>联合注入：基于Union的注入</h1>]]></content>
+    
+    
+    <categories>
+      
+      <category>渗透测试</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>渗透测试，SQL注入</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
+    <title>【Sql注入】报错注入</title>
     <link href="/2023/04/21/%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5/"/>
     <url>/2023/04/21/%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5/</url>
     
