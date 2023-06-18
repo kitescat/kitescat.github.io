@@ -16,26 +16,26 @@
   <meta name="author" content="kitescat">
   <meta name="keywords" content="web安全">
   
-    <meta name="description" content="基于页面回显的数据库报错，获取数据库内部信息">
+    <meta name="description" content="CSRF的关键字有：冒用用户身份凭证，前端same-site,后端token及refer检测防御。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="【Sql注入】报错注入">
-<meta property="og:url" content="https://kitescat.github.io/2023/04/21/%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5/index.html">
+<meta property="og:title" content="【Web安全基础】CSRF">
+<meta property="og:url" content="https://kitescat.github.io/2023/05/05/CSRF/index.html">
 <meta property="og:site_name" content="kitescat 的博客">
-<meta property="og:description" content="基于页面回显的数据库报错，获取数据库内部信息">
+<meta property="og:description" content="CSRF的关键字有：冒用用户身份凭证，前端same-site,后端token及refer检测防御。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://kitescat.github.io/img/errinj.png">
-<meta property="article:published_time" content="2023-04-21T13:23:58.000Z">
-<meta property="article:modified_time" content="2023-04-29T03:49:59.999Z">
+<meta property="og:image" content="https://kitescat.github.io/img/CSRF.png">
+<meta property="article:published_time" content="2023-05-05T03:48:04.000Z">
+<meta property="article:modified_time" content="2023-06-18T07:59:03.773Z">
 <meta property="article:author" content="kitescat">
-<meta property="article:tag" content="渗透测试，SQL注入">
+<meta property="article:tag" content="渗透测试">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://kitescat.github.io/img/errinj.png">
+<meta name="twitter:image" content="https://kitescat.github.io/img/CSRF.png">
   
   
     <meta name="referrer" content="no-referrer-when-downgrade">
   
   
-  <title>【Sql注入】报错注入 - kitescat 的博客</title>
+  <title>【Web安全基础】CSRF - kitescat 的博客</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -192,13 +192,13 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/errinj.png') no-repeat center center; background-size: cover;">
+     style="background: url('/img/CSRF.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="【Sql注入】报错注入"></span>
+            <span id="subtitle" data-typed-text="【Web安全基础】CSRF"></span>
           
         </div>
 
@@ -209,8 +209,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-04-21 21:23" pubdate>
-          2023年4月21日 晚上
+        <time datetime="2023-05-05 11:48" pubdate>
+          2023年5月5日 中午
         </time>
       </span>
     
@@ -222,7 +222,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          3.8k 字
+          3.6k 字
         
       </span>
     
@@ -234,7 +234,7 @@
         
         
           <!-- compatible with older versions-->
-          32 分钟
+          30 分钟
         
       </span>
     
@@ -280,38 +280,107 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">【Sql注入】报错注入</h1>
+            <h1 style="display: none">【Web安全基础】CSRF</h1>
             
             <div class="markdown-body">
               
-              <h1 id="sql注入漏洞概述"><a href="#sql注入漏洞概述" class="headerlink" title="sql注入漏洞概述"></a>sql注入漏洞概述</h1><p>本篇我们即将开启Web安全基础学习之旅，从我所整理的笔记中梳理常见Web漏洞的诸多知识点，包括漏洞原理，分类，利用场景及手段，渗透测试步骤，防御措施及常用工具等多个角度。本Web安全基础推文系列旨在以平白的语言讲解漏洞原理，文章多数内容为我本人的学习笔记与总结，汇总供大家参考。<br>首先，sql注入原理：存在输入口，使得用户输入的恶意sql语句拼接到正常语句中被后台执行。</p>
-<h2 id="1-漏洞分类"><a href="#1-漏洞分类" class="headerlink" title="1 漏洞分类"></a>1 漏洞分类</h2><h3 id="1-1-按参数类型分类"><a href="#1-1-按参数类型分类" class="headerlink" title="1.1 按参数类型分类"></a>1.1 按参数类型分类</h3><p>SQL语句注入点的参数类型有数字型和字符型，如下：<br>1)数字型注入:SELECT * FROM users WHERE id=$id<br>参数$id为整型，即数字型。举例报错注入情况下，由payload：?id=1 and 1=1/?id=1 and 1=2，由于and 1=1使得整个逻辑表达式结果为1，and 1=2结果为0，这两种拼接的结果不同，势必会使页面有不同的回显，因此可以用来验证是否存在注入点。</p>
-<p>2)字符型注入:SELECT * FROM users WHERE id=’$id’<br>参数’$id’为string类型， 如sqli-lab-Less-1  此时?id=1’ 发现报错，爆数据库名和mysql版本payload为：?id=1’ union select 1,database(),version()–+</p>
-<h3 id="1-2-按注入方式分类"><a href="#1-2-按注入方式分类" class="headerlink" title="1.2 按注入方式分类"></a>1.2 按注入方式分类</h3><p>大致可以分为：报错注入，盲注，联合注入，HTTP注入，二次注入，堆叠注入，宽字节注入这几种。<br>报错注入<br>由于Mysql在执行语句的时候会抛出异常信息，而php+mysql架构的网站往往又将错误代码显示在页面，因此攻击者可以利用这一点从报错信息中获取数据库的私密数据。这种注入行为称为“报错注入”。报错注入是注入页面可显示数据库报错结果的情况下，利用函数报错使其输出错误结果来获取数据库的相关信息的一种sql注入类型。</p>
-<p>1）数据类型溢出<br>当数值超出某个类型的最大范围时就会溢出报错。exp函数就会产生类似的溢出错误</p>
-<p>mysql&gt; select ~0;<br>+———————-+<br>| ~0                   |<br>+———————-+<br>| 18446744073709551615 |<br>+———————-+<br>1 row in set (0.00 sec)</p>
-<p>mysql&gt; select <del>0+1;<br>ERROR 1690 (22003): BIGINT UNSIGNED value is out of range in ‘(</del>(0) + 1)’</p>
-<p>mysql&gt; select exp(710);</p>
-<p>ERROR 1690 (22003): DOUBLE value is out of range in ‘exp(710)’</p>
-<p>利用姿势<br>mysql&gt; select exp(<del>(select*from(select user())x));<br>ERROR 1690 (22003): DOUBLE value is out of range in ‘exp(</del>((select ‘root@localhost’ from dual)))’<br>这里的x是把user()取名为x的意思<br>2）xpath语法错误<br>利用xpath语法错误来进行报错注入主要利用extractvalue和updatexml两个函数。<br>extractvalue负责在xml文档中按照xpath语法查询节点内容，updatexml则负责修改查询到的内容<br>extractvalue<br>函数原型：extractvalue(xml_document,Xpath_string);<br>正常语法：extractvalue(xml_document,Xpath_string);<br>第一个参数：xml_document是string格式，为xml文档对象的名称<br>第二个参数：Xpath_string是xpath格式的字符串<br>作用：从目标xml中返回包含所查询值的字符串<br>updatexml<br> 函数原型：updatexml(xml_document,xpath_string,new_value)<br>第一个参数：xml_document是string格式，为xml文档对象的名称<br>第二个参数：xpath_string是xpath格式的字符串<br>第三个参数：new_value是string格式，替换查找到的负荷条件的数据<br>作用：改变文档中符合条件的节点的值<br>利用姿势<br>mysql&gt; select updatexml(1,concat(0x7e,(select @@version),0x7e),1);<br>ERROR 1105 (HY000): XPATH syntax error: ‘<del>5.7.17</del>‘<br>mysql&gt; select extractvalue(1,concat(0x7e,(select @@version),0x7e));<br>ERROR 1105 (HY000): XPATH syntax error: ‘<del>5.7.17</del>‘<br>3）主键重复错误<br>count()+rand()+group by导致主键重复，count()和group by在遇到rand()产生的重复值时报错<br>我们基于sql语句：Select count(*) from test group by floor(rand(0)*2)，查看下面的分析：</p>
-<p>原理：group by key的原理是循环读取数据的每一行，将结果保存于临时表中。读取每一行的key时，如果key存在于临时表中，则不在临时表中更新临时表的数据；如果key不在临时表中，则在临时表中插入key所在行的数据。</p>
-<p>而rand(0)是个稳定的序列，floor(rand(0)<em>2)则会固定得到011011…的序列，插入的时候就会报主键重复的错误。<br>利用姿势<br>mysql&gt; select count(</em>) from test group by concat(version(),floor(rand(0)<em>2));<br>ERROR 1062 (23000): Duplicate entry ‘5.7.171’ for key ‘<group_key>‘<br>mysql&gt; select count(</em>),concat(version(),floor(rand(0)*2))x from information_schema.tables group by x;<br>ERROR 1062 (23000): Duplicate entry ‘5.7.171’ for key ‘<group_key>‘<br>4）列名重复报错<br>mysql列名重复会报错，可以利用name_const（const）来制造一个列：</p>
-<p>mysql&gt; select * from (select NAME_CONST(version(),1),NAME_CONST(version(),1))x;<br>ERROR 1060 (42S21): Duplicate column name ‘5.7.17’<br>mysql&gt; select *  from(select * from test a join test b)c;<br>ERROR 1060 (42S21): Duplicate column name ‘id’<br>mysql&gt; select *  from(select * from test a join test b using(id))c;<br>ERROR 1060 (42S21): Duplicate column name ‘name’<br>5）几何函数报错</p>
-<p>mysql有些几何函数，例如geometrycollection()，multipoint()，polygon()，multipolygon()，linestring()，multilinestring()，这些函数对参数要求是形如(1 2,3 3,2 2 1)这样几何数据，如果不满足要求，则会报错。经测试，在版本号为5.5.47上可以用来注入，而在5.7.17上则不行。</p>
-<h2 id="2-注入步骤及漏洞利用"><a href="#2-注入步骤及漏洞利用" class="headerlink" title="2 注入步骤及漏洞利用"></a>2 注入步骤及漏洞利用</h2><p>① 找注入点</p>
-<p>② 判断注入类型</p>
-<p>③ 判断是整型还是字符型</p>
-<p>④ 判断查询列数</p>
-<p>⑤ 判断显示位</p>
-<p>⑥ 获取所有数据库名</p>
-<p>⑦ 获取表名</p>
-<p>⑧ 获取列名</p>
-<p>⑨ 获取列中信息</p>
-<h2 id="3-常用函数说明"><a href="#3-常用函数说明" class="headerlink" title="3 常用函数说明"></a>3 常用函数说明</h2><p>① 0x7e=’<del>’<br>② concat(‘a’,‘b’)=“ab” 起到连接两个字符的作用；<br>③ version()等同于@@version<br>④ ‘</del>‘可以换成’#’、’$’等不满足xpath格式的字符<br>⑤ extractvalue()能查询字符串的最大长度为32，如果我们想要的结果超过32，就要用substring()函数截取或limit分页，一次查看最多32位<br>extractvalue(xml_document,Xpath_string) 两个参数<br>updatexml(xml_document,xpath_string,new_value) 有三个参数<br>一般在其参数里用concat() 去拼接更多内容报错<br>⑥ sql语句最后–+ 和# 是为了使语句闭合引入注释，使得sql语句提前闭合，成功注入我们的语句</p>
-<h2 id="4-总结"><a href="#4-总结" class="headerlink" title="4 总结"></a>4 总结</h2><p>上两篇文章中我们总结了两个信息搜集过程常遇到的问题：CDN绕过和泛域名解析，本篇我们讲解了sql注入漏洞的报错注入类型，其中关于主键重复报错的细节我建议至参考链接查看。下期我们可能会讲解一些计算机网络基础，并继续整理sql注入的知识点。<br>最后闲聊几句，最近开始海投简历面试，希望暑假前能找到实习，忽然又开始做起了大厂梦，又开始有了peer pressure。<br>记得微博网友有句话说的蛮好：焦虑没有用，做才有用。</p>
-<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/253">https://xz.aliyun.com/t/253</a></p>
-<p><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/2169033">https://cloud.tencent.com/developer/article/2169033</a></p>
-<p>声明：本Web安全基础推文系列旨在以平白的语言讲解漏洞原理，文章多数内容为我本人的学习笔记与总结，汇总供大家参考。所有内容仅作为学习记录。请遵守中华人民共和国法律！</p>
+              <h2 id="1-CSRF原理"><a href="#1-CSRF原理" class="headerlink" title="1 CSRF原理"></a>1 CSRF原理</h2><p>CSRF, Cross-site request forgery，即“跨站请求伪造”，是指攻击者可能利用网页中的恶意<br>代码强迫受害者浏览器向被攻击的Web站点发送伪造的请求，篡夺受害者的认证Cookie等身份<br>信息，从而假冒受害者对目标站点执行指定的操作。<br>简单来讲，CSRF 攻击就是黑客冒用用户身份并通过第三方的站点执行非法操作。这种攻击我们也称为“One Click Attack”或者Session Riding。</p>
+<h3 id="1-1-什么是cookie？"><a href="#1-1-什么是cookie？" class="headerlink" title="1.1 什么是cookie？"></a>1.1 什么是cookie？</h3><p>在 Web认证中 ,因为HTTP协议本身的局限，必须采用其他技术将相关认证标记以某种方式持续传送，以免客户从一个页面跳转至另一个页面时重新输入认证信息。<br>Cookie由一个名称（Name）、一个值（Value）和其它几个用于控制Cookie有效期、安全性、使用范围的可选属性组成。<br>图片</p>
+<p>csrf漏洞的成因就是网站的cookie在浏览器中不会过期，只要不关闭浏览器或者退出登录，那以后只要是访问这个网站，都会默认你已经登录的状态。而在这个期间，攻击者发送了构造好的csrf脚本或包含csrf脚本的链接，可能会执行一些用户不想做的功能（比如是添加账号等）。这个操作不是用户真正想要执行的。<br><a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/web/206407.html">https://www.freebuf.com/articles/web/206407.html</a><br>1.2 攻击流程</p>
+<p>一个典型的CSRF攻击有着如下的流程：</p>
+<p>受害者登录 a.com，并保留了登录凭证（Cookie）。</p>
+<p>攻击者引诱受害者访问 b.com。</p>
+<p>b.com 向 a.com 发送了一个请求：a.com/act=xx。浏览器会默认携带 a.com 的 Cookie。</p>
+<p>a.com 接收到请求后，对请求进行验证，并确认是受害者的凭证，误以为是受害者自己发送的请求。</p>
+<p>a.com 以受害者的名义执行了 act=xx。</p>
+<p>攻击完成，攻击者在受害者不知情的情况下，冒充受害者，让 a.com 执行了自己定义的操作。</p>
+<p>图片</p>
+<p>典型的CSRF攻击</p>
+<p>一个CSRF漏洞攻击的实现，其需要由三个部分来构成</p>
+<p>有一个漏洞存在（无需验证、任意修改后台数据、新增请求）；</p>
+<p>伪装数据操作请求的恶意链接或者页面；</p>
+<p>诱使用户主动访问或登录恶意链接，触发非法操作</p>
+<h2 id="2-CSRF防御"><a href="#2-CSRF防御" class="headerlink" title="2 CSRF防御"></a>2 CSRF防御</h2><p>CSRF的防御可以从两个方面考虑，一是后台接口层做防御，另一个则是在前端做防御。</p>
+<h3 id="2-1-后端防御CSRF"><a href="#2-1-后端防御CSRF" class="headerlink" title="2.1 后端防御CSRF"></a>2.1 后端防御CSRF</h3><p>后端防御主要是区分哪些请求是恶意请求，哪些请求是来自本网站的请求。区分恶意请求的方式有很多，以下介绍两种。</p>
+<p>一、CSRF Token</p>
+<p>这种方式是在表单页面生成一个随机数，这个随机数一定要后端生成，并且对这个随机数进行存储。举个例子，在前端页面中，对这个Token表单项进行隐藏。代码如下：</p>
+<form method="post" action="/transfer">
+<input type="hidden" name="_csrf" value="4bfd1575-3ad1-4d21-96c7-4ef2d9f86721"/>
+<input type="text" name="amount"/>
+<input type="hidden" name="account"/>
+<input type="submit" value="Transfer"/></form>
+
+<p>_csrf就是CSRF Token。我们看到他的value是一个UUID，这个UUID是后台生成的。当用户点击转账按钮时，会给银行的后台发送请求，请求中包含_csrf参数，如下：</p>
+<p>POST /transfer HTTP/1.1Host: <a target="_blank" rel="noopener" href="http://www.a-bank.comcookie/">www.a-bank.comCookie</a>: JSESSIONID=randomidContent-Type: application/x-www-form-urlencoded<br>amount=100.00&amp;account=9876&amp;_csrf=4bfd1575-3ad1-4d21-96c7-4ef2d9f86721</p>
+<p>银行后台接收到这个请求后，判断_csrf的值是否存在，如果存在则是自己网站的请求，进行后续的流程；如果不存在，则是恶意网站的请求，直接忽略。</p>
+<p>二、通过请求头中的referer字段判断请求的来源</p>
+<p>每一个发送给后端的请求，在http请求头中都会包含一个referer字段，这个字段标识着请求的来源。如果请求是从银行网站发出的，这个字段会是银行网站转账页的链接，比如：<a target="_blank" rel="noopener" href="https://www.a-bank.com/transfer-view%EF%BC%9B%E5%A6%82%E6%9E%9C%E6%98%AF%E4%BB%8E%E6%81%B6%E6%84%8F%E7%BD%91%E7%AB%99%E5%8F%91%E5%87%BA%E7%9A%84%EF%BC%8C%E9%82%A3%E4%B9%88referer%E5%AD%97%E6%AE%B5%E4%B8%8D%E4%BC%9A%E6%98%AF%E9%93%B6%E8%A1%8C%E7%BD%91%E7%AB%99%E3%80%82%E6%88%91%E4%BB%AC%E5%9C%A8%E5%81%9A%E5%90%8E%E7%AB%AF%E9%98%B2%E5%BE%A1%E6%97%B6%EF%BC%8C%E5%8F%AF%E4%BB%A5%E5%85%88%E5%8F%96%E5%87%BA%E6%AF%8F%E4%B8%AA%E8%AF%B7%E6%B1%82%E7%9A%84%E8%AF%B7%E6%B1%82%E5%A4%B4%E4%B8%AD%E7%9A%84referer%E5%AD%97%E6%AE%B5%EF%BC%8C%E5%88%A4%E6%96%AD%E6%98%AF%E4%B8%8D%E6%98%AF%E4%BB%A5%E8%87%AA%E5%B7%B1%E7%BD%91%E7%AB%99%E7%9A%84%E5%9F%9F%E5%90%8D%E5%BC%80%E5%A4%B4%EF%BC%8C%E5%9C%A8%E5%92%B1%E4%BB%AC%E7%9A%84%E7%A4%BA%E4%BE%8B%E4%B8%AD%EF%BC%8C%E5%A6%82%E6%9E%9Creferer%E5%AD%97%E6%AE%B5%E6%98%AF%E4%BB%A5https://www.a-bank.com/%E5%BC%80%E5%A4%B4%E7%9A%84%EF%BC%8C%E5%88%99%E7%BB%A7%E7%BB%AD%E6%89%A7%E8%A1%8C%E8%BD%AC%E8%B4%A6%E6%93%8D%E4%BD%9C%EF%BC%9B%E5%A6%82%E6%9E%9C%E4%B8%8D%E6%98%AF%EF%BC%8C%E5%88%99%E7%9B%B4%E6%8E%A5%E5%BF%BD%E7%95%A5%E6%8E%89%E8%BF%99%E4%B8%AA%E8%AF%B7%E6%B1%82%E3%80%82">https://www.a-bank.com/transfer-view；如果是从恶意网站发出的，那么referer字段不会是银行网站。我们在做后端防御时，可以先取出每个请求的请求头中的referer字段，判断是不是以自己网站的域名开头，在咱们的示例中，如果referer字段是以https://www.a-bank.com/开头的，则继续执行转账操作；如果不是，则直接忽略掉这个请求。</a></p>
+<p>以上就是后端防御CSRF攻击的两种方式，都需要在后端做特殊的处理。当然也可以在前端做处理，我们接着往下看。</p>
+<h3 id="2-2-前端防御CSRF"><a href="#2-2-前端防御CSRF" class="headerlink" title="2.2 前端防御CSRF"></a>2.2 前端防御CSRF</h3><p>既然CSRF攻击的危害这么大，为什么不能在前端禁止这种请求呢？各大浏览器厂商似乎也注意到了这个问题，谷歌提出了same-site cookies概念，same-site cookies 是基于 Chrome 和 Mozilla 开发者花了三年多时间制定的 IETF 标准。它是在原有的Cookie中，新添加了一个SameSite属性，它标识着在非同源的请求中，是否可以带上Cookie，它可以设置为3个值，分别为：1) Strict 2) Lax 3) None</p>
+<p>Cookie中的内容为：</p>
+<p>POST /transfer HTTP/1.1Host: <a target="_blank" rel="noopener" href="http://www.a-bank.com/">www.a-bank.com</a><br>Cookie: JSESSIONID=randomid; SameSite=Strict;<br>Strict是最严格的，它完全禁止在跨站情况下，发送Cookie。只有在自己的网站内部发送请求，才会带上Cookie。不过这个规则过于严格，会影响用户的体验。比如在一个网站中有一个链接，这个链接连接到了GitHub上，由于SameSite设置为Strict，跳转到GitHub后，GitHub总是未登录状态。</p>
+<p>Lax的规则稍稍放宽了些，大部分跨站的请求也不会带上Cookie，但是一些导航的Get请求会带上Cookie，如下：</p>
+<p>请求类型</p>
+<p>示例</p>
+<p>Lax情况</p>
+<p>链接</p>
+<p><a href="..."></a></p>
+<p>发送 Cookie</p>
+<p>预加载</p>
+<link rel="prerender" href="..."/>
+
+<p>发送 Cookie</p>
+<p>GET 表单</p>
+<form method="GET" action="...">
+
+<p>发送 Cookie</p>
+<p>POST 表单</p>
+<form method="POST" action="...">
+
+<p>不发送</p>
+<p>iframe</p>
+<p>frameLabelStart–frameLabelEnd</p>
+<p>不发送</p>
+<p>AJAX</p>
+<p>$.get(“…”)</p>
+<p>不发送</p>
+<p>Image</p>
+<img src="..." srcset="/img/loading.gif" lazyload>
+
+<p>不发送</p>
+<p>上面的表格就是SameSite设置为Lax的时候，Cookie的发送情况。</p>
+<p>None就是关闭SameSite属性，所有的情况下都发送Cookie。不过SameSite设置None，还要同时设置Cookie的Secure属性，否则是不生效的。</p>
+<h2 id="3-常见问题"><a href="#3-常见问题" class="headerlink" title="3 常见问题"></a>3 常见问题</h2><ol>
+<li>CSRF 与 SSRF 区别</li>
+</ol>
+<p>CSRF (Cross-Site Request Forgery) 即跨站请求伪造，伪造用户请求，冒用用户身份。</p>
+<p>SSRF (Server-Side Request Forgery) 即服务端请求伪造，就是伪造一个服务端请求，攻击者伪造服务端的请求发起攻击，攻击者借由服务端为跳板来攻击目标系统。</p>
+<p>用非常通俗的语言讲的话，CSRF 更像是钓鱼的举动，是用户攻击用户的；而对于 SSRF 来说，是由服务器发出请求，用户攻击服务器的。</p>
+<ol start="2">
+<li>XSS 与 CSRF的区别</li>
+</ol>
+<p>XSS (Cross Site Scripting) 跨站脚本攻击 与 CSRF 的最大区别在于对 Cookie 的使用，XSS 把受害者 的 Cookie 偷过来，而 CSRF 则是借用了受害者的 Cookie。</p>
+<ol start="3">
+<li>samesite防御CSRF的原理</li>
+</ol>
+<p>在原有的Cookie中，新添加了一个SameSite属性，它标识着在非同源的请求中，是否可以带上Cookie，它可以设置为3个值，分别为：Strict Lax None</p>
+<ol start="4">
+<li>json格式的CSRF如何防御？</li>
+</ol>
+<p>前景知识：</p>
+<p>json格式的CSRF存在的条件是POST 传参采用 JSON 格式，而不是传统的parameter=value的格式。一般采用 Json 格式传输参数时，请求包中都有 Content-Type 头，一般服务器也会验证 Content-Type 值是否为 application/json，当服务器验证 Content-Type 时，若不符合要求，则会抛出异常，导致传输的数据失效。</p>
+<p>1）用户操作验证，在提交数据时需要输入验证码</p>
+<p>2）请求来源验证，验证请求来源的referer</p>
+<p>3）表单token验证</p>
+<ol start="5">
+<li>什么是同源策略？</li>
+</ol>
+<p>同源策略由Netscape公司引入浏览器。目前，所有浏览器都实行这个策略。含义是指：A网页设置的Cookie，B网页不能打开，除非这两个网页“同源”。所谓同源指的是“三个相同”</p>
+<p>协议相同<br>域名相同<br>端口相同</p>
+<h2 id="4-总结"><a href="#4-总结" class="headerlink" title="4 总结"></a>4 总结</h2><p>CSRF的关键字有：冒用用户身份凭证，前端same-site,后端token及refer检测防御。由于还在学习阶段，CSRF总结笔记后面再进行补充。</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/7911">https://xz.aliyun.com/t/7911</a></p>
+<p><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/beta/article/1458194">https://cloud.tencent.com/developer/beta/article/1458194</a></p>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/XRqiLVdUzvzhD-bw2L3hhQ">https://mp.weixin.qq.com/s/XRqiLVdUzvzhD-bw2L3hhQ</a><br>WEB常见漏洞之CSRF（靶场篇）</p>
 
               
             </div>
@@ -344,7 +413,7 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95%EF%BC%8CSQL%E6%B3%A8%E5%85%A5/">#渗透测试，SQL注入</a>
+        <a href="/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/">#渗透测试</a>
       
     </div>
   
@@ -356,8 +425,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>【Sql注入】报错注入</div>
-      <div>https://kitescat.github.io/2023/04/21/报错注入/</div>
+      <div>【Web安全基础】CSRF</div>
+      <div>https://kitescat.github.io/2023/05/05/CSRF/</div>
     </div>
     <div class="license-meta">
       
@@ -369,7 +438,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年4月21日</div>
+          <div>2023年5月5日</div>
         </div>
       
       
@@ -399,18 +468,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/04/24/%E8%81%94%E5%90%88%E6%B3%A8%E5%85%A5/" title="【Sql注入】联合注入">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">【Sql注入】联合注入</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/03/29/%E7%BB%95%E8%BF%87CDN%E5%AF%BB%E6%89%BE%E7%9C%9F%E5%AE%9EIP/" title="【信息搜集】绕过CDN寻找真实IP">
-                        <span class="hidden-mobile">【信息搜集】绕过CDN寻找真实IP</span>
+                      <a href="/2023/04/26/HTTP%E6%B3%A8%E5%85%A5/" title="【Sql注入】HTTP注入">
+                        <span class="hidden-mobile">【Sql注入】HTTP注入</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

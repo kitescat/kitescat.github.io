@@ -16,26 +16,26 @@
   <meta name="author" content="kitescat">
   <meta name="keywords" content="web安全">
   
-    <meta name="description" content="基于页面回显的数据库报错，获取数据库内部信息">
+    <meta name="description" content="本篇我们讲解了sql注入漏洞的盲注，盲注的关键词有：1）页面无数据库回显示，2）时间盲注：反应时间差异 ，3）布尔盲注：页面差异。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="【Sql注入】报错注入">
-<meta property="og:url" content="https://kitescat.github.io/2023/04/21/%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5/index.html">
+<meta property="og:title" content="【Sql注入】盲注">
+<meta property="og:url" content="https://kitescat.github.io/2023/04/25/%E7%9B%B2%E6%B3%A8/index.html">
 <meta property="og:site_name" content="kitescat 的博客">
-<meta property="og:description" content="基于页面回显的数据库报错，获取数据库内部信息">
+<meta property="og:description" content="本篇我们讲解了sql注入漏洞的盲注，盲注的关键词有：1）页面无数据库回显示，2）时间盲注：反应时间差异 ，3）布尔盲注：页面差异。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://kitescat.github.io/img/errinj.png">
-<meta property="article:published_time" content="2023-04-21T13:23:58.000Z">
-<meta property="article:modified_time" content="2023-04-29T03:49:59.999Z">
+<meta property="og:image" content="https://kitescat.github.io/img/Blind_inj.png">
+<meta property="article:published_time" content="2023-04-25T03:48:04.000Z">
+<meta property="article:modified_time" content="2023-06-18T07:51:34.580Z">
 <meta property="article:author" content="kitescat">
 <meta property="article:tag" content="渗透测试，SQL注入">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://kitescat.github.io/img/errinj.png">
+<meta name="twitter:image" content="https://kitescat.github.io/img/Blind_inj.png">
   
   
     <meta name="referrer" content="no-referrer-when-downgrade">
   
   
-  <title>【Sql注入】报错注入 - kitescat 的博客</title>
+  <title>【Sql注入】盲注 - kitescat 的博客</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -192,13 +192,13 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/errinj.png') no-repeat center center; background-size: cover;">
+     style="background: url('/img/Blind_inj.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="【Sql注入】报错注入"></span>
+            <span id="subtitle" data-typed-text="【Sql注入】盲注"></span>
           
         </div>
 
@@ -209,8 +209,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-04-21 21:23" pubdate>
-          2023年4月21日 晚上
+        <time datetime="2023-04-25 11:48" pubdate>
+          2023年4月25日 中午
         </time>
       </span>
     
@@ -222,7 +222,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          3.8k 字
+          3.4k 字
         
       </span>
     
@@ -234,7 +234,7 @@
         
         
           <!-- compatible with older versions-->
-          32 分钟
+          29 分钟
         
       </span>
     
@@ -280,38 +280,52 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">【Sql注入】报错注入</h1>
+            <h1 style="display: none">【Sql注入】盲注</h1>
             
             <div class="markdown-body">
               
-              <h1 id="sql注入漏洞概述"><a href="#sql注入漏洞概述" class="headerlink" title="sql注入漏洞概述"></a>sql注入漏洞概述</h1><p>本篇我们即将开启Web安全基础学习之旅，从我所整理的笔记中梳理常见Web漏洞的诸多知识点，包括漏洞原理，分类，利用场景及手段，渗透测试步骤，防御措施及常用工具等多个角度。本Web安全基础推文系列旨在以平白的语言讲解漏洞原理，文章多数内容为我本人的学习笔记与总结，汇总供大家参考。<br>首先，sql注入原理：存在输入口，使得用户输入的恶意sql语句拼接到正常语句中被后台执行。</p>
-<h2 id="1-漏洞分类"><a href="#1-漏洞分类" class="headerlink" title="1 漏洞分类"></a>1 漏洞分类</h2><h3 id="1-1-按参数类型分类"><a href="#1-1-按参数类型分类" class="headerlink" title="1.1 按参数类型分类"></a>1.1 按参数类型分类</h3><p>SQL语句注入点的参数类型有数字型和字符型，如下：<br>1)数字型注入:SELECT * FROM users WHERE id=$id<br>参数$id为整型，即数字型。举例报错注入情况下，由payload：?id=1 and 1=1/?id=1 and 1=2，由于and 1=1使得整个逻辑表达式结果为1，and 1=2结果为0，这两种拼接的结果不同，势必会使页面有不同的回显，因此可以用来验证是否存在注入点。</p>
-<p>2)字符型注入:SELECT * FROM users WHERE id=’$id’<br>参数’$id’为string类型， 如sqli-lab-Less-1  此时?id=1’ 发现报错，爆数据库名和mysql版本payload为：?id=1’ union select 1,database(),version()–+</p>
-<h3 id="1-2-按注入方式分类"><a href="#1-2-按注入方式分类" class="headerlink" title="1.2 按注入方式分类"></a>1.2 按注入方式分类</h3><p>大致可以分为：报错注入，盲注，联合注入，HTTP注入，二次注入，堆叠注入，宽字节注入这几种。<br>报错注入<br>由于Mysql在执行语句的时候会抛出异常信息，而php+mysql架构的网站往往又将错误代码显示在页面，因此攻击者可以利用这一点从报错信息中获取数据库的私密数据。这种注入行为称为“报错注入”。报错注入是注入页面可显示数据库报错结果的情况下，利用函数报错使其输出错误结果来获取数据库的相关信息的一种sql注入类型。</p>
-<p>1）数据类型溢出<br>当数值超出某个类型的最大范围时就会溢出报错。exp函数就会产生类似的溢出错误</p>
-<p>mysql&gt; select ~0;<br>+———————-+<br>| ~0                   |<br>+———————-+<br>| 18446744073709551615 |<br>+———————-+<br>1 row in set (0.00 sec)</p>
-<p>mysql&gt; select <del>0+1;<br>ERROR 1690 (22003): BIGINT UNSIGNED value is out of range in ‘(</del>(0) + 1)’</p>
-<p>mysql&gt; select exp(710);</p>
-<p>ERROR 1690 (22003): DOUBLE value is out of range in ‘exp(710)’</p>
-<p>利用姿势<br>mysql&gt; select exp(<del>(select*from(select user())x));<br>ERROR 1690 (22003): DOUBLE value is out of range in ‘exp(</del>((select ‘root@localhost’ from dual)))’<br>这里的x是把user()取名为x的意思<br>2）xpath语法错误<br>利用xpath语法错误来进行报错注入主要利用extractvalue和updatexml两个函数。<br>extractvalue负责在xml文档中按照xpath语法查询节点内容，updatexml则负责修改查询到的内容<br>extractvalue<br>函数原型：extractvalue(xml_document,Xpath_string);<br>正常语法：extractvalue(xml_document,Xpath_string);<br>第一个参数：xml_document是string格式，为xml文档对象的名称<br>第二个参数：Xpath_string是xpath格式的字符串<br>作用：从目标xml中返回包含所查询值的字符串<br>updatexml<br> 函数原型：updatexml(xml_document,xpath_string,new_value)<br>第一个参数：xml_document是string格式，为xml文档对象的名称<br>第二个参数：xpath_string是xpath格式的字符串<br>第三个参数：new_value是string格式，替换查找到的负荷条件的数据<br>作用：改变文档中符合条件的节点的值<br>利用姿势<br>mysql&gt; select updatexml(1,concat(0x7e,(select @@version),0x7e),1);<br>ERROR 1105 (HY000): XPATH syntax error: ‘<del>5.7.17</del>‘<br>mysql&gt; select extractvalue(1,concat(0x7e,(select @@version),0x7e));<br>ERROR 1105 (HY000): XPATH syntax error: ‘<del>5.7.17</del>‘<br>3）主键重复错误<br>count()+rand()+group by导致主键重复，count()和group by在遇到rand()产生的重复值时报错<br>我们基于sql语句：Select count(*) from test group by floor(rand(0)*2)，查看下面的分析：</p>
-<p>原理：group by key的原理是循环读取数据的每一行，将结果保存于临时表中。读取每一行的key时，如果key存在于临时表中，则不在临时表中更新临时表的数据；如果key不在临时表中，则在临时表中插入key所在行的数据。</p>
-<p>而rand(0)是个稳定的序列，floor(rand(0)<em>2)则会固定得到011011…的序列，插入的时候就会报主键重复的错误。<br>利用姿势<br>mysql&gt; select count(</em>) from test group by concat(version(),floor(rand(0)<em>2));<br>ERROR 1062 (23000): Duplicate entry ‘5.7.171’ for key ‘<group_key>‘<br>mysql&gt; select count(</em>),concat(version(),floor(rand(0)*2))x from information_schema.tables group by x;<br>ERROR 1062 (23000): Duplicate entry ‘5.7.171’ for key ‘<group_key>‘<br>4）列名重复报错<br>mysql列名重复会报错，可以利用name_const（const）来制造一个列：</p>
-<p>mysql&gt; select * from (select NAME_CONST(version(),1),NAME_CONST(version(),1))x;<br>ERROR 1060 (42S21): Duplicate column name ‘5.7.17’<br>mysql&gt; select *  from(select * from test a join test b)c;<br>ERROR 1060 (42S21): Duplicate column name ‘id’<br>mysql&gt; select *  from(select * from test a join test b using(id))c;<br>ERROR 1060 (42S21): Duplicate column name ‘name’<br>5）几何函数报错</p>
-<p>mysql有些几何函数，例如geometrycollection()，multipoint()，polygon()，multipolygon()，linestring()，multilinestring()，这些函数对参数要求是形如(1 2,3 3,2 2 1)这样几何数据，如果不满足要求，则会报错。经测试，在版本号为5.5.47上可以用来注入，而在5.7.17上则不行。</p>
-<h2 id="2-注入步骤及漏洞利用"><a href="#2-注入步骤及漏洞利用" class="headerlink" title="2 注入步骤及漏洞利用"></a>2 注入步骤及漏洞利用</h2><p>① 找注入点</p>
-<p>② 判断注入类型</p>
-<p>③ 判断是整型还是字符型</p>
-<p>④ 判断查询列数</p>
-<p>⑤ 判断显示位</p>
-<p>⑥ 获取所有数据库名</p>
-<p>⑦ 获取表名</p>
-<p>⑧ 获取列名</p>
-<p>⑨ 获取列中信息</p>
-<h2 id="3-常用函数说明"><a href="#3-常用函数说明" class="headerlink" title="3 常用函数说明"></a>3 常用函数说明</h2><p>① 0x7e=’<del>’<br>② concat(‘a’,‘b’)=“ab” 起到连接两个字符的作用；<br>③ version()等同于@@version<br>④ ‘</del>‘可以换成’#’、’$’等不满足xpath格式的字符<br>⑤ extractvalue()能查询字符串的最大长度为32，如果我们想要的结果超过32，就要用substring()函数截取或limit分页，一次查看最多32位<br>extractvalue(xml_document,Xpath_string) 两个参数<br>updatexml(xml_document,xpath_string,new_value) 有三个参数<br>一般在其参数里用concat() 去拼接更多内容报错<br>⑥ sql语句最后–+ 和# 是为了使语句闭合引入注释，使得sql语句提前闭合，成功注入我们的语句</p>
-<h2 id="4-总结"><a href="#4-总结" class="headerlink" title="4 总结"></a>4 总结</h2><p>上两篇文章中我们总结了两个信息搜集过程常遇到的问题：CDN绕过和泛域名解析，本篇我们讲解了sql注入漏洞的报错注入类型，其中关于主键重复报错的细节我建议至参考链接查看。下期我们可能会讲解一些计算机网络基础，并继续整理sql注入的知识点。<br>最后闲聊几句，最近开始海投简历面试，希望暑假前能找到实习，忽然又开始做起了大厂梦，又开始有了peer pressure。<br>记得微博网友有句话说的蛮好：焦虑没有用，做才有用。</p>
-<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/253">https://xz.aliyun.com/t/253</a></p>
-<p><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/2169033">https://cloud.tencent.com/developer/article/2169033</a></p>
-<p>声明：本Web安全基础推文系列旨在以平白的语言讲解漏洞原理，文章多数内容为我本人的学习笔记与总结，汇总供大家参考。所有内容仅作为学习记录。请遵守中华人民共和国法律！</p>
+              <p>本Web安全基础推文系列旨在以平白的语言讲解漏洞原理，文章多数内容为我本人的学习笔记与总结，汇总供大家参考。</p>
+<h2 id="1-盲注"><a href="#1-盲注" class="headerlink" title="1 盲注"></a>1 盲注</h2><p>为什么叫做盲注？<br>盲注的本质是猜解(所谓 “盲” 就是在你看不到返回数据的情况下能通过 “感觉” 来判断)，那能感觉到什么？答案是：差异（包括运行时间的差异和页面返回结果的差异）。也就是说我们想实现的是我们要构造一条语句来测试我们输入的布尔表达式，使得布尔表达式结果的真假直接影响整条语句的执行结果，从而使得系统有不同的反应，在时间盲注中是不同的返回的时间，在布尔盲注中则是不同的页面反应。<br><a target="_blank" rel="noopener" href="http://zhuanzhuan.lklgongyi.com/anquanke/26/170626.html">http://zhuanzhuan.lklgongyi.com/anquanke/26/170626.html</a><br>如上所述，这种猜测的过程使得盲注得名。在盲注中，攻击者根据页面内容的不同，或是响应时间不同来判断是否存在注入，以及注入是否成功。<br>于是很好理解，盲注是页面无数据库回显示，但能通过 1）反应时间或 2）页面不同的差异，来反馈逻辑正误的注入。攻击者可以利用逻辑判断获取数据库中的数据。常见的可以分为布尔盲注和时间盲注两大类。<br><img src="/img/blind_1.png" srcset="/img/loading.gif" lazyload><br>这种类似if的逻辑语句可以给sql语句分流，出现两种结果，带来差异。我们把这种能根据其中输入真假，返回不同结果的函数叫做分流函数。其他的分流“函数”还有：elt()， field()，case when then else end等等。</p>
+<ol>
+<li><p>ELT(N ,str1 ,str2 ,str3 ,…)<br>说明：若 N = 1 ，则返回值为 str1 ，若 N = 2 ，则返回值为 str2 ，以此类推。若 N 小于 1 或大于参数的数目，则返回值为 NULL 。ELT() 是 FIELD() 的补数。</p>
+</li>
+<li><p>FIELD(str, str1, str2, str3, ……)<br>该函数返回的是 str 在这些字符串的位置的索引，如果找不到返回 0。</p>
+</li>
+<li><p>case when then else end</p>
+</li>
+</ol>
+<p>eg. CASE WHEN (ascii(substr((select database()),{0},1))&gt;{1}) THEN 1 ELSE (SELECT 1 FROM DUAL UNION SELECT 2 FROM DUAL) END)</p>
+<h3 id="1-1-布尔盲注"><a href="#1-1-布尔盲注" class="headerlink" title="1.1 布尔盲注"></a>1.1 布尔盲注</h3><p>布尔盲注：某些场合下，不能返回查询的结果，但是对于输入 布尔值 0 和 1 的反应是不同的。通过输入布尔值的注入点，注入我们的条件语句，查看页面的返回结果（True or False）来判断哪些SQL判断条件成立，通过此来获取数据库中的数据。<br>① 布尔盲注的特点：<br>1）只会显示执行或者未执行两种不同界面</p>
+<p>2）适用于数据库能查询到数据和查询不到数据页面返回不同，但是数据不会显示在页面</p>
+<p>② 注入流程及手段<br>参考论坛@士别三日wyx的帖子，我们以sqli-lab Less 5为例，?id=1 正常输入页面显示 “You are in…”， 加入单引号发现报错。</p>
+<p><img src="/img/blind_2.png" srcset="/img/loading.gif" lazyload></p>
+<p><a target="_blank" rel="noopener" href="http://127.0.0.1/Less-5/?id=1&#39;and">http://127.0.0.1/Less-5/?id=1&#39;and</a> length(database())=1 –+<br><img src="/img/blind_3.png" srcset="/img/loading.gif" lazyload><br>此时，页面回显为空。猜数据库长度(利用二分法)。<br><a target="_blank" rel="noopener" href="http://127.0.0.1/Less-5/?id=1&#39;and">http://127.0.0.1/Less-5/?id=1&#39;and</a> length(database())=8 –+<br><img src="/img/blind_4.png" srcset="/img/loading.gif" lazyload><br>当页面回显You are in … 说明and后面数值为1， 显示正常，说明数据库名长度为8。这种通过构造条件判断的方式进行猜解的过程，即是盲注的过程。</p>
+<h3 id="1-2-时间盲注（延迟注入）"><a href="#1-2-时间盲注（延迟注入）" class="headerlink" title="1.2 时间盲注（延迟注入）"></a>1.2 时间盲注（延迟注入）</h3><p> 时间盲注：根据页面的响应时间来判断是否存在注入。一般通过延迟函数，大量查询等payload进行利用。时间盲注使用的优先级并不高，通常是在联合注入、报错注入、布尔盲注都无法使用时才会考虑使用：</p>
+<p>1）页面没有回显位置（联合注入无法使用）</p>
+<p>2）页面不显示数据库的报错信息（报错注入无法使用）</p>
+<p>3）无论成功还是失败，页面只响应一种结果（布尔盲注无法使用）</p>
+<p>①  延迟函数 sleep(n) 、benchmark(n,expr)<br>sleep：select * from users where id = ‘1’ and sleep(2)</p>
+<p>benchmark：benchmark(10000000,encode(‘hello’,’mom’))</p>
+<pre><code class="hljs"> eg.  select BENCHMARK(10000,md5(&#39;a&#39;));
+</code></pre>
+<p>benchmark是Mysql的一个内置函数,其作用是来测试一些函数的执行速度。benchmark()中带有两个参数，第一个是执行的次数，第二个是要执行的函数或者是表达式</p>
+<p>② heavy query<br>heavy query顾名思义就是通过做大量的查询导致查询时间较长来达到延时的目的。通常选择一些比较大的表做笛卡尔积运算。</p>
+<p>③ get_lock<br>get_lock()函数 需要使用 mysql_pconnect函数来连接数据库，利用场景比较有限。</p>
+<p>在一个session中可以先锁定一个变量例如：select get_lock(‘MountSec’,1)。然后通过另一个session再次执行get_lock（‘MountSec’,5）此时会产生5秒的延迟，其效果类似于sleep(5)。</p>
+<p>④ rpad+rlike<br>rpad(1,3,’a’)是指用a填充第一位的字符串以达到第二位的长度</p>
+<p>经本地测试mysql5.7最大允许用单个rpad()填充349525位，而多个rpad()可以填充4个349525位，</p>
+<p>select * from table1 where 1=1 and<br>if(mid(user(),1,1)=’r’,concat(rpad(1,349525,’a’),<br>rpad(1,349525,’a’),rpad(1,349525,’a’))<br>RLIKE ‘(a.<em>)+(a.</em>)+(a.<em>)+(a.</em>)+(a.<em>)+(a.</em>)+(a.*)+<br>asdasdsadasd’,1);<br>最后的asdasdasd对时间长度有巨大影响，可以增长其长度以增大时延</p>
+<h2 id="2-常见payload"><a href="#2-常见payload" class="headerlink" title="2 常见payload"></a>2 常见payload</h2><h3 id="2-1-猜解细节"><a href="#2-1-猜解细节" class="headerlink" title="2.1 猜解细节"></a>2.1 猜解细节</h3><p>①  猜解当前数据库名称长度（二分法）<br>eg.  ‘ and if((length(database()))=12,sleep(5),1)–+ 页面延时了</p>
+<p>==》当前数据库名称长度为 12。</p>
+<p>② 猜解当前数据库名称<br>猜解数据库第一个字符<br>eg. ?id=1’ and if((ascii(substr(database(),1,1)) =115 ),sleep(3),1) –+<br>猜解整个数据库名<br>eg. ‘ and if(ascii(substr(database(),1,1))=107,sleep(5),1)–+ 页面延时了<br>==》数据库第一个字母是k… 类推得到数据库名kanwolonxia。可以用burp进行爆破。</p>
+<h3 id="2-2-常用语句"><a href="#2-2-常用语句" class="headerlink" title="2.2 常用语句"></a>2.2 常用语句</h3><p>①  条件语句case when then else end<br>“(CASE WHEN (ascii(substr((select database()),{0},1))&gt;{1}) THEN 1 ELSE (SELECT 1 FROM DUAL UNION SELECT 2 FROM DUAL) END)”.format(i, str(ord(string[left])))<br>②  条件语句 if(expr1,expr2,expr3)<br>expr1为true则返回expr2，expr1为false则返回expr3。</p>
+<p>注：仅MySQL支持if（expr1，expr2，expr3）</p>
+<p>1’and if(ascii(substr(database(),1,1))&gt;97,sleep(5),1)# 明显延迟<br>1’and if(ascii(substr(database(),1,1))&lt;100,sleep(5),1)# 没有延迟<br>1’and if(ascii(substr(database(),1,1))&gt;100,sleep(5),1)# 没有延迟<br>③ Order by<br>order by rand(True)和order by rand(False)的结果排序是不同的，可以根据这个不同来进行盲注：order by rand(database()=’MountSec’)</p>
+<p>返回了True的排序，说明database()=’MountSec’是正确的值</p>
+<h2 id="3-总结"><a href="#3-总结" class="headerlink" title="3 总结"></a>3 总结</h2><p>本篇我们讲解了sql注入漏洞的盲注，盲注的关键词有：1）页面无数据库回显示，2）时间盲注：反应时间差异 ，3）布尔盲注：页面差异。</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://www.sqlinjection.net/heavy-query/">https://www.sqlinjection.net/heavy-query/</a></p>
+<p><a target="_blank" rel="noopener" href="http://zhuanzhuan.lklgongyi.com/anquanke/26/170626.html">http://zhuanzhuan.lklgongyi.com/anquanke/26/170626.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/web/356765.html">https://www.freebuf.com/articles/web/356765.html</a></p>
 
               
             </div>
@@ -356,8 +370,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>【Sql注入】报错注入</div>
-      <div>https://kitescat.github.io/2023/04/21/报错注入/</div>
+      <div>【Sql注入】盲注</div>
+      <div>https://kitescat.github.io/2023/04/25/盲注/</div>
     </div>
     <div class="license-meta">
       
@@ -369,7 +383,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年4月21日</div>
+          <div>2023年4月25日</div>
         </div>
       
       
@@ -399,9 +413,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/04/24/%E8%81%94%E5%90%88%E6%B3%A8%E5%85%A5/" title="【Sql注入】联合注入">
+                      <a href="/2023/04/26/HTTP%E6%B3%A8%E5%85%A5/" title="【Sql注入】HTTP注入">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">【Sql注入】联合注入</span>
+                        <span class="hidden-mobile">【Sql注入】HTTP注入</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -409,8 +423,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/03/29/%E7%BB%95%E8%BF%87CDN%E5%AF%BB%E6%89%BE%E7%9C%9F%E5%AE%9EIP/" title="【信息搜集】绕过CDN寻找真实IP">
-                        <span class="hidden-mobile">【信息搜集】绕过CDN寻找真实IP</span>
+                      <a href="/2023/04/24/%E8%81%94%E5%90%88%E6%B3%A8%E5%85%A5/" title="【Sql注入】联合注入">
+                        <span class="hidden-mobile">【Sql注入】联合注入</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

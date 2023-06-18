@@ -16,26 +16,26 @@
   <meta name="author" content="kitescat">
   <meta name="keywords" content="web安全">
   
-    <meta name="description" content="基于Union连接语句实现">
+    <meta name="description" content="HTTP头部注入，http头部有许多不同的字段，这些字段标识了不同的信息">
 <meta property="og:type" content="article">
-<meta property="og:title" content="【Sql注入】联合注入">
-<meta property="og:url" content="https://kitescat.github.io/2023/04/29/%E8%81%94%E5%90%88%E6%B3%A8%E5%85%A5/index.html">
+<meta property="og:title" content="【Sql注入】HTTP注入">
+<meta property="og:url" content="https://kitescat.github.io/2023/04/26/HTTP%E6%B3%A8%E5%85%A5/index.html">
 <meta property="og:site_name" content="kitescat 的博客">
-<meta property="og:description" content="基于Union连接语句实现">
+<meta property="og:description" content="HTTP头部注入，http头部有许多不同的字段，这些字段标识了不同的信息">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://kitescat.github.io/img/errinj.png">
-<meta property="article:published_time" content="2023-04-29T03:48:04.000Z">
-<meta property="article:modified_time" content="2023-04-29T07:31:24.875Z">
+<meta property="og:image" content="https://kitescat.github.io/img/HTTP_inj.png">
+<meta property="article:published_time" content="2023-04-26T03:48:04.000Z">
+<meta property="article:modified_time" content="2023-06-18T08:05:35.459Z">
 <meta property="article:author" content="kitescat">
 <meta property="article:tag" content="渗透测试，SQL注入">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://kitescat.github.io/img/errinj.png">
+<meta name="twitter:image" content="https://kitescat.github.io/img/HTTP_inj.png">
   
   
     <meta name="referrer" content="no-referrer-when-downgrade">
   
   
-  <title>【Sql注入】联合注入 - kitescat 的博客</title>
+  <title>【Sql注入】HTTP注入 - kitescat 的博客</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -192,13 +192,13 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/errinj.png') no-repeat center center; background-size: cover;">
+     style="background: url('/img/HTTP_inj.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="【Sql注入】联合注入"></span>
+            <span id="subtitle" data-typed-text="【Sql注入】HTTP注入"></span>
           
         </div>
 
@@ -209,8 +209,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-04-29 11:48" pubdate>
-          2023年4月29日 中午
+        <time datetime="2023-04-26 11:48" pubdate>
+          2023年4月26日 中午
         </time>
       </span>
     
@@ -222,7 +222,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          15 字
+          2.5k 字
         
       </span>
     
@@ -234,7 +234,7 @@
         
         
           <!-- compatible with older versions-->
-          1 分钟
+          21 分钟
         
       </span>
     
@@ -280,11 +280,52 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">【Sql注入】联合注入</h1>
+            <h1 style="display: none">【Sql注入】HTTP注入</h1>
             
             <div class="markdown-body">
               
-              <h1 id="联合注入：基于Union的注入"><a href="#联合注入：基于Union的注入" class="headerlink" title="联合注入：基于Union的注入"></a>联合注入：基于Union的注入</h1>
+              <h2 id="1-HTTP注入"><a href="#1-HTTP注入" class="headerlink" title="1 HTTP注入"></a>1 HTTP注入</h2><p>Sql注入如果按数据提交方式进行分类，则有HTTP的<br>1）GET注入 2）POST注入 3）HEADER注入</p>
+<h3 id="1-1-GET注入"><a href="#1-1-GET注入" class="headerlink" title="1.1 GET注入"></a>1.1 GET注入</h3><p>GET 的语义是从服务器获取指定的资源，这个资源可以是静态的文本、页面、图片视频等。GET 请求的参数位置一般是写在 URL 中。<br><a target="_blank" rel="noopener" href="https://xiaolincoding.com/network/2_http/http_interview.html#get-%E4%B8%8E-post">https://xiaolincoding.com/network/2_http/http_interview.html#get-%E4%B8%8E-post</a><br>数据以get的方式进行提交，注入点一般在get提交的url的参数后，可以通过Burpsuite抓包进行查找。<a target="_blank" rel="noopener" href="http://127.0.0.1/Less-1/?id=1">http://127.0.0.1/Less-1/?id=1</a> 类似这种可以输入不同id的均为Get请求。</p>
+<h3 id="1-2-POST注入"><a href="#1-2-POST注入" class="headerlink" title="1.2 POST注入"></a>1.2 POST注入</h3><p>POST 的语义是根据请求负荷（报文body）对指定的资源做出处理，具体的处理方式视资源类型而不同。POST 请求携带数据的位置一般是写在报文 body 中。比如，你在我文章底部，敲入了留言后点击「提交」，浏览器就会执行一次 POST 请求，把你的留言文字放进了报文 body 里，然后拼接好 POST 请求头，通过 TCP 协议发送给服务器。<br>数据以post的方式进行提交。注入点一般在表单的填写处。</p>
+<p>图片</p>
+<p>如sqli-lab Less-14</p>
+<h3 id="1-3-Http头部注入"><a href="#1-3-Http头部注入" class="headerlink" title="1.3 Http头部注入"></a>1.3 Http头部注入</h3><p>user-agent：判定用户使用的操作系统，以及使用的浏览器的版本</p>
+<p>cookie：判定用户的身份，进行session跟踪可以存储在用户本地终端上的数据，简单理解为用户的一张身份辨别卡</p>
+<p>x-forwarded-for：获得HTTP请求端真实的IP</p>
+<p>client-ip：数据库保存客户端IP的参数</p>
+<p>rerferer：浏览器向web端表明自己从哪个链接而来</p>
+<p>host：客户端指定自己想访问的WEB服务器的域名/IP 地址和端口号</p>
+<h2 id="2-靶场例子或测试步骤"><a href="#2-靶场例子或测试步骤" class="headerlink" title="2 靶场例子或测试步骤"></a>2 靶场例子或测试步骤</h2><p>① POST包中header的User-agent头后拼接语句<br>图片</p>
+<p>‘and extractvalue(1,concat(0x7e,version(),0x7e)) and ‘1’=’1</p>
+<p>‘or extractvalue(1,concat(0x7e,(select username from security.users limit 0,1),0x7e)) or’</p>
+<p>② cookie后拼接语句</p>
+<p>图片</p>
+<p>图片</p>
+<p>图片</p>
+<p>③ x-forwarded-for后拼接语句</p>
+<p>X-forwarded-for:172.63.25.3’ and updatexml(1,concat(0x7e,(selectdatabase()),0x7e),1) and ‘1’=’1  </p>
+<p>④ client-ip/rerferer都和前面的类似</p>
+<p>referer:xxx.com’ and extractvalue(1,concat(0x7e,(select database()),0x7e)) and ‘1’=’1</p>
+<p>⑤ host注入</p>
+<p>1）修改Host值</p>
+<p>简单地来说，可以修改HTTP头中的Host值，如果观察到响应包中含有修改后的值，说明存在漏洞。但有时候篡改Host头的值会导致无法访问Web应用程序，从而导致“无效主机头”的错误信息，特别是通过CDN访问目标时会发生这种情况。</p>
+<p>2）添加重复的Host头</p>
+<p>添加重复的Host头，通常两个Host头之中有一个是有效的，可以理解为一个是确保请求正确地发送到目标服务器上；另一个则是传递payload到后端服务器中。</p>
+<p>GET /example HTTP/1.1<br>Host: vulnerable-website.com<br>Host: attackd-stuff<br>3）使用绝对路径的URL</p>
+<p>尽管许多请求通常在请求域上使用相对路径，但是也同时配置了绝对URL的请求。</p>
+<p>GET <a target="_blank" rel="noopener" href="https://vulnerable-website.com/">https://vulnerable-website.com/</a> HTTP/1.1<br>Host: attack-stuff<br>有时候也可以尝试不同的协议，如HTTP或HTTPS。</p>
+<p>4）添加缩进或换行</p>
+<p>当一些站点block带有多个Host头的请求时，可以通过添加缩进字符的HTTP头来绕过：</p>
+<p>GET /example HTTP/1.1<br> Host: attack-stuff<br>Host: vulnerable-website.com<br>5）注入覆盖Host头的字段</p>
+<p>与Host头功能相近的字段，如X-Forwarded-Host、X-Forwarded-For等，这些有时候是默认开启的。</p>
+<p>GET /example HTTP/1.1<br>Host: vulnerable-website.com<br>X-Forwarded-Host: attack-stuff<br>诸如此类，还有其他的字段：</p>
+<p>X-Host<br>X-Forwarded-Server<br>X-HTTP-Host-Override<br>Forwarded<br>6）忽略端口仅校验域名</p>
+<p>当修改、添加重复Host头被拦截的时候，可以尝试了解Web应用程序是怎样解析Host头的。</p>
+<p>比如，一些解析算法会忽略Host头中的端口值，仅仅校验域名。这时候可以将Host修改为如下形式：</p>
+<p>GET /example HTTP/1.1<br>Host: vulnerable-website.com:attack-stuff<br>保持域名不变，修改端口值为非端口号的其他值（非数字）， 将Host头攻击的payload放在端口值处，同样能进行Host头攻击。</p>
+<h2 id="3-总结"><a href="#3-总结" class="headerlink" title="3 总结"></a>3 总结</h2><p>本篇我们讲解了sql注入漏洞的HTTP注入，HTTP注入的关键词有：1）GET注入 2）POST注入 3）HEADER注入。文章重点在于HTTP头部注入部分，http头部有许多不同的字段，这些字段标识了不同的信息，其中host字段注入介绍了许多细节。<br>学习到这里，我们已经积攒了一定的问题，比如这些sql注入有哪些修复建议，有没有统一的测试步骤等，我们在后面的文章中一一寻找答案并解决吧。同时我们将讲完接下来的堆叠注入，二次注入，宽字节注入。</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_39654116/article/details/105421499">https://blog.csdn.net/qq_39654116/article/details/105421499</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/angry_program/article/details/109034421">https://blog.csdn.net/angry_program/article/details/109034421</a></p>
+
               
             </div>
             <hr/>
@@ -328,8 +369,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>【Sql注入】联合注入</div>
-      <div>https://kitescat.github.io/2023/04/29/联合注入/</div>
+      <div>【Sql注入】HTTP注入</div>
+      <div>https://kitescat.github.io/2023/04/26/HTTP注入/</div>
     </div>
     <div class="license-meta">
       
@@ -341,7 +382,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年4月29日</div>
+          <div>2023年4月26日</div>
         </div>
       
       
@@ -371,12 +412,18 @@
                   <article class="post-prev col-6">
                     
                     
+                      <a href="/2023/05/05/CSRF/" title="【Web安全基础】CSRF">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">【Web安全基础】CSRF</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/04/21/%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5/" title="【Sql注入】报错注入">
-                        <span class="hidden-mobile">【Sql注入】报错注入</span>
+                      <a href="/2023/04/25/%E7%9B%B2%E6%B3%A8/" title="【Sql注入】盲注">
+                        <span class="hidden-mobile">【Sql注入】盲注</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
