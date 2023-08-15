@@ -16,26 +16,26 @@
   <meta name="author" content="kitescat">
   <meta name="keywords" content="web安全">
   
-    <meta name="description" content="CSRF的关键字有：冒用用户身份凭证，前端same-site,后端token及refer检测防御。">
+    <meta name="description" content="红队如何快速打点拿下站点">
 <meta property="og:type" content="article">
-<meta property="og:title" content="【Web安全基础】CSRF">
-<meta property="og:url" content="https://kitescat.github.io/2023/05/05/CSRF/index.html">
+<meta property="og:title" content="【干货】红队打点技巧总结">
+<meta property="og:url" content="https://kitescat.github.io/2023/08/16/redteam-fast/index.html">
 <meta property="og:site_name" content="kitescat 的博客">
-<meta property="og:description" content="CSRF的关键字有：冒用用户身份凭证，前端same-site,后端token及refer检测防御。">
+<meta property="og:description" content="红队如何快速打点拿下站点">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://kitescat.github.io/img/CSRF.png">
-<meta property="article:published_time" content="2023-05-05T03:48:04.000Z">
-<meta property="article:modified_time" content="2023-06-18T07:59:03.773Z">
+<meta property="og:image" content="https://kitescat.github.io/img/rd.png">
+<meta property="article:published_time" content="2023-08-15T16:01:32.000Z">
+<meta property="article:modified_time" content="2023-08-15T16:05:32.070Z">
 <meta property="article:author" content="kitescat">
-<meta property="article:tag" content="渗透测试">
+<meta property="article:tag" content="红队">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://kitescat.github.io/img/CSRF.png">
+<meta name="twitter:image" content="https://kitescat.github.io/img/rd.png">
   
   
     <meta name="referrer" content="no-referrer-when-downgrade">
   
   
-  <title>【Web安全基础】CSRF - kitescat 的博客</title>
+  <title>【干货】红队打点技巧总结 - kitescat 的博客</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -192,13 +192,13 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/CSRF.png') no-repeat center center; background-size: cover;">
+     style="background: url('/img/rd.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="【Web安全基础】CSRF"></span>
+            <span id="subtitle" data-typed-text="【干货】红队打点技巧总结"></span>
           
         </div>
 
@@ -209,8 +209,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-05-05 11:48" pubdate>
-          2023年5月5日 中午
+        <time datetime="2023-08-16 00:01" pubdate>
+          2023年8月16日 凌晨
         </time>
       </span>
     
@@ -222,7 +222,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          3.6k 字
+          1.4k 字
         
       </span>
     
@@ -234,7 +234,7 @@
         
         
           <!-- compatible with older versions-->
-          30 分钟
+          12 分钟
         
       </span>
     
@@ -280,107 +280,23 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">【Web安全基础】CSRF</h1>
+            <h1 style="display: none">【干货】红队打点技巧总结</h1>
             
             <div class="markdown-body">
               
-              <h2 id="1-CSRF原理"><a href="#1-CSRF原理" class="headerlink" title="1 CSRF原理"></a>1 CSRF原理</h2><p>CSRF, Cross-site request forgery，即“跨站请求伪造”，是指攻击者可能利用网页中的恶意<br>代码强迫受害者浏览器向被攻击的Web站点发送伪造的请求，篡夺受害者的认证Cookie等身份<br>信息，从而假冒受害者对目标站点执行指定的操作。<br>简单来讲，CSRF 攻击就是黑客冒用用户身份并通过第三方的站点执行非法操作。这种攻击我们也称为“One Click Attack”或者Session Riding。</p>
-<h3 id="1-1-什么是cookie？"><a href="#1-1-什么是cookie？" class="headerlink" title="1.1 什么是cookie？"></a>1.1 什么是cookie？</h3><p>在 Web认证中 ,因为HTTP协议本身的局限，必须采用其他技术将相关认证标记以某种方式持续传送，以免客户从一个页面跳转至另一个页面时重新输入认证信息。<br>Cookie由一个名称（Name）、一个值（Value）和其它几个用于控制Cookie有效期、安全性、使用范围的可选属性组成。<br>图片</p>
-<p>csrf漏洞的成因就是网站的cookie在浏览器中不会过期，只要不关闭浏览器或者退出登录，那以后只要是访问这个网站，都会默认你已经登录的状态。而在这个期间，攻击者发送了构造好的csrf脚本或包含csrf脚本的链接，可能会执行一些用户不想做的功能（比如是添加账号等）。这个操作不是用户真正想要执行的。<br><a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/web/206407.html">https://www.freebuf.com/articles/web/206407.html</a><br>1.2 攻击流程</p>
-<p>一个典型的CSRF攻击有着如下的流程：</p>
-<p>受害者登录 a.com，并保留了登录凭证（Cookie）。</p>
-<p>攻击者引诱受害者访问 b.com。</p>
-<p>b.com 向 a.com 发送了一个请求：a.com/act=xx。浏览器会默认携带 a.com 的 Cookie。</p>
-<p>a.com 接收到请求后，对请求进行验证，并确认是受害者的凭证，误以为是受害者自己发送的请求。</p>
-<p>a.com 以受害者的名义执行了 act=xx。</p>
-<p>攻击完成，攻击者在受害者不知情的情况下，冒充受害者，让 a.com 执行了自己定义的操作。</p>
-<p>图片</p>
-<p>典型的CSRF攻击</p>
-<p>一个CSRF漏洞攻击的实现，其需要由三个部分来构成</p>
-<p>有一个漏洞存在（无需验证、任意修改后台数据、新增请求）；</p>
-<p>伪装数据操作请求的恶意链接或者页面；</p>
-<p>诱使用户主动访问或登录恶意链接，触发非法操作</p>
-<h2 id="2-CSRF防御"><a href="#2-CSRF防御" class="headerlink" title="2 CSRF防御"></a>2 CSRF防御</h2><p>CSRF的防御可以从两个方面考虑，一是后台接口层做防御，另一个则是在前端做防御。</p>
-<h3 id="2-1-后端防御CSRF"><a href="#2-1-后端防御CSRF" class="headerlink" title="2.1 后端防御CSRF"></a>2.1 后端防御CSRF</h3><p>后端防御主要是区分哪些请求是恶意请求，哪些请求是来自本网站的请求。区分恶意请求的方式有很多，以下介绍两种。</p>
-<p>一、CSRF Token</p>
-<p>这种方式是在表单页面生成一个随机数，这个随机数一定要后端生成，并且对这个随机数进行存储。举个例子，在前端页面中，对这个Token表单项进行隐藏。代码如下：</p>
-<form method="post" action="/transfer">
-<input type="hidden" name="_csrf" value="4bfd1575-3ad1-4d21-96c7-4ef2d9f86721"/>
-<input type="text" name="amount"/>
-<input type="hidden" name="account"/>
-<input type="submit" value="Transfer"/></form>
-
-<p>_csrf就是CSRF Token。我们看到他的value是一个UUID，这个UUID是后台生成的。当用户点击转账按钮时，会给银行的后台发送请求，请求中包含_csrf参数，如下：</p>
-<p>POST /transfer HTTP/1.1Host: <a target="_blank" rel="noopener" href="http://www.a-bank.comcookie/">www.a-bank.comCookie</a>: JSESSIONID=randomidContent-Type: application/x-www-form-urlencoded<br>amount=100.00&amp;account=9876&amp;_csrf=4bfd1575-3ad1-4d21-96c7-4ef2d9f86721</p>
-<p>银行后台接收到这个请求后，判断_csrf的值是否存在，如果存在则是自己网站的请求，进行后续的流程；如果不存在，则是恶意网站的请求，直接忽略。</p>
-<p>二、通过请求头中的referer字段判断请求的来源</p>
-<p>每一个发送给后端的请求，在http请求头中都会包含一个referer字段，这个字段标识着请求的来源。如果请求是从银行网站发出的，这个字段会是银行网站转账页的链接，比如：<a target="_blank" rel="noopener" href="https://www.a-bank.com/transfer-view%EF%BC%9B%E5%A6%82%E6%9E%9C%E6%98%AF%E4%BB%8E%E6%81%B6%E6%84%8F%E7%BD%91%E7%AB%99%E5%8F%91%E5%87%BA%E7%9A%84%EF%BC%8C%E9%82%A3%E4%B9%88referer%E5%AD%97%E6%AE%B5%E4%B8%8D%E4%BC%9A%E6%98%AF%E9%93%B6%E8%A1%8C%E7%BD%91%E7%AB%99%E3%80%82%E6%88%91%E4%BB%AC%E5%9C%A8%E5%81%9A%E5%90%8E%E7%AB%AF%E9%98%B2%E5%BE%A1%E6%97%B6%EF%BC%8C%E5%8F%AF%E4%BB%A5%E5%85%88%E5%8F%96%E5%87%BA%E6%AF%8F%E4%B8%AA%E8%AF%B7%E6%B1%82%E7%9A%84%E8%AF%B7%E6%B1%82%E5%A4%B4%E4%B8%AD%E7%9A%84referer%E5%AD%97%E6%AE%B5%EF%BC%8C%E5%88%A4%E6%96%AD%E6%98%AF%E4%B8%8D%E6%98%AF%E4%BB%A5%E8%87%AA%E5%B7%B1%E7%BD%91%E7%AB%99%E7%9A%84%E5%9F%9F%E5%90%8D%E5%BC%80%E5%A4%B4%EF%BC%8C%E5%9C%A8%E5%92%B1%E4%BB%AC%E7%9A%84%E7%A4%BA%E4%BE%8B%E4%B8%AD%EF%BC%8C%E5%A6%82%E6%9E%9Creferer%E5%AD%97%E6%AE%B5%E6%98%AF%E4%BB%A5https://www.a-bank.com/%E5%BC%80%E5%A4%B4%E7%9A%84%EF%BC%8C%E5%88%99%E7%BB%A7%E7%BB%AD%E6%89%A7%E8%A1%8C%E8%BD%AC%E8%B4%A6%E6%93%8D%E4%BD%9C%EF%BC%9B%E5%A6%82%E6%9E%9C%E4%B8%8D%E6%98%AF%EF%BC%8C%E5%88%99%E7%9B%B4%E6%8E%A5%E5%BF%BD%E7%95%A5%E6%8E%89%E8%BF%99%E4%B8%AA%E8%AF%B7%E6%B1%82%E3%80%82">https://www.a-bank.com/transfer-view；如果是从恶意网站发出的，那么referer字段不会是银行网站。我们在做后端防御时，可以先取出每个请求的请求头中的referer字段，判断是不是以自己网站的域名开头，在咱们的示例中，如果referer字段是以https://www.a-bank.com/开头的，则继续执行转账操作；如果不是，则直接忽略掉这个请求。</a></p>
-<p>以上就是后端防御CSRF攻击的两种方式，都需要在后端做特殊的处理。当然也可以在前端做处理，我们接着往下看。</p>
-<h3 id="2-2-前端防御CSRF"><a href="#2-2-前端防御CSRF" class="headerlink" title="2.2 前端防御CSRF"></a>2.2 前端防御CSRF</h3><p>既然CSRF攻击的危害这么大，为什么不能在前端禁止这种请求呢？各大浏览器厂商似乎也注意到了这个问题，谷歌提出了same-site cookies概念，same-site cookies 是基于 Chrome 和 Mozilla 开发者花了三年多时间制定的 IETF 标准。它是在原有的Cookie中，新添加了一个SameSite属性，它标识着在非同源的请求中，是否可以带上Cookie，它可以设置为3个值，分别为：1) Strict 2) Lax 3) None</p>
-<p>Cookie中的内容为：</p>
-<p>POST /transfer HTTP/1.1Host: <a target="_blank" rel="noopener" href="http://www.a-bank.com/">www.a-bank.com</a><br>Cookie: JSESSIONID=randomid; SameSite=Strict;<br>Strict是最严格的，它完全禁止在跨站情况下，发送Cookie。只有在自己的网站内部发送请求，才会带上Cookie。不过这个规则过于严格，会影响用户的体验。比如在一个网站中有一个链接，这个链接连接到了GitHub上，由于SameSite设置为Strict，跳转到GitHub后，GitHub总是未登录状态。</p>
-<p>Lax的规则稍稍放宽了些，大部分跨站的请求也不会带上Cookie，但是一些导航的Get请求会带上Cookie，如下：</p>
-<p>请求类型</p>
-<p>示例</p>
-<p>Lax情况</p>
-<p>链接</p>
-<p><a href="..."></a></p>
-<p>发送 Cookie</p>
-<p>预加载</p>
-<link rel="prerender" href="..."/>
-
-<p>发送 Cookie</p>
-<p>GET 表单</p>
-<form method="GET" action="...">
-
-<p>发送 Cookie</p>
-<p>POST 表单</p>
-<form method="POST" action="...">
-
-<p>不发送</p>
-<p>iframe</p>
-<p>frameLabelStart–frameLabelEnd</p>
-<p>不发送</p>
-<p>AJAX</p>
-<p>$.get(“…”)</p>
-<p>不发送</p>
-<p>Image</p>
-<img src="..." srcset="/img/loading.gif" lazyload>
-
-<p>不发送</p>
-<p>上面的表格就是SameSite设置为Lax的时候，Cookie的发送情况。</p>
-<p>None就是关闭SameSite属性，所有的情况下都发送Cookie。不过SameSite设置None，还要同时设置Cookie的Secure属性，否则是不生效的。</p>
-<h2 id="3-常见问题"><a href="#3-常见问题" class="headerlink" title="3 常见问题"></a>3 常见问题</h2><ol>
-<li>CSRF 与 SSRF 区别</li>
-</ol>
-<p>CSRF (Cross-Site Request Forgery) 即跨站请求伪造，伪造用户请求，冒用用户身份。</p>
-<p>SSRF (Server-Side Request Forgery) 即服务端请求伪造，就是伪造一个服务端请求，攻击者伪造服务端的请求发起攻击，攻击者借由服务端为跳板来攻击目标系统。</p>
-<p>用非常通俗的语言讲的话，CSRF 更像是钓鱼的举动，是用户攻击用户的；而对于 SSRF 来说，是由服务器发出请求，用户攻击服务器的。</p>
-<ol start="2">
-<li>XSS 与 CSRF的区别</li>
-</ol>
-<p>XSS (Cross Site Scripting) 跨站脚本攻击 与 CSRF 的最大区别在于对 Cookie 的使用，XSS 把受害者 的 Cookie 偷过来，而 CSRF 则是借用了受害者的 Cookie。</p>
-<ol start="3">
-<li>samesite防御CSRF的原理</li>
-</ol>
-<p>在原有的Cookie中，新添加了一个SameSite属性，它标识着在非同源的请求中，是否可以带上Cookie，它可以设置为3个值，分别为：Strict Lax None</p>
-<ol start="4">
-<li>json格式的CSRF如何防御？</li>
-</ol>
-<p>前景知识：</p>
-<p>json格式的CSRF存在的条件是POST 传参采用 JSON 格式，而不是传统的parameter=value的格式。一般采用 Json 格式传输参数时，请求包中都有 Content-Type 头，一般服务器也会验证 Content-Type 值是否为 application/json，当服务器验证 Content-Type 时，若不符合要求，则会抛出异常，导致传输的数据失效。</p>
-<p>1）用户操作验证，在提交数据时需要输入验证码</p>
-<p>2）请求来源验证，验证请求来源的referer</p>
-<p>3）表单token验证</p>
-<ol start="5">
-<li>什么是同源策略？</li>
-</ol>
-<p>同源策略由Netscape公司引入浏览器。目前，所有浏览器都实行这个策略。含义是指：A网页设置的Cookie，B网页不能打开，除非这两个网页“同源”。所谓同源指的是“三个相同”</p>
-<p>协议相同<br>域名相同<br>端口相同</p>
-<h2 id="4-总结"><a href="#4-总结" class="headerlink" title="4 总结"></a>4 总结</h2><p>CSRF的关键字有：冒用用户身份凭证，前端same-site,后端token及refer检测防御。由于还在学习阶段，CSRF总结笔记后面再进行补充。</p>
-<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/7911">https://xz.aliyun.com/t/7911</a></p>
-<p><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/beta/article/1458194">https://cloud.tencent.com/developer/beta/article/1458194</a></p>
-<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/XRqiLVdUzvzhD-bw2L3hhQ">https://mp.weixin.qq.com/s/XRqiLVdUzvzhD-bw2L3hhQ</a><br>WEB常见漏洞之CSRF（靶场篇）</p>
+              <p>本篇主要分享一些自己的红队思路和使用的工具，希望对你有一些帮助。</p>
+<h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><p>0x01 红队知识扫盲<br>0x02 打点技巧总结<br>0x03 涉及工具<br>0x04 参考链接</p>
+<h2 id="0x01-红队知识扫盲"><a href="#0x01-红队知识扫盲" class="headerlink" title="0x01 红队知识扫盲"></a>0x01 红队知识扫盲</h2><p>渗透测试作为一种安全防护手段，让安全防护从被动转换成主动，正被越来越多企业及机构认可，但也仅限于是防护基础工作之一，代表企业网络系统正合法合规的运行着。然而企业的业务场景是动态变化的，黑客的攻击手法、0day漏洞更是层出不穷，红蓝队对抗便是针对此方面的测试。<br>红蓝队对抗是以红队模拟真实攻击，蓝队负责防御。红队（RedTeam）区别于传统的渗透测试，更偏向于实战。</p>
+<h2 id="0x02-打点技巧总结"><a href="#0x02-打点技巧总结" class="headerlink" title="0x02 打点技巧总结"></a>0x02 打点技巧总结</h2><p>1.拿到靶标，资产收集<br>批量域名转IP ，从旁站入手（挂靠在同个服务器的不同站点）；<br>根据IP找C段：我一般用Goby普通扫描去找C段；<br>先看靶标再看子域名；<br>子域名爆破：子域名爆破有时候往往能找到脆弱站点，比如开发人员忘记关闭测试站点，可以通过弱口令拿到web应用普通权限然后尝试提权或者注入shell实现RCE；比如常见web应用，OA系统，监控系统，Jira，gitlab等等都可能存在系统历史漏洞。<br>同样拿到子域名的IP也可以看C段；<br>若有第三方供应商，可以查备案，找到属于该厂商的所有主域名，加入资产列表中。<br>2.识别存活站点<br>Httpx，快照工具等（先埋坑，后面补上）<br>3.Ehole 指纹识别 配合Afrog作poc扫描<br>寻找重要站点，比如能识别“后台”“OA”系统等指纹，丰富的指纹库是重点。<br>配合Afrog进行Poc扫描：Poc就是常见漏洞的验证脚本，一般是python写的，平时积累Poc可以用于漏洞的快速识别。<br>4.Nmap全端口扫描/ Goby 扫端口<br>全端口扫描能找到站点开放的服务，端口存在web开放的页面可以进一步利用。<br>5.插件简单打点<br>js文件审计：浏览器按F11去审js文件，有时候会看到一些注释或者代码泄露信息，找到其他站点；<br>利用插件搜集信息：Wappalyzer插件指纹识别；Findsomething插件（敏感信息比如js文件，敏感路径，ip地址，邮箱都能识别出来）；<br>其他：burp有些插件可以识别shiro，log4j漏洞；<br>6.Dirsearch/Ffuf 跑目录<br>目录字典是关键，注意积累自己的常用字典。几次攻防演练我都没有通过此途径挖到漏洞，但是其他队员都有挖到过未授权的路径。<br>7.找文件上传点<br>找敏感路径，找脆弱站点的文件上传处，比如微信公众号存在未关闭的文件上传处。<br>总结下来，几次攻防演练我都停留在找脆弱站点的层面，并没能通过旁站拿到主站权限，往后学习要提升getshell和内网渗透方面的能力。</p>
+<h2 id="0x03-涉及工具"><a href="#0x03-涉及工具" class="headerlink" title="0x03 涉及工具"></a>0x03 涉及工具</h2><p>网络空间搜索引擎Fofa，fofaviewer（查看资产更简介快捷）；</p>
+<p>Nmap（端口扫描）；比如我就通过全端口扫描，找到过一个弱口令登录站点，拿到web应用管理员权限。</p>
+<p>漏扫Goby（我一般用来全端口扫描和看C段）；</p>
+<p>Ehole，Wappalyzer插件指纹识别；</p>
+<p>Findsomething插件（敏感信息比如js文件，敏感路径，ip地址，邮箱都能识别出来）；</p>
+<p>Dirsearch/Ffuf 作目录扫描，有时候可以用Burpsuite的intruder做简单的目录扫描；</p>
+<p>Aforg作为poc扫描器；有时候能捡漏，比如我就扫出过一个ERP的指纹然后弱密码登录成功；</p>
+<h2 id="0x04-参考链接"><a href="#0x04-参考链接" class="headerlink" title="0x04 参考链接"></a>0x04 参考链接</h2><p><a target="_blank" rel="noopener" href="https://www.ddosi.org/b368/">https://www.ddosi.org/b368/</a></p>
+<p>短短两月</p>
 
               
             </div>
@@ -398,7 +314,7 @@
     
       <span class="category-chain">
         
-  <a href="/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/" class="category-chain-item">渗透测试</a>
+  <a href="/categories/%E7%BA%A2%E9%98%9F/" class="category-chain-item">红队</a>
   
   
 
@@ -413,7 +329,7 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/">#渗透测试</a>
+        <a href="/tags/%E7%BA%A2%E9%98%9F/">#红队</a>
       
     </div>
   
@@ -425,8 +341,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>【Web安全基础】CSRF</div>
-      <div>https://kitescat.github.io/2023/05/05/CSRF/</div>
+      <div>【干货】红队打点技巧总结</div>
+      <div>https://kitescat.github.io/2023/08/16/redteam-fast/</div>
     </div>
     <div class="license-meta">
       
@@ -438,7 +354,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年5月5日</div>
+          <div>2023年8月16日</div>
         </div>
       
       
@@ -468,18 +384,12 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/08/16/redteam-fast/" title="【干货】红队打点技巧总结">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">【干货】红队打点技巧总结</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/04/26/HTTP%E6%B3%A8%E5%85%A5/" title="【Sql注入】HTTP注入">
-                        <span class="hidden-mobile">【Sql注入】HTTP注入</span>
+                      <a href="/2023/05/05/CSRF/" title="【Web安全基础】CSRF">
+                        <span class="hidden-mobile">【Web安全基础】CSRF</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
