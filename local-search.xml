@@ -4,6 +4,31 @@
   
   
   <entry>
+    <title>预编译是如何组织sql注入的</title>
+    <link href="/2023/10/18/%E9%A2%84%E7%BC%96%E8%AF%91%E6%98%AF%E5%A6%82%E4%BD%95%E7%BB%84%E7%BB%87sql%E6%B3%A8%E5%85%A5%E7%9A%84/"/>
+    <url>/2023/10/18/%E9%A2%84%E7%BC%96%E8%AF%91%E6%98%AF%E5%A6%82%E4%BD%95%E7%BB%84%E7%BB%87sql%E6%B3%A8%E5%85%A5%E7%9A%84/</url>
+    
+    <content type="html"><![CDATA[<p>&lt;開山之道，安全参照&gt;<br>本篇主要分享sql注入防御之预编译的原理，并解释模糊查询为何不适用预编译来进行sql注入防御。</p><h2 id="0x01-常见的sql注入场景"><a href="#0x01-常见的sql注入场景" class="headerlink" title="0x01 常见的sql注入场景"></a>0x01 常见的sql注入场景</h2><p>sql注入是指用户在提交查询请求时，将恶意SQL语句插入到请求内容中，同时程序本身未对插入的SQL语句进行过滤，导致SQL语句直接被服务端执行。</p><p>拼接的SQL查询例如，通过在id变量后插入or 1=1这样的条件，来绕过身份验证，获得未授权数据的访问权。</p><pre><code class="hljs">SELECT * FROM user WHERE id = -1 or 1=1</code></pre><p>由于or 1=1 满足永真结果，sql语句会执行输出user中的全部内容。</p><h3 id="sql注入的防御方式有哪些？"><a href="#sql注入的防御方式有哪些？" class="headerlink" title="sql注入的防御方式有哪些？"></a>sql注入的防御方式有哪些？</h3><p>1、定制黑名单：将常用的SQL注入字符写入到黑名单中，然后通过程序对用户提交的POST、GET请求以及请求中的各个字段都进行过滤检查，筛选威胁字符。</p><p>2、加强对用户输入的验证，限制用户输入。限制用户输入内容的大小和数据类型，强制执行适当的限制与转换，并在用户提交请求的时候进行检查，凡不符合该类型的提交就认为是非法请求。限制查询长度：SQL注入需要构造较长的SQL语句。</p><p>3、设置数据库权限，遵循最小化原则。根据程序要求为特定的表设置特定的权限，如：某段程序对某表只需具备select权限即可，这样即使程序存在问题，恶意用户也无法对表进行update或insert等写入操作。严格区分普通用户与管理员用户的权限。如果页面查询用户使用的是root，注入时被带入了drop table,drop database等语句，后果将不堪设想 。</p><p>4、限制目录权限：WEB目录应至少遵循“可写目录不可执行，可执行目录不可写”的原则，在此基础上，对各目录进行必要的权限细化。建议是不要给执行权限。</p><p>5、预编译，采用参数化语句。使用参数而不是将用户输入变量嵌入到SQL语句中，可以杜绝大部分的SQL注入式攻击。</p><p>那么，终于引出文章的主角——预编译。</p><h2 id="0x02-预编译是什么"><a href="#0x02-预编译是什么" class="headerlink" title="0x02 预编译是什么"></a>0x02 预编译是什么</h2><p>SQL预编译是一种提高数据库查询性能的技术，它允许将SQL语句预编译并存储在数据库中，以便在需要时快速执行。</p><h3 id="一次编译、多次运行，省去了解析优化"><a href="#一次编译、多次运行，省去了解析优化" class="headerlink" title="一次编译、多次运行，省去了解析优化"></a>一次编译、多次运行，省去了解析优化</h3><p>预编译的SQL语句可以被缓存和重用，避免了每次执行时都需要重新解析和编译的开销，从而提高了查询的响应速度。<br>对于数据库来说，通常一条SQL语句从传入到执行经历了以下过程：（1）词法和语义解析优化；（2）制定执行计划；（3）执行并返回结果。这种普通语句称为Immediate Statements。但很多情况下，一条SQL语句可能会反复执行，或者每次执行的时候只有个别的参数值不同，比如：</p><pre><code class="hljs">SELECT username, password FROM users WHERE id=1;SELECT username, password FROM users WHERE id=2；</code></pre><p>这两个SQL语句由于id后的值不同，因此在词法和语义解析优化阶段不会匹配，不能得到重复使用。使用预编译可以解决这个问题。<br>所谓预编译语句就是将这类语句中的值用占位符（“?”）替代，可以视为将SQL语句模板化或者参数化，即将SQL语句先交由数据库预处理，构建语法树，再传入真正的字段值多次执行，省却了重复解析和优化相同语法树的时间，提升了SQL执行的效率。一般这类语句称为Prepared Statements。</p><h2 id="0x03-预编译防止SQL注入的原理"><a href="#0x03-预编译防止SQL注入的原理" class="headerlink" title="0x03 预编译防止SQL注入的原理"></a>0x03 预编译防止SQL注入的原理</h2><p>预编译是先将SQL语句中可被客户端控制的参数集进行编译，生成对应的临时变量集，再使用对应的设置方法setxxx，为临时变量集里面的元素进行赋值，比如赋值函数setString()，会对传入的参数进行强制类型检查和安全检查，所以就避免了SQL注入的产生。</p><h3 id="Java-Prepared-Statements"><a href="#Java-Prepared-Statements" class="headerlink" title="Java Prepared Statements"></a>Java Prepared Statements</h3><p>当把参数传给PrepraredStatement时，即使参数里有敏感字符如 or 1=1，数据库也只会将它作为一个参数值来处理而不会作为一个SQL指令，如此，就起到防止SQL注入的作用了。<br>看下面的例子：</p><pre><code class="hljs">import java.sql.PreparedStatement;String sql = &quot;select * from user where id=?&quot;;ps = conn.PreparedStatement(sql);ps.setint(1,input); //set用于类型的强制转换，保证非法输入无法注入// ps.setString(1, &quot;1&quot;); -1 or 1=1resultSet = ps.executeQuery();</code></pre><p>具体实现代码参考 Java 的PreparedStatement (Java Platform SE 7 )</p><h4 id="类型的强制转换"><a href="#类型的强制转换" class="headerlink" title="类型的强制转换"></a>类型的强制转换</h4><p>void PreparedStatement setXxx(int parameterIndex, Xxx x);<br>Xxx几乎涵盖了所有Java基础类型（String、int、double、Date等等）；<br>预编译会将输入整体作一个参数，而不是SQL的一部分<br>比如之前的语句</p><pre><code class="hljs">SELECT * FROM article WHERE id = -1 OR 1=1</code></pre><p>1）setint情况：<br>由于input是-1 OR 1=1此时会报错；强制类型转换失败。<br>2）setString情况：<br>语句会变成</p><pre><code class="hljs">SELECT * FROM article WHERE id = &#39;-1 OR 1=1&#39;</code></pre><p>此时查不到结果。</p><h2 id="0x04-模糊查询如何防止sql注入"><a href="#0x04-模糊查询如何防止sql注入" class="headerlink" title="0x04 模糊查询如何防止sql注入"></a>0x04 模糊查询如何防止sql注入</h2><p>然而并不是所有情况都能进行预编译。对于无法预编译的场景怎么处理?比如模糊查询呢？<br>模糊查询本身并不支持预编译，因为预编译需要明确的参数值来进行参数绑定。而模糊查询中的通配符（如百分号%和下划线_）会导致参数值不确定，因此无法进行预编译。<br>在模糊查询中，查询条件通常包含通配符，例如：<br>SELECT * FROM users WHERE name LIKE ‘%abc%’<br>这个查询会返回名字中包含“abc”的所有用户。但是，由于通配符的存在，参数值是不确定的，因此无法进行预编译。<br>因此，模糊查询由于其不确定性，无法进行预编译。<br>如果需要在模糊查询中使用参数化查询来防止SQL注入攻击，可以考虑使用其他方式，例如使用ORM（对象关系映射）库或查询构建器等工具来自动处理查询的转义和参数化。</p><h2 id="0x05-总结"><a href="#0x05-总结" class="headerlink" title="0x05 总结"></a>0x05 总结</h2><p>预编译以参数化查询的方式，强制类型转换排除非法输入。<br>模糊查询由于存在% _使得参数值是不确定的，所以无法利用预编译的场景防御模糊查询的注入。</p><h2 id="0x06-参考链接"><a href="#0x06-参考链接" class="headerlink" title="0x06 参考链接"></a>0x06 参考链接</h2><p><a href="https://yiyan.baidu.com/">https://yiyan.baidu.com/</a><br><a href="https://www.zhihu.com/question/52869762/answer/132471224">https://www.zhihu.com/question/52869762/answer/132471224</a><br><a href="https://blog.csdn.net/HZX19941018/article/details/100047456">https://blog.csdn.net/HZX19941018/article/details/100047456</a></p>]]></content>
+    
+    
+    <categories>
+      
+      <category>sql注入</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>sql注入</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>【干货】红队打点技巧总结</title>
     <link href="/2023/08/16/redteam-fast/"/>
     <url>/2023/08/16/redteam-fast/</url>
