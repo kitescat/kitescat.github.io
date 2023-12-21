@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://kitescat.github.io/img/prestatement.png">
 <meta property="article:published_time" content="2023-10-17T17:39:24.000Z">
-<meta property="article:modified_time" content="2023-10-21T17:39:09.995Z">
+<meta property="article:modified_time" content="2023-12-21T17:30:44.580Z">
 <meta property="article:author" content="kitescat">
 <meta property="article:tag" content="sql注入">
 <meta name="twitter:card" content="summary_large_image">
@@ -222,7 +222,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          2.7k 字
+          4.4k 字
         
       </span>
     
@@ -234,7 +234,7 @@
         
         
           <!-- compatible with older versions-->
-          23 分钟
+          37 分钟
         
       </span>
     
@@ -284,44 +284,63 @@
             
             <div class="markdown-body">
               
-              <p>&lt;開山之道，安全参照&gt;<br>本篇主要分享sql注入防御之预编译的原理，并解释模糊查询为何不适用预编译来进行sql注入防御。</p>
-<h2 id="0x01-常见的sql注入场景"><a href="#0x01-常见的sql注入场景" class="headerlink" title="0x01 常见的sql注入场景"></a>0x01 常见的sql注入场景</h2><p>sql注入是指用户在提交查询请求时，将恶意SQL语句插入到请求内容中，同时程序本身未对插入的SQL语句进行过滤，导致SQL语句直接被服务端执行。</p>
-<p>拼接的SQL查询例如，通过在id变量后插入or 1=1这样的条件，来绕过身份验证，获得未授权数据的访问权。</p>
-<pre><code class="hljs">SELECT * FROM user WHERE id = -1 or 1=1
-</code></pre>
-<p>由于or 1=1 满足永真结果，sql语句会执行输出user中的全部内容。</p>
-<h3 id="sql注入的防御方式有哪些？"><a href="#sql注入的防御方式有哪些？" class="headerlink" title="sql注入的防御方式有哪些？"></a>sql注入的防御方式有哪些？</h3><p>1、定制黑名单：将常用的SQL注入字符写入到黑名单中，然后通过程序对用户提交的POST、GET请求以及请求中的各个字段都进行过滤检查，筛选威胁字符。</p>
-<p>2、加强对用户输入的验证，限制用户输入。限制用户输入内容的大小和数据类型，强制执行适当的限制与转换，并在用户提交请求的时候进行检查，凡不符合该类型的提交就认为是非法请求。限制查询长度：SQL注入需要构造较长的SQL语句。</p>
-<p>3、设置数据库权限，遵循最小化原则。根据程序要求为特定的表设置特定的权限，如：某段程序对某表只需具备select权限即可，这样即使程序存在问题，恶意用户也无法对表进行update或insert等写入操作。严格区分普通用户与管理员用户的权限。如果页面查询用户使用的是root，注入时被带入了drop table,drop database等语句，后果将不堪设想 。</p>
-<p>4、限制目录权限：WEB目录应至少遵循“可写目录不可执行，可执行目录不可写”的原则，在此基础上，对各目录进行必要的权限细化。建议是不要给执行权限。</p>
-<p>5、预编译，采用参数化语句。使用参数而不是将用户输入变量嵌入到SQL语句中，可以杜绝大部分的SQL注入式攻击。</p>
+              <p>本篇主要分享sql注入防御之预编译的原理，并解释模糊查询语句如何适配预编译。预编译是利用占位符替代参数值，预先建立语法树的过程。注入的恶意SQL语句只会被视为参数，参与不了SQL语句的语法树构建，也就无法改变其语法结构，也就无法达到编译恶意语句的目的。然而，预编译有一些局限性，比如，模糊查询由于存在% _使得参数值是不确定的，需要修改预编译语句。</p>
+<h2 id="1-SQL注入原理"><a href="#1-SQL注入原理" class="headerlink" title="1 SQL注入原理"></a>1 SQL注入原理</h2><p>sql注入是指攻击者拼接恶意SQL语句到接受外部参数的动态SQL查询中，程序本身未对插入的SQL语句进行过滤，导致SQL语句直接被服务端执行。<br>拼接的SQL查询例如，通过在id变量后插入or 1=1这样的条件，来绕过身份验证，获得未授权数据的访问权。<br>SELECT * FROM user WHERE id = -1 or 1=1<br>由于or 1=1 满足永真结果，sql语句会执行输出user中的全部内容。<br><img src="/img/pre_ex1.png" srcset="/img/loading.gif" lazyload></p>
+<p>拼接后的执行结果示例如上</p>
+<h2 id="2-SQL注入的防御方式"><a href="#2-SQL注入的防御方式" class="headerlink" title="2 SQL注入的防御方式"></a>2 SQL注入的防御方式</h2><ol>
+<li><p>定制严格的白名单校验，加强对用户输入的验证，限制用户输入。限制用户输入内容的大小和数据类型，强制执行适当的限制与转换，并在用户提交请求的时候进行检查，凡不符合该类型的提交就认为是非法请求。限制查询长度：SQL注入需要构造较长的SQL语句。</p>
+</li>
+<li><p>设置数据库权限，遵循最小化原则。根据程序要求为特定的表设置特定的权限，如：某段程序对某表只需具备select权限即可，这样即使程序存在问题，恶意用户也无法对表进行update或insert等写入操作。严格区分普通用户与管理员用户的权限。如果页面查询用户使用的是root，注入时被带入了drop table,drop database等语句，后果将不堪设想 。</p>
+</li>
+<li><p>限制目录权限：WEB目录应至少遵循“可写目录不可执行，可执行目录不可写”的原则，在此基础上，对各目录进行必要的权限细化。建议是不要给执行权限。</p>
+</li>
+<li><p>预编译。使用参数而不是将用户输入变量嵌入到SQL语句中，可以杜绝大部分的SQL注入式攻击。</p>
+</li>
+</ol>
 <p>那么，终于引出文章的主角——预编译。</p>
-<h2 id="0x02-预编译是什么"><a href="#0x02-预编译是什么" class="headerlink" title="0x02 预编译是什么"></a>0x02 预编译是什么</h2><p>SQL预编译是一种提高数据库查询性能的技术，它允许将SQL语句预编译并存储在数据库中，以便在需要时快速执行。</p>
-<h3 id="一次编译、多次运行，省去了解析优化"><a href="#一次编译、多次运行，省去了解析优化" class="headerlink" title="一次编译、多次运行，省去了解析优化"></a>一次编译、多次运行，省去了解析优化</h3><p>预编译的SQL语句可以被缓存和重用，避免了每次执行时都需要重新解析和编译的开销，从而提高了查询的响应速度。<br>对于数据库来说，通常一条SQL语句从传入到执行经历了以下过程：（1）词法和语义解析优化；（2）制定执行计划；（3）执行并返回结果。这种普通语句称为Immediate Statements。但很多情况下，一条SQL语句可能会反复执行，或者每次执行的时候只有个别的参数值不同，比如：</p>
-<pre><code class="hljs">SELECT username, password FROM users WHERE id=1;
-SELECT username, password FROM users WHERE id=2；
-</code></pre>
-<p>这两个SQL语句由于id后的值不同，因此在词法和语义解析优化阶段不会匹配，不能得到重复使用。使用预编译可以解决这个问题。<br>所谓预编译语句就是将这类语句中的值用占位符（“?”）替代，可以视为将SQL语句模板化或者参数化，即将SQL语句先交由数据库预处理，构建语法树，再传入真正的字段值多次执行，省却了重复解析和优化相同语法树的时间，提升了SQL执行的效率。一般这类语句称为Prepared Statements。</p>
-<h2 id="0x03-预编译防止SQL注入的原理"><a href="#0x03-预编译防止SQL注入的原理" class="headerlink" title="0x03 预编译防止SQL注入的原理"></a>0x03 预编译防止SQL注入的原理</h2><p>预编译是先将SQL语句中可被客户端控制的参数集进行编译，生成对应的临时变量集，再使用对应的设置方法setxxx，为临时变量集里面的元素进行赋值，比如赋值函数setString()，会对传入的参数进行强制类型检查和安全检查，所以就避免了SQL注入的产生。</p>
-<h3 id="Java-Prepared-Statements"><a href="#Java-Prepared-Statements" class="headerlink" title="Java Prepared Statements"></a>Java Prepared Statements</h3><p>当把参数传给PrepraredStatement时，即使参数里有敏感字符如 or 1=1，数据库也只会将它作为一个参数值来处理而不会作为一个SQL指令，如此，就起到防止SQL注入的作用了。<br>看下面的例子：</p>
-<pre><code class="hljs">import java.sql.PreparedStatement;
-String sql = &quot;select * from user where id=?&quot;;
-ps = conn.PreparedStatement(sql);
-ps.setint(1,input); //set用于类型的强制转换，保证非法输入无法注入
-// ps.setString(1, &quot;1&quot;); -1 or 1=1
-resultSet = ps.executeQuery();
-</code></pre>
-<p>具体实现代码参考 Java 的PreparedStatement (Java Platform SE 7 )</p>
-<h4 id="类型的强制转换"><a href="#类型的强制转换" class="headerlink" title="类型的强制转换"></a>类型的强制转换</h4><p>void PreparedStatement setXxx(int parameterIndex, Xxx x);<br>Xxx几乎涵盖了所有Java基础类型（String、int、double、Date等等）；<br>预编译会将输入整体作一个参数，而不是SQL的一部分<br>比如之前的语句</p>
-<pre><code class="hljs">SELECT * FROM article WHERE id = -1 OR 1=1
-</code></pre>
-<p>1）setint情况：<br>由于input是-1 OR 1=1此时会报错；强制类型转换失败。<br>2）setString情况：<br>语句会变成</p>
-<pre><code class="hljs">SELECT * FROM article WHERE id = &#39;-1 OR 1=1&#39;
-</code></pre>
-<p>此时查不到结果。</p>
-<h2 id="0x04-模糊查询如何防止sql注入"><a href="#0x04-模糊查询如何防止sql注入" class="headerlink" title="0x04 模糊查询如何防止sql注入"></a>0x04 模糊查询如何防止sql注入</h2><p>然而并不是所有情况都能进行预编译。对于无法预编译的场景怎么处理?比如模糊查询呢？<br>模糊查询本身并不支持预编译，因为预编译需要明确的参数值来进行参数绑定。而模糊查询中的通配符（如百分号%和下划线_）会导致参数值不确定，因此无法进行预编译。<br>在模糊查询中，查询条件通常包含通配符，例如：<br>SELECT * FROM users WHERE name LIKE ‘%abc%’<br>这个查询会返回名字中包含“abc”的所有用户。但是，由于通配符的存在，参数值是不确定的，因此无法进行预编译。<br>因此，模糊查询由于其不确定性，无法进行预编译。<br>如果需要在模糊查询中使用参数化查询来防止SQL注入攻击，可以考虑使用其他方式，例如使用ORM（对象关系映射）库或查询构建器等工具来自动处理查询的转义和参数化。</p>
-<h2 id="0x05-总结"><a href="#0x05-总结" class="headerlink" title="0x05 总结"></a>0x05 总结</h2><p>预编译以参数化查询的方式，强制类型转换排除非法输入。<br>模糊查询由于存在% _使得参数值是不确定的，所以无法利用预编译的场景防御模糊查询的注入。</p>
-<h2 id="0x06-参考链接"><a href="#0x06-参考链接" class="headerlink" title="0x06 参考链接"></a>0x06 参考链接</h2><p><a target="_blank" rel="noopener" href="https://yiyan.baidu.com/">https://yiyan.baidu.com/</a><br><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/52869762/answer/132471224">https://www.zhihu.com/question/52869762/answer/132471224</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/HZX19941018/article/details/100047456">https://blog.csdn.net/HZX19941018/article/details/100047456</a></p>
+<p>以MySQL为例，数据库在执行SQL语句时，需要经历7个步骤：</p>
+<p>词法分析：将SQL语句分解成一个个token（关键字、标识符、运算符），然后对token进行分类和解析，生成相应的数据结构。</p>
+<p>语法分析：根据SQL语法检测规则检查语法是否正确，并生成语法树。</p>
+<p>语义分析：遍历语法树，确定表和列等信息，同时检查语义的正确性。优化处理：使用优化器对SQL语句进行处理和优化，比如执行计划、索引等。</p>
+<p>执行计划：使用执行计划生成器生成SQL语句的执行计划，比如数据的访问方式，索引的使用方式等。</p>
+<p>引擎执行：将执行计划发送给相应的数据库引擎进行处理，执行计划被翻译成底层的操作指令，执行数据扫描、索引查找、排序、分组等操作。</p>
+<p>返回数据：将执行结果返回给客户端，比如查询结果集或操作结果。在这里，我们粗暴的把执行过程理解成两步，即：先编译SQL语法结构（1<del>3步），再执行SQL语句（4</del>7步）。</p>
+<p>SQL编译的过程包括：</p>
+<p>词法分析 Scanning 分词</p>
+<p>语法分析 Syntax 组句</p>
+<p>语义分析 Semantic 识意 收集标识符的属性信息 和 对语义的检查（检查合法性）</p>
+<h2 id="3-预编译的原理"><a href="#3-预编译的原理" class="headerlink" title="3 预编译的原理"></a>3 预编译的原理</h2><p>预编译：用占位符替代参数值，预先建立语法树。恶意语句不参与语法书的建立，所以不影响SQL语法，也就无法造成恶意注入。最初的目的是提高代码的复用性，因为有很多只有参数值不同的SQL（完全相同的SQL会从缓存里查），比如：<br>select * from user where id=’1’<br>select * from user where id=’2’<br>这些SQL的语法树相同，但每次都要进行重复的编译，很浪费时间。SQL预编译将SQL语句模板化，用占位符替代值（参数化绑定）并存储在数据库中，以便在需要时再传入值执行，省掉了重复建立语法树的时间，实现快速执行。<br>select * from user where id={占位符}</p>
+<p>以MySQL为例，利用mysqli的预编译功能编写的核心PHP语句为：</p>
+<p>//定义需要预编译的SQL语句，从外界传递的参数（输入）用占位符?表示<br> $sql= “SELECT FROM security.users WHERE id= ? LIMIT 0,1”;<br> //创建预处理对象<br> $mysqli_stmt = $mysqli-&gt;prepare($sql);<br> //绑定参数<br> $mysqli_stmt-&gt;bind_param(‘i’, $id);<br> //绑定结果集<br> $mysqli_stmt-&gt;bind_result($id, $username, $password);<br> //执行<br> $mysqli_stmt-&gt;execute();</p>
+<p>预编译语句的优势在于：一次编译、多次运行，省去了解析优化等过程。</p>
+<p>预编译防止SQL注入的原理</p>
+<p>正常情况下，用户输入的参数会直接参与SQL语法的编译，而预编译则是先构建语法树，确定SQL语法结构以后，再拼接用户的参数。注入的恶意SQL语句只会被视为参数，参与不了SQL语句的语法树构建，也就无法改变其语法结构，也就无法达到编译恶意语句的目的。</p>
+<p>比如：不使用预编译，用单引号提前闭合的方式注入恶意SQL语句</p>
+<p>select count(1) from students where name=’张三’ or ‘1=1’；</p>
+<p>使用了预编译：</p>
+<p>select count(1) from students where name=’张三” or “1=1’；</p>
+<p>这里payload是张三’ or ‘1=1，会被当做参数，单引号会被转义成’’，从数据库查的时候，查的就是name=’张三’ or ‘1=1’,而数据库不会存在名字为’张三’ or ‘1=1’的人，所有查不到。</p>
+<h2 id="4-预编译的局限性"><a href="#4-预编译的局限性" class="headerlink" title="4 预编译的局限性"></a>4 预编译的局限性</h2><p>预编译的机制是先编译，再传值，用户传递的参数无法改变SQL语法结构，从根本上解决了SQL注入的问题。但并不是所有参数都可以使用预编译。<br>比如动态表名和列名的场景。：在生成语法树的过程中，预处理器在进一步检查解析后的语法树时，会检查数据表和数据列是否存在，因此数据表和数据列不能被占位符?所替代。但在很多业务场景中，表名需要作为一个变量存在，因此这部分仍需由加号进行SQL语句的拼接，若表名是由外部传入且可控的，仍会造成SQL注入。</p>
+<p>动态传参的场景，如动态表名，列名，Order by $param，不能使用预编译，应该使用严格的白名单校验。order by后一般是接字段名，而字段名是不能带引号的，比如 order by username；如果带上引号成了order by ‘username’，那username就是一个字符串不是字段名了，这就产生了语法错误。一方面预编译又只有自动加引号的setString()方法，没有不加引号的方法；而另一方面order by后接的字段名不能有引号。</p>
+<p>凡是字符串但又不能加引号的位置都不能参数化；包括sql关键字、库名表名字段名函数名等等。不能参数化的位置。不管怎么拼接，最终都是和使用“+”号拼接字符串的功效一样：拼成了sql语句但没有防sql注入的效果。</p>
+<h2 id="5-模糊查询预编译"><a href="#5-模糊查询预编译" class="headerlink" title="5 模糊查询预编译"></a>5 模糊查询预编译</h2><p>模糊查询本身并不支持预编译，占位符 ? 不适用于模糊查询中的通配符 %。占位符只能用于替换具体的值，而不能用于替换SQL语句中的其他结构，如通配符或标识符，因为预编译需要明确的参数值来进行参数绑定，所以无法进行预编译。例如：</p>
+<p>SELECT * FROM users WHERE name LIKE ‘%abc%’</p>
+<p>这个查询会返回名字中包含“abc”的所有用户。但是，由于通配符的存在，参数值是不确定的，因此无法进行预编译。当执行如下语句时，会报错：</p>
+<p>SELECT * FROM users WHERE name LIKE ‘%?%’</p>
+<p>报错：Parameter index out of range (1 &gt; number of parameters, which is 0).</p>
+<p>%?%是字符串，所以不会被当做一个参数解析。</p>
+<p>解决方案是修改语句如下：</p>
+<p>select id,name,age from people where address LIKE</p>
+<p>concat(‘%’,?,’%’) order by id desc；</p>
+<p>select id,name,age from people where address LIKE</p>
+<p>concat(‘%’,#{key,jdbcType=VARCHAR},’%’) order by id desc；</p>
+<p>Mybatis场景下$和#的区别</p>
+<p>${}:表示拼接sql串，将接收到参数的内容不加任何修饰拼接在sql中，可能引发sql注入。</p>
+<p>#{ }是预编译处理，MyBatis在处理#{ }时，它会将sql中的#{ }替换为？，然后调用PreparedStatement的set方法来赋值，传入字符串后，会在值两边加上单引号，使用占位符的方式提高效率，可以防止sql注入。因此最好使用#{ }方式。</p>
+<h2 id="6-总结"><a href="#6-总结" class="headerlink" title="6 总结"></a>6 总结</h2><p>预编译是利用占位符替代参数值，预先建立语法树的过程。注入的恶意SQL语句只会被视为参数，参与不了SQL语句的语法树构建，也就无法改变其语法结构，也就无法达到编译恶意语句的目的。然而，预编译有一些局限性，比如，模糊查询由于存在% _使得参数值是不确定的，需要修改预编译语句。</p>
+<p>我的上一篇博客出现了两个错误，我这里做出勘误。</p>
+<p>我在查找相关资料的时候，在知乎上遇到了错误的回答（而且还是一个大佬的回答），大致是强调Java预编译会做强制类型转换来防止SQL注入。注意预编译防止SQL注入并不是从强制类型转换这一角度出发的，setstring()这类操作只是Java预编译对用户输入增加的过滤操作而已。务必记住关键词，那就是语法树的建立。模糊查询也是可以通过修改语句来适配预编译的。再次强调，希望大家在学习的时候务必多搜索多求证，避免出现知识误区。</p>
+<h2 id="7-参考链接"><a href="#7-参考链接" class="headerlink" title="7 参考链接"></a>7 参考链接</h2><p><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/52869762/answer/132471224">https://www.zhihu.com/question/52869762/answer/132471224</a><br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/578134933">https://zhuanlan.zhihu.com/p/578134933</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/wangyuxiang946/article/details/132356363">https://blog.csdn.net/wangyuxiang946/article/details/132356363</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/HZX19941018/article/details/100047456">https://blog.csdn.net/HZX19941018/article/details/100047456</a><br><a target="_blank" rel="noopener" href="https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html">https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html</a><br><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000040023061">https://segmentfault.com/a/1190000040023061</a><br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/210732421">https://zhuanlan.zhihu.com/p/210732421</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_34868715/article/details/100734095">https://blog.csdn.net/qq_34868715/article/details/100734095</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/jie11447416/article/details/51318389">https://blog.csdn.net/jie11447416/article/details/51318389</a></p>
 
               
             </div>
