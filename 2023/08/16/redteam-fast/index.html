@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://kitescat.github.io/img/rd.png">
 <meta property="article:published_time" content="2023-08-15T16:01:32.000Z">
-<meta property="article:modified_time" content="2023-08-16T09:11:17.759Z">
+<meta property="article:modified_time" content="2024-01-17T13:07:48.053Z">
 <meta property="article:author" content="kitescat">
 <meta property="article:tag" content="红队">
 <meta name="twitter:card" content="summary_large_image">
@@ -287,7 +287,36 @@
               <p>本篇主要分享一些自己的红队思路和使用的工具，希望对你有一些帮助。</p>
 <h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><p>0x01 红队知识扫盲<br>0x02 打点技巧总结<br>0x03 涉及工具<br>0x04 参考链接</p>
 <h2 id="0x01-红队知识扫盲"><a href="#0x01-红队知识扫盲" class="headerlink" title="0x01 红队知识扫盲"></a>0x01 红队知识扫盲</h2><p>渗透测试作为一种安全防护手段，让安全防护从被动转换成主动，正被越来越多企业及机构认可，但也仅限于是防护基础工作之一，代表企业网络系统正合法合规的运行着。然而企业的业务场景是动态变化的，黑客的攻击手法、0day漏洞更是层出不穷，红蓝队对抗便是针对此方面的测试。<br>红蓝队对抗是以红队模拟真实攻击，蓝队负责防御。红队（RedTeam）区别于传统的渗透测试，更偏向于实战。</p>
-<h2 id="0x02-打点技巧总结"><a href="#0x02-打点技巧总结" class="headerlink" title="0x02 打点技巧总结"></a>0x02 打点技巧总结</h2><p>1.拿到靶标，资产收集<br>批量域名转IP ，从旁站入手（挂靠在同个服务器的不同站点）；<br>根据IP找C段：我一般用Goby普通扫描去找C段；<br>先看靶标再看子域名；<br>子域名爆破：子域名爆破有时候往往能找到脆弱站点，比如开发人员忘记关闭测试站点，可以通过弱口令拿到web应用普通权限然后尝试提权或者注入shell实现RCE；比如常见web应用，OA系统，监控系统，Jira，gitlab等等都可能存在系统历史漏洞。<br>同样拿到子域名的IP也可以看C段；<br>若有第三方供应商，可以查备案，找到属于该厂商的所有主域名，加入资产列表中。<br>2.识别存活站点<br>Httpx，快照工具等（先埋坑，后面补上）<br>3.Ehole 指纹识别 配合Afrog作poc扫描<br>寻找重要站点，比如能识别“后台”“OA”系统等指纹，丰富的指纹库是重点。<br>配合Afrog进行Poc扫描：Poc就是常见漏洞的验证脚本，一般是python写的，平时积累Poc可以用于漏洞的快速识别。<br>4.Nmap全端口扫描/ Goby 扫端口<br>全端口扫描能找到站点开放的服务，端口存在web开放的页面可以进一步利用。<br>5.插件简单打点<br>js文件审计：浏览器按F11去审js文件，有时候会看到一些注释或者代码泄露信息，找到其他站点；<br>利用插件搜集信息：Wappalyzer插件指纹识别；Findsomething插件（敏感信息比如js文件，敏感路径，ip地址，邮箱都能识别出来）；<br>其他：burp有些插件可以识别shiro，log4j漏洞；<br>6.Dirsearch/Ffuf 跑目录<br>目录字典是关键，注意积累自己的常用字典。几次攻防演练我都没有通过此途径挖到漏洞，但是其他队员都有挖到过未授权的路径。<br>7.找文件上传点<br>找敏感路径，找脆弱站点的文件上传处，比如微信公众号存在未关闭的文件上传处。<br>总结下来，几次攻防演练我都停留在找脆弱站点的层面，并没能通过旁站拿到主站权限，往后学习要提升getshell和内网渗透方面的能力。</p>
+<h2 id="0x02-打点技巧总结"><a href="#0x02-打点技巧总结" class="headerlink" title="0x02 打点技巧总结"></a>0x02 打点技巧总结</h2><p>1.拿到靶标，资产收集</p>
+<pre><code class="hljs">批量域名转IP ，从旁站入手（挂靠在同个服务器的不同站点）；
+根据IP找C段：我一般用Goby普通扫描去找C段；
+先看靶标再看子域名；
+子域名爆破：子域名爆破有时候往往能找到脆弱站点，比如开发人员忘记关闭测试站点，可以通过弱口令拿到web应用普通权限然后尝试提权或者注入shell实现RCE；比如常见web应用，OA系统，监控系统，Jira，gitlab等等都可能存在系统历史漏洞。
+同样拿到子域名的IP也可以看C段；
+若有第三方供应商，可以查备案，找到属于该厂商的所有主域名，加入资产列表中。
+</code></pre>
+<p>2.识别存活站点</p>
+<pre><code class="hljs">Httpx，快照工具等（先埋坑，后面补上） 
+</code></pre>
+<p>3.Ehole 指纹识别 配合Afrog作poc扫描</p>
+<pre><code class="hljs">寻找重要站点，比如能识别“后台”“OA”系统等指纹，丰富的指纹库是重点。
+配合Afrog进行Poc扫描：Poc就是常见漏洞的验证脚本，一般是python写的，平时积累Poc可以用于漏洞的快速识别。
+</code></pre>
+<p>4.Nmap全端口扫描/ Goby 扫端口</p>
+<pre><code class="hljs">全端口扫描能找到站点开放的服务，端口存在web开放的页面可以进一步利用。
+</code></pre>
+<p>5.插件简单打点</p>
+<pre><code class="hljs">js文件审计：浏览器按F11去审js文件，有时候会看到一些注释或者代码泄露信息，找到其他站点；
+利用插件搜集信息：Wappalyzer插件指纹识别；Findsomething插件（敏感信息比如js文件，敏感路径，ip地址，邮箱都能识别出来）；
+其他：burp有些插件可以识别shiro，log4j漏洞；
+</code></pre>
+<p>6.Dirsearch/Ffuf 跑目录 </p>
+<pre><code class="hljs">目录字典是关键，注意积累自己的常用字典。几次攻防演练我都没有通过此途径挖到漏洞，但是其他队员都有挖到过未授权的路径。
+</code></pre>
+<p>7.找文件上传点</p>
+<pre><code class="hljs">找敏感路径，找脆弱站点的文件上传处，比如微信公众号存在未关闭的文件上传处。
+总结下来，几次攻防演练我都停留在找脆弱站点的层面，并没能通过旁站拿到主站权限，往后学习要提升getshell和内网渗透方面的能力。
+</code></pre>
 <h2 id="0x03-涉及工具"><a href="#0x03-涉及工具" class="headerlink" title="0x03 涉及工具"></a>0x03 涉及工具</h2><p>网络空间搜索引擎Fofa，fofaviewer（查看资产更简介快捷）；</p>
 <p>Nmap（端口扫描）；比如我就通过全端口扫描，找到过一个弱口令登录站点，拿到web应用管理员权限。</p>
 <p>漏扫Goby（我一般用来全端口扫描和看C段）；</p>

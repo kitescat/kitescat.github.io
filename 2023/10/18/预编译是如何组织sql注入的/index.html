@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://kitescat.github.io/img/prestatement.png">
 <meta property="article:published_time" content="2023-10-17T17:39:24.000Z">
-<meta property="article:modified_time" content="2023-12-21T17:30:44.580Z">
+<meta property="article:modified_time" content="2024-01-17T13:05:14.945Z">
 <meta property="article:author" content="kitescat">
 <meta property="article:tag" content="sql注入">
 <meta name="twitter:card" content="summary_large_image">
@@ -222,7 +222,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          4.4k 字
+          4.5k 字
         
       </span>
     
@@ -234,7 +234,7 @@
         
         
           <!-- compatible with older versions-->
-          37 分钟
+          38 分钟
         
       </span>
     
@@ -285,7 +285,10 @@
             <div class="markdown-body">
               
               <p>本篇主要分享sql注入防御之预编译的原理，并解释模糊查询语句如何适配预编译。预编译是利用占位符替代参数值，预先建立语法树的过程。注入的恶意SQL语句只会被视为参数，参与不了SQL语句的语法树构建，也就无法改变其语法结构，也就无法达到编译恶意语句的目的。然而，预编译有一些局限性，比如，模糊查询由于存在% _使得参数值是不确定的，需要修改预编译语句。</p>
-<h2 id="1-SQL注入原理"><a href="#1-SQL注入原理" class="headerlink" title="1 SQL注入原理"></a>1 SQL注入原理</h2><p>sql注入是指攻击者拼接恶意SQL语句到接受外部参数的动态SQL查询中，程序本身未对插入的SQL语句进行过滤，导致SQL语句直接被服务端执行。<br>拼接的SQL查询例如，通过在id变量后插入or 1=1这样的条件，来绕过身份验证，获得未授权数据的访问权。<br>SELECT * FROM user WHERE id = -1 or 1=1<br>由于or 1=1 满足永真结果，sql语句会执行输出user中的全部内容。<br><img src="/img/pre_ex1.png" srcset="/img/loading.gif" lazyload></p>
+<h2 id="1-SQL注入原理"><a href="#1-SQL注入原理" class="headerlink" title="1 SQL注入原理"></a>1 SQL注入原理</h2><p>sql注入是指攻击者拼接恶意SQL语句到接受外部参数的动态SQL查询中，程序本身未对插入的SQL语句进行过滤，导致SQL语句直接被服务端执行。<br>拼接的SQL查询例如，通过在id变量后插入or 1=1这样的条件，来绕过身份验证，获得未授权数据的访问权。</p>
+<pre><code class="hljs">SELECT * FROM user WHERE id = -1 or 1=1
+</code></pre>
+<p>由于or 1=1 满足永真结果，sql语句会执行输出user中的全部内容。<br><img src="/img/pre_ex1.png" srcset="/img/loading.gif" lazyload></p>
 <p>拼接后的执行结果示例如上</p>
 <h2 id="2-SQL注入的防御方式"><a href="#2-SQL注入的防御方式" class="headerlink" title="2 SQL注入的防御方式"></a>2 SQL注入的防御方式</h2><ol>
 <li><p>定制严格的白名单校验，加强对用户输入的验证，限制用户输入。限制用户输入内容的大小和数据类型，强制执行适当的限制与转换，并在用户提交请求的时候进行检查，凡不符合该类型的提交就认为是非法请求。限制查询长度：SQL注入需要构造较长的SQL语句。</p>
@@ -309,31 +312,55 @@
 <p>词法分析 Scanning 分词</p>
 <p>语法分析 Syntax 组句</p>
 <p>语义分析 Semantic 识意 收集标识符的属性信息 和 对语义的检查（检查合法性）</p>
-<h2 id="3-预编译的原理"><a href="#3-预编译的原理" class="headerlink" title="3 预编译的原理"></a>3 预编译的原理</h2><p>预编译：用占位符替代参数值，预先建立语法树。恶意语句不参与语法书的建立，所以不影响SQL语法，也就无法造成恶意注入。最初的目的是提高代码的复用性，因为有很多只有参数值不同的SQL（完全相同的SQL会从缓存里查），比如：<br>select * from user where id=’1’<br>select * from user where id=’2’<br>这些SQL的语法树相同，但每次都要进行重复的编译，很浪费时间。SQL预编译将SQL语句模板化，用占位符替代值（参数化绑定）并存储在数据库中，以便在需要时再传入值执行，省掉了重复建立语法树的时间，实现快速执行。<br>select * from user where id={占位符}</p>
+<h2 id="3-预编译的原理"><a href="#3-预编译的原理" class="headerlink" title="3 预编译的原理"></a>3 预编译的原理</h2><p>预编译：用占位符替代参数值，预先建立语法树。恶意语句不参与语法书的建立，所以不影响SQL语法，也就无法造成恶意注入。最初的目的是提高代码的复用性，因为有很多只有参数值不同的SQL（完全相同的SQL会从缓存里查），比如：</p>
+<pre><code class="hljs">select * from user where id=&#39;1&#39;
+select * from user where id=&#39;2&#39;
+</code></pre>
+<p>这些SQL的语法树相同，但每次都要进行重复的编译，很浪费时间。SQL预编译将SQL语句模板化，用占位符替代值（参数化绑定）并存储在数据库中，以便在需要时再传入值执行，省掉了重复建立语法树的时间，实现快速执行。</p>
+<pre><code class="hljs">select * from user where id=&#123;占位符&#125;
+</code></pre>
 <p>以MySQL为例，利用mysqli的预编译功能编写的核心PHP语句为：</p>
-<p>//定义需要预编译的SQL语句，从外界传递的参数（输入）用占位符?表示<br> $sql= “SELECT FROM security.users WHERE id= ? LIMIT 0,1”;<br> //创建预处理对象<br> $mysqli_stmt = $mysqli-&gt;prepare($sql);<br> //绑定参数<br> $mysqli_stmt-&gt;bind_param(‘i’, $id);<br> //绑定结果集<br> $mysqli_stmt-&gt;bind_result($id, $username, $password);<br> //执行<br> $mysqli_stmt-&gt;execute();</p>
+<p>//定义需要预编译的SQL语句，从外界传递的参数（输入）用占位符?表示</p>
+<pre><code class="hljs">$sql= &quot;SELECT FROM security.users WHERE id= ? LIMIT 0,1&quot;;
+//创建预处理对象
+$mysqli_stmt = $mysqli-&gt;prepare($sql);
+//绑定参数
+$mysqli_stmt-&gt;bind_param(&#39;i&#39;, $id);
+//绑定结果集
+$mysqli_stmt-&gt;bind_result($id, $username, $password);
+//执行
+$mysqli_stmt-&gt;execute();
+</code></pre>
 <p>预编译语句的优势在于：一次编译、多次运行，省去了解析优化等过程。</p>
 <p>预编译防止SQL注入的原理</p>
 <p>正常情况下，用户输入的参数会直接参与SQL语法的编译，而预编译则是先构建语法树，确定SQL语法结构以后，再拼接用户的参数。注入的恶意SQL语句只会被视为参数，参与不了SQL语句的语法树构建，也就无法改变其语法结构，也就无法达到编译恶意语句的目的。</p>
 <p>比如：不使用预编译，用单引号提前闭合的方式注入恶意SQL语句</p>
-<p>select count(1) from students where name=’张三’ or ‘1=1’；</p>
+<pre><code class="hljs">select count(1) from students where name=&#39;张三&#39; or &#39;1=1&#39;；
+</code></pre>
 <p>使用了预编译：</p>
-<p>select count(1) from students where name=’张三” or “1=1’；</p>
+<pre><code class="hljs">select count(1) from students where name=&#39;张三” or “1=1&#39;；
+</code></pre>
 <p>这里payload是张三’ or ‘1=1，会被当做参数，单引号会被转义成’’，从数据库查的时候，查的就是name=’张三’ or ‘1=1’,而数据库不会存在名字为’张三’ or ‘1=1’的人，所有查不到。</p>
 <h2 id="4-预编译的局限性"><a href="#4-预编译的局限性" class="headerlink" title="4 预编译的局限性"></a>4 预编译的局限性</h2><p>预编译的机制是先编译，再传值，用户传递的参数无法改变SQL语法结构，从根本上解决了SQL注入的问题。但并不是所有参数都可以使用预编译。<br>比如动态表名和列名的场景。：在生成语法树的过程中，预处理器在进一步检查解析后的语法树时，会检查数据表和数据列是否存在，因此数据表和数据列不能被占位符?所替代。但在很多业务场景中，表名需要作为一个变量存在，因此这部分仍需由加号进行SQL语句的拼接，若表名是由外部传入且可控的，仍会造成SQL注入。</p>
 <p>动态传参的场景，如动态表名，列名，Order by $param，不能使用预编译，应该使用严格的白名单校验。order by后一般是接字段名，而字段名是不能带引号的，比如 order by username；如果带上引号成了order by ‘username’，那username就是一个字符串不是字段名了，这就产生了语法错误。一方面预编译又只有自动加引号的setString()方法，没有不加引号的方法；而另一方面order by后接的字段名不能有引号。</p>
 <p>凡是字符串但又不能加引号的位置都不能参数化；包括sql关键字、库名表名字段名函数名等等。不能参数化的位置。不管怎么拼接，最终都是和使用“+”号拼接字符串的功效一样：拼成了sql语句但没有防sql注入的效果。</p>
 <h2 id="5-模糊查询预编译"><a href="#5-模糊查询预编译" class="headerlink" title="5 模糊查询预编译"></a>5 模糊查询预编译</h2><p>模糊查询本身并不支持预编译，占位符 ? 不适用于模糊查询中的通配符 %。占位符只能用于替换具体的值，而不能用于替换SQL语句中的其他结构，如通配符或标识符，因为预编译需要明确的参数值来进行参数绑定，所以无法进行预编译。例如：</p>
-<p>SELECT * FROM users WHERE name LIKE ‘%abc%’</p>
+<pre><code class="hljs">SELECT * FROM users WHERE name LIKE ‘%abc%’
+</code></pre>
 <p>这个查询会返回名字中包含“abc”的所有用户。但是，由于通配符的存在，参数值是不确定的，因此无法进行预编译。当执行如下语句时，会报错：</p>
-<p>SELECT * FROM users WHERE name LIKE ‘%?%’</p>
+<pre><code class="hljs">SELECT * FROM users WHERE name LIKE ‘%?%’
+</code></pre>
 <p>报错：Parameter index out of range (1 &gt; number of parameters, which is 0).</p>
 <p>%?%是字符串，所以不会被当做一个参数解析。</p>
 <p>解决方案是修改语句如下：</p>
-<p>select id,name,age from people where address LIKE</p>
-<p>concat(‘%’,?,’%’) order by id desc；</p>
-<p>select id,name,age from people where address LIKE</p>
-<p>concat(‘%’,#{key,jdbcType=VARCHAR},’%’) order by id desc；</p>
+<pre><code class="hljs">select id,name,age from people where address LIKE
+
+concat(&#39;%&#39;,?,&#39;%&#39;) order by id desc；
+
+select id,name,age from people where address LIKE
+
+concat(&#39;%&#39;,#&#123;key,jdbcType=VARCHAR&#125;,&#39;%&#39;) order by id desc；
+</code></pre>
 <p>Mybatis场景下$和#的区别</p>
 <p>${}:表示拼接sql串，将接收到参数的内容不加任何修饰拼接在sql中，可能引发sql注入。</p>
 <p>#{ }是预编译处理，MyBatis在处理#{ }时，它会将sql中的#{ }替换为？，然后调用PreparedStatement的set方法来赋值，传入字符串后，会在值两边加上单引号，使用占位符的方式提高效率，可以防止sql注入。因此最好使用#{ }方式。</p>
