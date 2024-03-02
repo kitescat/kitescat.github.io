@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://kitescat.github.io/img/mongo.png">
 <meta property="article:published_time" content="2022-05-15T14:04:46.000Z">
-<meta property="article:modified_time" content="2022-11-17T16:10:59.066Z">
+<meta property="article:modified_time" content="2024-03-02T09:00:11.831Z">
 <meta property="article:author" content="kitescat">
 <meta property="article:tag" content="Database">
 <meta property="article:tag" content="MongoDB">
@@ -285,8 +285,10 @@
             
             <div class="markdown-body">
               
-              <h1 id="MongoDB遭遇删库勒索漏洞"><a href="#MongoDB遭遇删库勒索漏洞" class="headerlink" title="MongoDB遭遇删库勒索漏洞"></a>MongoDB遭遇删库勒索漏洞</h1><p>申明：本地测试，请遵守法律，切勿对未授权网站进行恶意攻击渗透</p>
-<h2 id="0X01-漏洞介绍"><a href="#0X01-漏洞介绍" class="headerlink" title="0X01 漏洞介绍"></a>0X01 漏洞介绍</h2><p>最近在看的项目源代码用到很多类型的数据库，除了上次我们讲到redis数据库<br>这次我又发现，除了已知的redis之外，MongoDB数据库也可能存在未授权登录<br><img src="/img/mongo.png" srcset="/img/loading.gif" lazyload></p>
+              <div class="note note-warning">
+            <p>申明：本地测试为授权操作，请遵守法律，切勿对网站进行未授权的恶意攻击渗透</p>
+          </div>
+<h1 id="MongoDB遭遇删库勒索漏洞"><a href="#MongoDB遭遇删库勒索漏洞" class="headerlink" title="MongoDB遭遇删库勒索漏洞"></a>MongoDB遭遇删库勒索漏洞</h1><h2 id="0X01-漏洞介绍"><a href="#0X01-漏洞介绍" class="headerlink" title="0X01 漏洞介绍"></a>0X01 漏洞介绍</h2><p>最近在看的项目源代码用到很多类型的数据库，除了上次我们讲到redis数据库<br>这次我又发现，除了已知的redis之外，MongoDB数据库也可能存在未授权登录<br><img src="/img/mongo.png" srcset="/img/loading.gif" lazyload></p>
 <p>这里我们对MongoDB不做特别介绍，只需要知道该漏洞，和上次的redis漏洞一样初始化运行时候，默认都是没有密码的<br>且没有严格的访问控制，容易造成任意用户登录等问题</p>
 <h2 id="0X02-漏洞利用"><a href="#0X02-漏洞利用" class="headerlink" title="0X02 漏洞利用"></a>0X02 漏洞利用</h2><p>信息搜集一番，安装MongoDB Compass，根据ip和端口号尝试连接<br><img src="/img/mongo_connect.png" srcset="/img/loading.gif" lazyload><br>通过输入ip:port连接成功!<br><img src="/img/mongo_login.png" srcset="/img/loading.gif" lazyload></p>
 <p>查看数据库 Database，发现有三个admin，config和一个显著的Readme to recover your data<br><img src="/img/mondb_cont.png" srcset="/img/loading.gif" lazyload></p>
@@ -304,8 +306,8 @@ After paying write to me in the mail with your DB IP: recmydb+1vqt9@onionmail.or
 <p>灵机一动，我们去fofa(网络空间扫描)看看其他机器是否有类似的漏洞<br><img src="/img/fofa_mongo.png" srcset="/img/loading.gif" lazyload><br>果不其然，很多ip都存在，且相当一部分机器已经被删库，并留下勒索信息<br><img src="/img/fofa_mongobug.png" srcset="/img/loading.gif" lazyload></p>
 <h2 id="0X03-可能造成的影响："><a href="#0X03-可能造成的影响：" class="headerlink" title="0X03 可能造成的影响："></a>0X03 可能造成的影响：</h2><p>首先数据库内容若非敏感信息，损失不严重<br>但我们发现任意登陆者都可以任意上传文件，推测可以造成服务器内存异常<br>这样就会使得原本正常运行在该服务器上的服务无法很好地运行</p>
 <h2 id="0X04-可能造成的影响："><a href="#0X04-可能造成的影响：" class="headerlink" title="0X04 可能造成的影响："></a>0X04 可能造成的影响：</h2><p>若不需要mongodb可以将其卸载 然后设置好权限 去掉外网访问权限<br>其他修复意见见网络</p>
-<h2 id="0X05-相关博客"><a href="#0X05-相关博客" class="headerlink" title="0X05 相关博客"></a>0X05 相关博客</h2><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/lzkalislw/p/15991123.html">https://www.cnblogs.com/lzkalislw/p/15991123.html</a> </p>
-
+<h2 id="0X05-相关博客"><a href="#0X05-相关博客" class="headerlink" title="0X05 相关博客"></a>0X05 相关博客</h2><section class="footnotes"><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://www.cnblogs.com/lzkalislw/p/15991123.html">https://www.cnblogs.com/lzkalislw/p/15991123.html</a>
+<a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
               
             </div>
             <hr/>

@@ -16,26 +16,26 @@
   <meta name="author" content="kitescat">
   <meta name="keywords" content="web安全">
   
-    <meta name="description" content="本篇我们讲解了sql注入漏洞的盲注，盲注的关键词有：1）页面无数据库回显示，2）时间盲注：反应时间差异 ，3）布尔盲注：页面差异。">
+    <meta name="description" content="已存储的用户输入被读取后，再次进入到SQL查询语句中导致的注入;当ascii码大于127的字符和转义字符组成宽字节字符，从而造成单引号或者双引号逃逸，进而导致sql注入。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="【Sql注入】盲注">
-<meta property="og:url" content="https://kitescat.github.io/2023/04/25/%E7%9B%B2%E6%B3%A8/index.html">
+<meta property="og:title" content="【Sql注入】宽字节 二次注入">
+<meta property="og:url" content="https://kitescat.github.io/2023/05/11/SQL%E6%B3%A8%E5%85%A5%E4%B9%8B%E5%AE%BD%E5%AD%97%E8%8A%82%E3%80%81%E4%BA%8C%E6%AC%A1%E6%B3%A8%E5%85%A5/index.html">
 <meta property="og:site_name" content="kitescat 的博客">
-<meta property="og:description" content="本篇我们讲解了sql注入漏洞的盲注，盲注的关键词有：1）页面无数据库回显示，2）时间盲注：反应时间差异 ，3）布尔盲注：页面差异。">
+<meta property="og:description" content="已存储的用户输入被读取后，再次进入到SQL查询语句中导致的注入;当ascii码大于127的字符和转义字符组成宽字节字符，从而造成单引号或者双引号逃逸，进而导致sql注入。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://kitescat.github.io/img/Blind_inj.png">
-<meta property="article:published_time" content="2023-04-25T03:48:04.000Z">
-<meta property="article:modified_time" content="2023-06-18T07:51:34.580Z">
+<meta property="og:image" content="https://kitescat.github.io/img/double_inj.png">
+<meta property="article:published_time" content="2023-05-11T14:10:07.000Z">
+<meta property="article:modified_time" content="2024-03-02T09:04:39.105Z">
 <meta property="article:author" content="kitescat">
 <meta property="article:tag" content="渗透测试，SQL注入">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://kitescat.github.io/img/Blind_inj.png">
+<meta name="twitter:image" content="https://kitescat.github.io/img/double_inj.png">
   
   
     <meta name="referrer" content="no-referrer-when-downgrade">
   
   
-  <title>【Sql注入】盲注 - kitescat 的博客</title>
+  <title>【Sql注入】宽字节 二次注入 - kitescat 的博客</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -192,13 +192,13 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/Blind_inj.png') no-repeat center center; background-size: cover;">
+     style="background: url('/img/double_inj.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="【Sql注入】盲注"></span>
+            <span id="subtitle" data-typed-text="【Sql注入】宽字节 二次注入"></span>
           
         </div>
 
@@ -209,8 +209,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-04-25 11:48" pubdate>
-          2023年4月25日 中午
+        <time datetime="2023-05-11 22:10" pubdate>
+          2023年5月11日 晚上
         </time>
       </span>
     
@@ -222,7 +222,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          3.4k 字
+          2.1k 字
         
       </span>
     
@@ -234,7 +234,7 @@
         
         
           <!-- compatible with older versions-->
-          29 分钟
+          18 分钟
         
       </span>
     
@@ -280,53 +280,56 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">【Sql注入】盲注</h1>
+            <h1 style="display: none">【Sql注入】宽字节 二次注入</h1>
             
             <div class="markdown-body">
               
-              <p>本Web安全基础推文系列旨在以平白的语言讲解漏洞原理，文章多数内容为我本人的学习笔记与总结，汇总供大家参考。</p>
-<h2 id="1-盲注"><a href="#1-盲注" class="headerlink" title="1 盲注"></a>1 盲注</h2><p>为什么叫做盲注？<br>盲注的本质是猜解(所谓 “盲” 就是在你看不到返回数据的情况下能通过 “感觉” 来判断)，那能感觉到什么？答案是：差异（包括运行时间的差异和页面返回结果的差异）。也就是说我们想实现的是我们要构造一条语句来测试我们输入的布尔表达式，使得布尔表达式结果的真假直接影响整条语句的执行结果，从而使得系统有不同的反应，在时间盲注中是不同的返回的时间，在布尔盲注中则是不同的页面反应。<br><a target="_blank" rel="noopener" href="http://zhuanzhuan.lklgongyi.com/anquanke/26/170626.html">http://zhuanzhuan.lklgongyi.com/anquanke/26/170626.html</a><br>如上所述，这种猜测的过程使得盲注得名。在盲注中，攻击者根据页面内容的不同，或是响应时间不同来判断是否存在注入，以及注入是否成功。<br>于是很好理解，盲注是页面无数据库回显示，但能通过 1）反应时间或 2）页面不同的差异，来反馈逻辑正误的注入。攻击者可以利用逻辑判断获取数据库中的数据。常见的可以分为布尔盲注和时间盲注两大类。<br><img src="/img/blind_1.png" srcset="/img/loading.gif" lazyload><br>这种类似if的逻辑语句可以给sql语句分流，出现两种结果，带来差异。我们把这种能根据其中输入真假，返回不同结果的函数叫做分流函数。其他的分流“函数”还有：elt()， field()，case when then else end等等。</p>
-<ol>
-<li><p>ELT(N ,str1 ,str2 ,str3 ,…)<br>说明：若 N = 1 ，则返回值为 str1 ，若 N = 2 ，则返回值为 str2 ，以此类推。若 N 小于 1 或大于参数的数目，则返回值为 NULL 。ELT() 是 FIELD() 的补数。</p>
-</li>
-<li><p>FIELD(str, str1, str2, str3, ……)<br>该函数返回的是 str 在这些字符串的位置的索引，如果找不到返回 0。</p>
-</li>
-<li><p>case when then else end</p>
-</li>
-</ol>
-<p>eg. CASE WHEN (ascii(substr((select database()),{0},1))&gt;{1}) THEN 1 ELSE (SELECT 1 FROM DUAL UNION SELECT 2 FROM DUAL) END)</p>
-<h3 id="1-1-布尔盲注"><a href="#1-1-布尔盲注" class="headerlink" title="1.1 布尔盲注"></a>1.1 布尔盲注</h3><p>布尔盲注：某些场合下，不能返回查询的结果，但是对于输入 布尔值 0 和 1 的反应是不同的。通过输入布尔值的注入点，注入我们的条件语句，查看页面的返回结果（True or False）来判断哪些SQL判断条件成立，通过此来获取数据库中的数据。<br>① 布尔盲注的特点：<br>1）只会显示执行或者未执行两种不同界面</p>
-<p>2）适用于数据库能查询到数据和查询不到数据页面返回不同，但是数据不会显示在页面</p>
-<p>② 注入流程及手段<br>参考论坛@士别三日wyx的帖子，我们以sqli-lab Less 5为例，?id=1 正常输入页面显示 “You are in…”， 加入单引号发现报错。</p>
-<p><img src="/img/blind_2.png" srcset="/img/loading.gif" lazyload></p>
-<p><a target="_blank" rel="noopener" href="http://127.0.0.1/Less-5/?id=1&#39;and">http://127.0.0.1/Less-5/?id=1&#39;and</a> length(database())=1 –+<br><img src="/img/blind_3.png" srcset="/img/loading.gif" lazyload><br>此时，页面回显为空。猜数据库长度(利用二分法)。<br><a target="_blank" rel="noopener" href="http://127.0.0.1/Less-5/?id=1&#39;and">http://127.0.0.1/Less-5/?id=1&#39;and</a> length(database())=8 –+<br><img src="/img/blind_4.png" srcset="/img/loading.gif" lazyload><br>当页面回显You are in … 说明and后面数值为1， 显示正常，说明数据库名长度为8。这种通过构造条件判断的方式进行猜解的过程，即是盲注的过程。</p>
-<h3 id="1-2-时间盲注（延迟注入）"><a href="#1-2-时间盲注（延迟注入）" class="headerlink" title="1.2 时间盲注（延迟注入）"></a>1.2 时间盲注（延迟注入）</h3><p> 时间盲注：根据页面的响应时间来判断是否存在注入。一般通过延迟函数，大量查询等payload进行利用。时间盲注使用的优先级并不高，通常是在联合注入、报错注入、布尔盲注都无法使用时才会考虑使用：</p>
-<p>1）页面没有回显位置（联合注入无法使用）</p>
-<p>2）页面不显示数据库的报错信息（报错注入无法使用）</p>
-<p>3）无论成功还是失败，页面只响应一种结果（布尔盲注无法使用）</p>
-<p>①  延迟函数 sleep(n) 、benchmark(n,expr)<br>sleep：select * from users where id = ‘1’ and sleep(2)</p>
-<p>benchmark：benchmark(10000000,encode(‘hello’,’mom’))</p>
-<pre><code class="hljs"> eg.  select BENCHMARK(10000,md5(&#39;a&#39;));
-</code></pre>
-<p>benchmark是Mysql的一个内置函数,其作用是来测试一些函数的执行速度。benchmark()中带有两个参数，第一个是执行的次数，第二个是要执行的函数或者是表达式</p>
-<p>② heavy query<br>heavy query顾名思义就是通过做大量的查询导致查询时间较长来达到延时的目的。通常选择一些比较大的表做笛卡尔积运算。</p>
-<p>③ get_lock<br>get_lock()函数 需要使用 mysql_pconnect函数来连接数据库，利用场景比较有限。</p>
-<p>在一个session中可以先锁定一个变量例如：select get_lock(‘MountSec’,1)。然后通过另一个session再次执行get_lock（‘MountSec’,5）此时会产生5秒的延迟，其效果类似于sleep(5)。</p>
-<p>④ rpad+rlike<br>rpad(1,3,’a’)是指用a填充第一位的字符串以达到第二位的长度</p>
-<p>经本地测试mysql5.7最大允许用单个rpad()填充349525位，而多个rpad()可以填充4个349525位，</p>
-<p>select * from table1 where 1=1 and<br>if(mid(user(),1,1)=’r’,concat(rpad(1,349525,’a’),<br>rpad(1,349525,’a’),rpad(1,349525,’a’))<br>RLIKE ‘(a.<em>)+(a.</em>)+(a.<em>)+(a.</em>)+(a.<em>)+(a.</em>)+(a.*)+<br>asdasdsadasd’,1);<br>最后的asdasdasd对时间长度有巨大影响，可以增长其长度以增大时延</p>
-<h2 id="2-常见payload"><a href="#2-常见payload" class="headerlink" title="2 常见payload"></a>2 常见payload</h2><h3 id="2-1-猜解细节"><a href="#2-1-猜解细节" class="headerlink" title="2.1 猜解细节"></a>2.1 猜解细节</h3><p>①  猜解当前数据库名称长度（二分法）<br>eg.  ‘ and if((length(database()))=12,sleep(5),1)–+ 页面延时了</p>
-<p>==》当前数据库名称长度为 12。</p>
-<p>② 猜解当前数据库名称<br>猜解数据库第一个字符<br>eg. ?id=1’ and if((ascii(substr(database(),1,1)) =115 ),sleep(3),1) –+<br>猜解整个数据库名<br>eg. ‘ and if(ascii(substr(database(),1,1))=107,sleep(5),1)–+ 页面延时了<br>==》数据库第一个字母是k… 类推得到数据库名kanwolonxia。可以用burp进行爆破。</p>
-<h3 id="2-2-常用语句"><a href="#2-2-常用语句" class="headerlink" title="2.2 常用语句"></a>2.2 常用语句</h3><p>①  条件语句case when then else end<br>“(CASE WHEN (ascii(substr((select database()),{0},1))&gt;{1}) THEN 1 ELSE (SELECT 1 FROM DUAL UNION SELECT 2 FROM DUAL) END)”.format(i, str(ord(string[left])))<br>②  条件语句 if(expr1,expr2,expr3)<br>expr1为true则返回expr2，expr1为false则返回expr3。</p>
-<p>注：仅MySQL支持if（expr1，expr2，expr3）</p>
-<p>1’and if(ascii(substr(database(),1,1))&gt;97,sleep(5),1)# 明显延迟<br>1’and if(ascii(substr(database(),1,1))&lt;100,sleep(5),1)# 没有延迟<br>1’and if(ascii(substr(database(),1,1))&gt;100,sleep(5),1)# 没有延迟<br>③ Order by<br>order by rand(True)和order by rand(False)的结果排序是不同的，可以根据这个不同来进行盲注：order by rand(database()=’MountSec’)</p>
-<p>返回了True的排序，说明database()=’MountSec’是正确的值</p>
-<h2 id="3-总结"><a href="#3-总结" class="headerlink" title="3 总结"></a>3 总结</h2><p>本篇我们讲解了sql注入漏洞的盲注，盲注的关键词有：1）页面无数据库回显示，2）时间盲注：反应时间差异 ，3）布尔盲注：页面差异。</p>
-<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://www.sqlinjection.net/heavy-query/">https://www.sqlinjection.net/heavy-query/</a></p>
-<p><a target="_blank" rel="noopener" href="http://zhuanzhuan.lklgongyi.com/anquanke/26/170626.html">http://zhuanzhuan.lklgongyi.com/anquanke/26/170626.html</a></p>
-<p><a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/web/356765.html">https://www.freebuf.com/articles/web/356765.html</a></p>
+              <div class="note note-info">
+            <p>本Web安全基础推文系列旨在以平白的语言讲解漏洞原理，文章多数内容为我本人的学习笔记与总结，汇总供大家参考。</p>
+          </div>
 
+<h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><p>1 二次注入<br>2 二次注入案例 sqli-labs less-24<br>3 宽字节注入<br>4 宽字节注入案例 sqli-labs less-32<br>参考链接</p>
+<h2 id="1-二次注入"><a href="#1-二次注入" class="headerlink" title="1 二次注入"></a>1 二次注入</h2><p>二次注入是指已存储（数据库、文件）的用户输入被读取后，再次进入到 SQL 查询语句中导致的注入。<br>过程如下：</p>
+<ol>
+<li>第一次插入恶意数据：在第一次进行数据库插入数据的时候，使用addslashes 或者是借助 get_magic_quotes_gpc 对其中的特殊字符进行了转义，在后端代码中可能会被转义，但在存入数据库时还是原来的数据，数据中一般带有单引号和＃号；<br>例如，插入1‘#；转义成1\’#。不能注入，但是保存在数据库时变成了原来的1’#。</li>
+<li>引用恶意数据，篡改正常数据：再次调用时，拼凑到SQL中就形成了二次注入。<br>利用1’#进行注入，也很好理解，单引号提前闭合，#注释后续语句。<br>这里利用时要求取出数据时不转义。<br>二次注入比普通sql注入利用更加困难，利用门槛更高。普通注入数据直接进入到 SQL 查询中，而二次注入则是输入数据经处理后存储，取出后，再次进入到 SQL 查询。<br>换言之，二次注入需要具备的两个条件：<br>（1）用户向数据库插入恶意语句（即使后端代码对语句进行了转义，如mysql_escape_string、mysql_real_escape_string转义）<br>（2）数据库对自己存储的数据非常放心，直接取出恶意数据给用户<h2 id="2-二次注入案例"><a href="#2-二次注入案例" class="headerlink" title="2 二次注入案例"></a>2 二次注入案例</h2><h3 id="2-1-以sqli-lab-less-24为例"><a href="#2-1-以sqli-lab-less-24为例" class="headerlink" title="2.1 以sqli-lab less-24为例"></a>2.1 以sqli-lab less-24为例</h3>正常来说，无法通过注入来登录admin，因为用户输入会被转义。<br>我们尝试注册admin ‘#，注册成功；<br>图片</li>
+</ol>
+<p>图片</p>
+<p>登录admin’# 转义成admin&#39;#，则登录的是admin’#<br>更新密码的sql语句为：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs routeros">UPDATE<span class="hljs-built_in"> users </span><span class="hljs-builtin-name">SET</span> <span class="hljs-attribute">pw</span>=’$newpw’ where username = ‘<span class="hljs-variable">$name</span>’ <span class="hljs-keyword">and</span> <span class="hljs-attribute">pw</span>=’oldpw’;<br></code></pre></td></tr></table></figure>
+<p>修改admin’#的密码，由于这里不会被转义，故可以直接利用，这个时候就变成了修改了admin的密码，#后面的语句不执行<br>于是语句变成：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs routeros">UPDATE<span class="hljs-built_in"> users </span><span class="hljs-builtin-name">SET</span> <span class="hljs-attribute">pw</span>=’123456’ where username = ‘admin’#<span class="hljs-string">&#x27; and pw=’123’;</span><br></code></pre></td></tr></table></figure>
+<p>于是我们修改admin密码成功</p>
+<p>图片</p>
+<p>注意到左图admin密码为admin，被修改为123456</p>
+<h3 id="2-2-防御"><a href="#2-2-防御" class="headerlink" title="2.2 防御"></a>2.2 防御</h3><ol>
+<li>通过预编译解决SQL注入。</li>
+<li>永远不要相信用户的输入！对输入一视同仁，无论输入来自用户还是存储，在进入到 SQL 查询前都对其进行过滤、转义。<h2 id="3-宽字节注入"><a href="#3-宽字节注入" class="headerlink" title="3 宽字节注入"></a>3 宽字节注入</h2>宽字节注入是利用mysql的一个特性，mysql在使用GBK编码的时候，会认为两个字符是一个汉字（前一个ascii码要大于128，才到汉字的范围），也就是说一次性会读取两个字节。</li>
+</ol>
+<p>简单来说，宽字节注入就是将两个ascii字符误认为是一个宽字节字符。</p>
+<p>然而，除了GBK的存在，转义字符\也是可以构成此漏洞的因素。</p>
+<p>当ascii码大于127的字符和转义字符\组成宽字节字符，会造成单引号或者双引号逃逸，进而导致sql注入。</p>
+<p>产生宽字节注入的原因涉及了编码转换的问题，当我们的mysql使用GBK编码后，同时两个字符的前一个字符ASCII码大于128时，会将两个字符认成一个汉字，那么如果存在过滤我们输入的函数（addslashes()、mysql_real_escape_string()、mysql_escape_string()、Magic_quotes_gpc）会将我们的输入进行转义。</p>
+<p>尝试注入，我们举一个简单的例子：</p>
+<p>addslashes()：该函数的作用是返回在预定义字符之前添加反斜杠的字符串。</p>
+<h2 id="4-宽字节注入案例"><a href="#4-宽字节注入案例" class="headerlink" title="4 宽字节注入案例"></a>4 宽字节注入案例</h2><h3 id="4-1-以sqli-lab-less-32为例"><a href="#4-1-以sqli-lab-less-32为例" class="headerlink" title="4.1 以sqli-lab less-32为例"></a>4.1 以sqli-lab less-32为例</h3><p>假设我们传入一个参数id为1’查看数据库是否错报：</p>
+<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs accesslog"><span class="hljs-number">127.0.0.1</span>/sqli-labs/Less-<span class="hljs-number">32</span>/?id=<span class="hljs-number">1</span>&#x27;<br></code></pre></td></tr></table></figure>
+<p>那么经过函数过滤后我们的输入拼接到sql语句就会变成：</p>
+<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs n1ql"><span class="hljs-keyword">select</span> * <span class="hljs-keyword">from</span> <span class="hljs-keyword">user</span> <span class="hljs-keyword">where</span> id = <span class="hljs-string">&#x27;1\&#x27;&#x27;</span><br></code></pre></td></tr></table></figure>
+<p>图片</p>
+<p>图片</p>
+<p>单引号被转义了能正常执行。</p>
+<p>图片</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">127</span>.<span class="hljs-number">0</span>.<span class="hljs-number">0</span>.<span class="hljs-number">1</span>/sqli-labs/Less-<span class="hljs-number">32</span>/?id=-<span class="hljs-number">1</span>%df%<span class="hljs-number">27</span>union select <span class="hljs-number">1</span>,user(),<span class="hljs-number">3</span>--+<br></code></pre></td></tr></table></figure>
+<p>所以如上，%df’ 变为 %df&#39; 而 %df\组成 %df%5C ，此为運字。而運字刚好使得转义字符失效，单引号成功逃逸，造成提前闭合。<br>图片</p>
+<h3 id="4-2-pikachu靶场wide-byte注入"><a href="#4-2-pikachu靶场wide-byte注入" class="headerlink" title="4.2 pikachu靶场wide byte注入"></a>4.2 pikachu靶场wide byte注入</h3><p>图片</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-attribute">name</span>=kobe1%df&#x27; <span class="hljs-keyword">or</span> <span class="hljs-attribute">1</span>=1#<br></code></pre></td></tr></table></figure>
+<h2 id="5-总结"><a href="#5-总结" class="headerlink" title="5 总结"></a>5 总结</h2><p>二次注入关键词为：已存储（数据库、文件）的用户输入被读取后，再次进入到 SQL 查询语句中导致的注入。</p>
+<p>宽字节注入关键字为：当ascii码大于127的字符和转义字符\组成宽字节字符，从而造成单引号或者双引号逃逸，进而导致sql注入。</p>
+<p>图片</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><section class="footnotes"><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://blog.csdn.net/kongzhian/article/details/110001836">https://blog.csdn.net/kongzhian/article/details/110001836</a>
+<a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:2" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://juejin.cn/post/7167647367246643208">https://juejin.cn/post/7167647367246643208</a>
+<a href="#fnref:2" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
               
             </div>
             <hr/>
@@ -370,8 +373,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>【Sql注入】盲注</div>
-      <div>https://kitescat.github.io/2023/04/25/盲注/</div>
+      <div>【Sql注入】宽字节 二次注入</div>
+      <div>https://kitescat.github.io/2023/05/11/SQL注入之宽字节、二次注入/</div>
     </div>
     <div class="license-meta">
       
@@ -383,7 +386,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年4月25日</div>
+          <div>2023年5月11日</div>
         </div>
       
       
@@ -413,9 +416,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/04/26/HTTP%E6%B3%A8%E5%85%A5/" title="【Sql注入】HTTP注入">
+                      <a href="/2023/06/21/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E/" title="文件上传漏洞">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">【Sql注入】HTTP注入</span>
+                        <span class="hidden-mobile">文件上传漏洞</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -423,8 +426,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/04/24/%E8%81%94%E5%90%88%E6%B3%A8%E5%85%A5/" title="【Sql注入】联合注入">
-                        <span class="hidden-mobile">【Sql注入】联合注入</span>
+                      <a href="/2023/05/06/SQL%E6%B3%A8%E5%85%A5%E4%B9%8B%E5%A0%86%E5%8F%A0%E6%B3%A8%E5%85%A5/" title="【Sql注入】堆叠注入">
+                        <span class="hidden-mobile">【Sql注入】堆叠注入</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

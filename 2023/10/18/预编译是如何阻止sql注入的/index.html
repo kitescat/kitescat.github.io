@@ -16,16 +16,16 @@
   <meta name="author" content="kitescat">
   <meta name="keywords" content="web安全">
   
-    <meta name="description" content="文心一言教你学安全">
+    <meta name="description" content="预编译，“预”的是什么？">
 <meta property="og:type" content="article">
 <meta property="og:title" content="预编译是如何阻止sql注入的">
-<meta property="og:url" content="https://kitescat.github.io/2023/10/18/%E9%A2%84%E7%BC%96%E8%AF%91%E6%98%AF%E5%A6%82%E4%BD%95%E7%BB%84%E7%BB%87sql%E6%B3%A8%E5%85%A5%E7%9A%84/index.html">
+<meta property="og:url" content="https://kitescat.github.io/2023/10/18/%E9%A2%84%E7%BC%96%E8%AF%91%E6%98%AF%E5%A6%82%E4%BD%95%E9%98%BB%E6%AD%A2sql%E6%B3%A8%E5%85%A5%E7%9A%84/index.html">
 <meta property="og:site_name" content="kitescat 的博客">
-<meta property="og:description" content="文心一言教你学安全">
+<meta property="og:description" content="预编译，“预”的是什么？">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://kitescat.github.io/img/prestatement.png">
 <meta property="article:published_time" content="2023-10-17T17:39:24.000Z">
-<meta property="article:modified_time" content="2024-01-17T13:05:14.945Z">
+<meta property="article:modified_time" content="2024-03-02T09:21:05.663Z">
 <meta property="article:author" content="kitescat">
 <meta property="article:tag" content="sql注入">
 <meta name="twitter:card" content="summary_large_image">
@@ -222,7 +222,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          4.5k 字
+          4.6k 字
         
       </span>
     
@@ -234,7 +234,7 @@
         
         
           <!-- compatible with older versions-->
-          38 分钟
+          39 分钟
         
       </span>
     
@@ -286,8 +286,7 @@
               
               <p>本篇主要分享sql注入防御之预编译的原理，并解释模糊查询语句如何适配预编译。预编译是利用占位符替代参数值，预先建立语法树的过程。注入的恶意SQL语句只会被视为参数，参与不了SQL语句的语法树构建，也就无法改变其语法结构，也就无法达到编译恶意语句的目的。然而，预编译有一些局限性，比如，模糊查询由于存在% _使得参数值是不确定的，需要修改预编译语句。</p>
 <h2 id="1-SQL注入原理"><a href="#1-SQL注入原理" class="headerlink" title="1 SQL注入原理"></a>1 SQL注入原理</h2><p>sql注入是指攻击者拼接恶意SQL语句到接受外部参数的动态SQL查询中，程序本身未对插入的SQL语句进行过滤，导致SQL语句直接被服务端执行。<br>拼接的SQL查询例如，通过在id变量后插入or 1=1这样的条件，来绕过身份验证，获得未授权数据的访问权。</p>
-<pre><code class="hljs">SELECT * FROM user WHERE id = -1 or 1=1
-</code></pre>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs SQL"><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> <span class="hljs-keyword">user</span> <span class="hljs-keyword">WHERE</span> id <span class="hljs-operator">=</span> <span class="hljs-number">-1</span> <span class="hljs-keyword">or</span> <span class="hljs-number">1</span><span class="hljs-operator">=</span><span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
 <p>由于or 1=1 满足永真结果，sql语句会执行输出user中的全部内容。<br><img src="/img/pre_ex1.png" srcset="/img/loading.gif" lazyload></p>
 <p>拼接后的执行结果示例如上</p>
 <h2 id="2-SQL注入的防御方式"><a href="#2-SQL注入的防御方式" class="headerlink" title="2 SQL注入的防御方式"></a>2 SQL注入的防御方式</h2><ol>
@@ -301,74 +300,85 @@
 </li>
 </ol>
 <p>那么，终于引出文章的主角——预编译。</p>
-<p>以MySQL为例，数据库在执行SQL语句时，需要经历7个步骤：</p>
-<p>词法分析：将SQL语句分解成一个个token（关键字、标识符、运算符），然后对token进行分类和解析，生成相应的数据结构。</p>
-<p>语法分析：根据SQL语法检测规则检查语法是否正确，并生成语法树。</p>
-<p>语义分析：遍历语法树，确定表和列等信息，同时检查语义的正确性。优化处理：使用优化器对SQL语句进行处理和优化，比如执行计划、索引等。</p>
-<p>执行计划：使用执行计划生成器生成SQL语句的执行计划，比如数据的访问方式，索引的使用方式等。</p>
-<p>引擎执行：将执行计划发送给相应的数据库引擎进行处理，执行计划被翻译成底层的操作指令，执行数据扫描、索引查找、排序、分组等操作。</p>
-<p>返回数据：将执行结果返回给客户端，比如查询结果集或操作结果。在这里，我们粗暴的把执行过程理解成两步，即：先编译SQL语法结构（1<del>3步），再执行SQL语句（4</del>7步）。</p>
-<p>SQL编译的过程包括：</p>
-<p>词法分析 Scanning 分词</p>
-<p>语法分析 Syntax 组句</p>
-<p>语义分析 Semantic 识意 收集标识符的属性信息 和 对语义的检查（检查合法性）</p>
+<div class="note note-info">
+            <p>以MySQL为例，数据库在执行SQL语句时，需要经历7个步骤：</p>
+          </div>
+
+<ul>
+<li><p>词法分析：将SQL语句分解成一个个token（关键字、标识符、运算符），然后对token进行分类和解析，生成相应的数据结构。</p>
+</li>
+<li><p>语法分析：根据SQL语法检测规则检查语法是否正确，并生成语法树。</p>
+</li>
+<li><p>语义分析：遍历语法树，确定表和列等信息，同时检查语义的正确性。优化处理：使用优化器对SQL语句进行处理和优化，比如执行计划、索引等。</p>
+</li>
+<li><p>执行计划：使用执行计划生成器生成SQL语句的执行计划，比如数据的访问方式，索引的使用方式等。</p>
+</li>
+<li><p>引擎执行：将执行计划发送给相应的数据库引擎进行处理，执行计划被翻译成底层的操作指令，执行数据扫描、索引查找、排序、分组等操作。</p>
+</li>
+<li><p>返回数据：将执行结果返回给客户端，比如查询结果集或操作结果。在这里，我们粗暴的把执行过程理解成两步，即：先编译SQL语法结构（1<del>3步），再执行SQL语句（4</del>7步）。</p>
+</li>
+</ul>
+<div class="note note-info">
+            <p>SQL编译的过程包括：</p>
+          </div>
+
+<ul>
+<li><p>词法分析 Scanning 分词</p>
+</li>
+<li><p>语法分析 Syntax 组句</p>
+</li>
+<li><p>语义分析 Semantic 识意 收集标识符的属性信息 和 对语义的检查（检查合法性）</p>
+</li>
+</ul>
 <h2 id="3-预编译的原理"><a href="#3-预编译的原理" class="headerlink" title="3 预编译的原理"></a>3 预编译的原理</h2><p>预编译：用占位符替代参数值，预先建立语法树。恶意语句不参与语法书的建立，所以不影响SQL语法，也就无法造成恶意注入。最初的目的是提高代码的复用性，因为有很多只有参数值不同的SQL（完全相同的SQL会从缓存里查），比如：</p>
-<pre><code class="hljs">select * from user where id=&#39;1&#39;
-select * from user where id=&#39;2&#39;
-</code></pre>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs SQL"><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> <span class="hljs-keyword">user</span> <span class="hljs-keyword">where</span> id<span class="hljs-operator">=</span><span class="hljs-string">&#x27;1&#x27;</span><br><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> <span class="hljs-keyword">user</span> <span class="hljs-keyword">where</span> id<span class="hljs-operator">=</span><span class="hljs-string">&#x27;2&#x27;</span><br></code></pre></td></tr></table></figure>
 <p>这些SQL的语法树相同，但每次都要进行重复的编译，很浪费时间。SQL预编译将SQL语句模板化，用占位符替代值（参数化绑定）并存储在数据库中，以便在需要时再传入值执行，省掉了重复建立语法树的时间，实现快速执行。</p>
-<pre><code class="hljs">select * from user where id=&#123;占位符&#125;
-</code></pre>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs SQL">select * from user where id=&#123;占位符&#125;<br></code></pre></td></tr></table></figure>
 <p>以MySQL为例，利用mysqli的预编译功能编写的核心PHP语句为：</p>
 <p>//定义需要预编译的SQL语句，从外界传递的参数（输入）用占位符?表示</p>
-<pre><code class="hljs">$sql= &quot;SELECT FROM security.users WHERE id= ? LIMIT 0,1&quot;;
-//创建预处理对象
-$mysqli_stmt = $mysqli-&gt;prepare($sql);
-//绑定参数
-$mysqli_stmt-&gt;bind_param(&#39;i&#39;, $id);
-//绑定结果集
-$mysqli_stmt-&gt;bind_result($id, $username, $password);
-//执行
-$mysqli_stmt-&gt;execute();
-</code></pre>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-variable">$sql</span>= <span class="hljs-string">&quot;SELECT FROM security.users WHERE id= ? LIMIT 0,1&quot;</span>;<br><span class="hljs-regexp">//</span>创建预处理对象<br><span class="hljs-variable">$mysqli_stmt</span> = <span class="hljs-variable">$mysqli</span>-&gt;prepare(<span class="hljs-variable">$sql</span>);<br><span class="hljs-regexp">//</span>绑定参数<br><span class="hljs-variable">$mysqli_stmt</span>-&gt;bind_param(<span class="hljs-string">&#x27;i&#x27;</span>, <span class="hljs-variable">$id</span>);<br><span class="hljs-regexp">//</span>绑定结果集<br><span class="hljs-variable">$mysqli_stmt</span>-&gt;bind_result(<span class="hljs-variable">$id</span>, <span class="hljs-variable">$username</span>, <span class="hljs-variable">$password</span>);<br><span class="hljs-regexp">//</span>执行<br><span class="hljs-variable">$mysqli_stmt</span>-&gt;execute();<br></code></pre></td></tr></table></figure>
+
 <p>预编译语句的优势在于：一次编译、多次运行，省去了解析优化等过程。</p>
 <p>预编译防止SQL注入的原理</p>
 <p>正常情况下，用户输入的参数会直接参与SQL语法的编译，而预编译则是先构建语法树，确定SQL语法结构以后，再拼接用户的参数。注入的恶意SQL语句只会被视为参数，参与不了SQL语句的语法树构建，也就无法改变其语法结构，也就无法达到编译恶意语句的目的。</p>
 <p>比如：不使用预编译，用单引号提前闭合的方式注入恶意SQL语句</p>
-<pre><code class="hljs">select count(1) from students where name=&#39;张三&#39; or &#39;1=1&#39;；
-</code></pre>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">select</span> count(<span class="hljs-number">1</span>) <span class="hljs-keyword">from</span> students <span class="hljs-keyword">where</span> <span class="hljs-type">name</span>=<span class="hljs-string">&#x27;张三&#x27;</span> <span class="hljs-keyword">or</span> <span class="hljs-string">&#x27;1=1&#x27;</span>；<br></code></pre></td></tr></table></figure>
 <p>使用了预编译：</p>
-<pre><code class="hljs">select count(1) from students where name=&#39;张三” or “1=1&#39;；
-</code></pre>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">select</span> count(<span class="hljs-number">1</span>) <span class="hljs-keyword">from</span> students <span class="hljs-keyword">where</span> <span class="hljs-type">name</span>=<span class="hljs-string">&#x27;张三” or “1=1&#x27;</span>；<br></code></pre></td></tr></table></figure>
 <p>这里payload是张三’ or ‘1=1，会被当做参数，单引号会被转义成’’，从数据库查的时候，查的就是name=’张三’ or ‘1=1’,而数据库不会存在名字为’张三’ or ‘1=1’的人，所有查不到。</p>
-<h2 id="4-预编译的局限性"><a href="#4-预编译的局限性" class="headerlink" title="4 预编译的局限性"></a>4 预编译的局限性</h2><p>预编译的机制是先编译，再传值，用户传递的参数无法改变SQL语法结构，从根本上解决了SQL注入的问题。但并不是所有参数都可以使用预编译。<br>比如动态表名和列名的场景。：在生成语法树的过程中，预处理器在进一步检查解析后的语法树时，会检查数据表和数据列是否存在，因此数据表和数据列不能被占位符?所替代。但在很多业务场景中，表名需要作为一个变量存在，因此这部分仍需由加号进行SQL语句的拼接，若表名是由外部传入且可控的，仍会造成SQL注入。</p>
-<p>动态传参的场景，如动态表名，列名，Order by $param，不能使用预编译，应该使用严格的白名单校验。order by后一般是接字段名，而字段名是不能带引号的，比如 order by username；如果带上引号成了order by ‘username’，那username就是一个字符串不是字段名了，这就产生了语法错误。一方面预编译又只有自动加引号的setString()方法，没有不加引号的方法；而另一方面order by后接的字段名不能有引号。</p>
-<p>凡是字符串但又不能加引号的位置都不能参数化；包括sql关键字、库名表名字段名函数名等等。不能参数化的位置。不管怎么拼接，最终都是和使用“+”号拼接字符串的功效一样：拼成了sql语句但没有防sql注入的效果。</p>
+<h2 id="4-预编译的局限性"><a href="#4-预编译的局限性" class="headerlink" title="4 预编译的局限性"></a>4 预编译的局限性</h2><p>预编译的机制是先编译，再传值，用户传递的参数无法改变SQL语法结构，从根本上解决了SQL注入的问题。但并不是所有参数都可以使用预编译。</p>
+<ul>
+<li><p>比如动态表名和列名的场景：在生成语法树的过程中，预处理器在进一步检查解析后的语法树时，会检查数据表和数据列是否存在，因此数据表和数据列不能被占位符?所替代。但在很多业务场景中，表名需要作为一个变量存在，因此这部分仍需由加号进行SQL语句的拼接，若表名是由外部传入且可控的，仍会造成SQL注入。</p>
+</li>
+<li><p>动态传参的场景，如动态表名，列名，Order by $param，不能使用预编译，应该使用严格的白名单校验。order by后一般是接字段名，而字段名是不能带引号的，比如 order by username；如果带上引号成了order by ‘username’，那username就是一个字符串不是字段名了，这就产生了语法错误。一方面预编译又只有自动加引号的setString()方法，没有不加引号的方法；而另一方面order by后接的字段名不能有引号。</p>
+</li>
+<li><p>凡是字符串但又不能加引号的位置都不能参数化；包括sql关键字、库名表名字段名函数名等等。不能参数化的位置。不管怎么拼接，最终都是和使用“+”号拼接字符串的功效一样：拼成了sql语句但没有防sql注入的效果。</p>
+</li>
+</ul>
 <h2 id="5-模糊查询预编译"><a href="#5-模糊查询预编译" class="headerlink" title="5 模糊查询预编译"></a>5 模糊查询预编译</h2><p>模糊查询本身并不支持预编译，占位符 ? 不适用于模糊查询中的通配符 %。占位符只能用于替换具体的值，而不能用于替换SQL语句中的其他结构，如通配符或标识符，因为预编译需要明确的参数值来进行参数绑定，所以无法进行预编译。例如：</p>
-<pre><code class="hljs">SELECT * FROM users WHERE name LIKE ‘%abc%’
-</code></pre>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">SELECT</span> * <span class="hljs-keyword">FROM</span> users <span class="hljs-keyword">WHERE</span> <span class="hljs-type">name</span> <span class="hljs-keyword">LIKE</span> ‘%abc%’<br></code></pre></td></tr></table></figure>
 <p>这个查询会返回名字中包含“abc”的所有用户。但是，由于通配符的存在，参数值是不确定的，因此无法进行预编译。当执行如下语句时，会报错：</p>
-<pre><code class="hljs">SELECT * FROM users WHERE name LIKE ‘%?%’
-</code></pre>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">SELECT</span> * <span class="hljs-keyword">FROM</span> users <span class="hljs-keyword">WHERE</span> <span class="hljs-type">name</span> <span class="hljs-keyword">LIKE</span> ‘%?%’<br></code></pre></td></tr></table></figure>
 <p>报错：Parameter index out of range (1 &gt; number of parameters, which is 0).</p>
 <p>%?%是字符串，所以不会被当做一个参数解析。</p>
 <p>解决方案是修改语句如下：</p>
-<pre><code class="hljs">select id,name,age from people where address LIKE
-
-concat(&#39;%&#39;,?,&#39;%&#39;) order by id desc；
-
-select id,name,age from people where address LIKE
-
-concat(&#39;%&#39;,#&#123;key,jdbcType=VARCHAR&#125;,&#39;%&#39;) order by id desc；
-</code></pre>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">select</span> id,<span class="hljs-type">name</span>,age <span class="hljs-keyword">from</span> people <span class="hljs-keyword">where</span> address <span class="hljs-keyword">LIKE</span><br><br>concat(<span class="hljs-string">&#x27;%&#x27;</span>,?,<span class="hljs-string">&#x27;%&#x27;</span>) <span class="hljs-keyword">order</span> <span class="hljs-keyword">by</span> id <span class="hljs-keyword">desc</span>；<br><br><span class="hljs-keyword">select</span> id,<span class="hljs-type">name</span>,age <span class="hljs-keyword">from</span> people <span class="hljs-keyword">where</span> address <span class="hljs-keyword">LIKE</span><br><br>concat(<span class="hljs-string">&#x27;%&#x27;</span>,#&#123;key,jdbcType=<span class="hljs-type">VARCHAR</span>&#125;,<span class="hljs-string">&#x27;%&#x27;</span>) <span class="hljs-keyword">order</span> <span class="hljs-keyword">by</span> id <span class="hljs-keyword">desc</span>；<br></code></pre></td></tr></table></figure>
 <p>Mybatis场景下$和#的区别</p>
 <p>${}:表示拼接sql串，将接收到参数的内容不加任何修饰拼接在sql中，可能引发sql注入。</p>
 <p>#{ }是预编译处理，MyBatis在处理#{ }时，它会将sql中的#{ }替换为？，然后调用PreparedStatement的set方法来赋值，传入字符串后，会在值两边加上单引号，使用占位符的方式提高效率，可以防止sql注入。因此最好使用#{ }方式。</p>
 <h2 id="6-总结"><a href="#6-总结" class="headerlink" title="6 总结"></a>6 总结</h2><p>预编译是利用占位符替代参数值，预先建立语法树的过程。注入的恶意SQL语句只会被视为参数，参与不了SQL语句的语法树构建，也就无法改变其语法结构，也就无法达到编译恶意语句的目的。然而，预编译有一些局限性，比如，模糊查询由于存在% _使得参数值是不确定的，需要修改预编译语句。</p>
 <p>我的上一篇博客出现了两个错误，我这里做出勘误。</p>
 <p>我在查找相关资料的时候，在知乎上遇到了错误的回答（而且还是一个大佬的回答），大致是强调Java预编译会做强制类型转换来防止SQL注入。注意预编译防止SQL注入并不是从强制类型转换这一角度出发的，setstring()这类操作只是Java预编译对用户输入增加的过滤操作而已。务必记住关键词，那就是语法树的建立。模糊查询也是可以通过修改语句来适配预编译的。再次强调，希望大家在学习的时候务必多搜索多求证，避免出现知识误区。</p>
-<h2 id="7-参考链接"><a href="#7-参考链接" class="headerlink" title="7 参考链接"></a>7 参考链接</h2><p><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/52869762/answer/132471224">https://www.zhihu.com/question/52869762/answer/132471224</a><br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/578134933">https://zhuanlan.zhihu.com/p/578134933</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/wangyuxiang946/article/details/132356363">https://blog.csdn.net/wangyuxiang946/article/details/132356363</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/HZX19941018/article/details/100047456">https://blog.csdn.net/HZX19941018/article/details/100047456</a><br><a target="_blank" rel="noopener" href="https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html">https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html</a><br><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000040023061">https://segmentfault.com/a/1190000040023061</a><br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/210732421">https://zhuanlan.zhihu.com/p/210732421</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_34868715/article/details/100734095">https://blog.csdn.net/qq_34868715/article/details/100734095</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/jie11447416/article/details/51318389">https://blog.csdn.net/jie11447416/article/details/51318389</a></p>
-
+<h2 id="7-参考链接"><a href="#7-参考链接" class="headerlink" title="7 参考链接"></a>7 参考链接</h2><section class="footnotes"><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/52869762/answer/132471224">https://www.zhihu.com/question/52869762/answer/132471224</a>
+<a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:2" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/578134933">https://zhuanlan.zhihu.com/p/578134933</a>
+<a href="#fnref:2" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:3" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://blog.csdn.net/wangyuxiang946/article/details/132356363">https://blog.csdn.net/wangyuxiang946/article/details/132356363</a>
+<a href="#fnref:3" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:4" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://blog.csdn.net/HZX19941018/article/details/100047456">https://blog.csdn.net/HZX19941018/article/details/100047456</a>
+<a href="#fnref:4" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:5" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html">https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html</a>
+<a href="#fnref:5" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:6" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000040023061">https://segmentfault.com/a/1190000040023061</a>
+<a href="#fnref:6" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:7" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/210732421">https://zhuanlan.zhihu.com/p/210732421</a>
+<a href="#fnref:7" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:8" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_34868715/article/details/100734095">https://blog.csdn.net/qq_34868715/article/details/100734095</a>
+<a href="#fnref:8" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:9" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://blog.csdn.net/jie11447416/article/details/51318389">https://blog.csdn.net/jie11447416/article/details/51318389</a>
+<a href="#fnref:9" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
               
             </div>
             <hr/>
@@ -385,7 +395,7 @@ concat(&#39;%&#39;,#&#123;key,jdbcType=VARCHAR&#125;,&#39;%&#39;) order by id de
     
       <span class="category-chain">
         
-  <a href="/categories/sql%E6%B3%A8%E5%85%A5/" class="category-chain-item">sql注入</a>
+  <a href="/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/" class="category-chain-item">渗透测试</a>
   
   
 
@@ -413,7 +423,7 @@ concat(&#39;%&#39;,#&#123;key,jdbcType=VARCHAR&#125;,&#39;%&#39;) order by id de
   <div class="license-box my-3">
     <div class="license-title">
       <div>预编译是如何阻止sql注入的</div>
-      <div>https://kitescat.github.io/2023/10/18/预编译是如何组织sql注入的/</div>
+      <div>https://kitescat.github.io/2023/10/18/预编译是如何阻止sql注入的/</div>
     </div>
     <div class="license-meta">
       

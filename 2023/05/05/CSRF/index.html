@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://kitescat.github.io/img/CSRF.png">
 <meta property="article:published_time" content="2023-05-05T03:48:04.000Z">
-<meta property="article:modified_time" content="2023-06-18T07:59:03.773Z">
+<meta property="article:modified_time" content="2024-03-02T09:28:28.324Z">
 <meta property="article:author" content="kitescat">
 <meta property="article:tag" content="渗透测试">
 <meta name="twitter:card" content="summary_large_image">
@@ -222,7 +222,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          3.6k 字
+          4.3k 字
         
       </span>
     
@@ -234,7 +234,7 @@
         
         
           <!-- compatible with older versions-->
-          30 分钟
+          36 分钟
         
       </span>
     
@@ -284,32 +284,35 @@
             
             <div class="markdown-body">
               
-              <h2 id="1-CSRF原理"><a href="#1-CSRF原理" class="headerlink" title="1 CSRF原理"></a>1 CSRF原理</h2><p>CSRF, Cross-site request forgery，即“跨站请求伪造”，是指攻击者可能利用网页中的恶意<br>代码强迫受害者浏览器向被攻击的Web站点发送伪造的请求，篡夺受害者的认证Cookie等身份<br>信息，从而假冒受害者对目标站点执行指定的操作。<br>简单来讲，CSRF 攻击就是黑客冒用用户身份并通过第三方的站点执行非法操作。这种攻击我们也称为“One Click Attack”或者Session Riding。</p>
+              <div class="note note-info">
+            <p>本Web安全基础推文系列旨在以平白的语言讲解漏洞原理，文章多数内容为我本人的学习笔记与总结，汇总供大家参考。</p>
+          </div>
+
+<h2 id="1-CSRF原理"><a href="#1-CSRF原理" class="headerlink" title="1 CSRF原理"></a>1 CSRF原理</h2><p>CSRF, Cross-site request forgery，即“跨站请求伪造”，是指攻击者可能利用网页中的恶意<br>代码强迫受害者浏览器向被攻击的Web站点发送伪造的请求，篡夺受害者的认证Cookie等身份<br>信息，从而假冒受害者对目标站点执行指定的操作。<br>简单来讲，CSRF 攻击就是黑客冒用用户身份并通过第三方的站点执行非法操作。这种攻击我们也称为“One Click Attack”或者Session Riding。</p>
 <h3 id="1-1-什么是cookie？"><a href="#1-1-什么是cookie？" class="headerlink" title="1.1 什么是cookie？"></a>1.1 什么是cookie？</h3><p>在 Web认证中 ,因为HTTP协议本身的局限，必须采用其他技术将相关认证标记以某种方式持续传送，以免客户从一个页面跳转至另一个页面时重新输入认证信息。<br>Cookie由一个名称（Name）、一个值（Value）和其它几个用于控制Cookie有效期、安全性、使用范围的可选属性组成。<br>图片</p>
 <p>csrf漏洞的成因就是网站的cookie在浏览器中不会过期，只要不关闭浏览器或者退出登录，那以后只要是访问这个网站，都会默认你已经登录的状态。而在这个期间，攻击者发送了构造好的csrf脚本或包含csrf脚本的链接，可能会执行一些用户不想做的功能（比如是添加账号等）。这个操作不是用户真正想要执行的。<br><a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/web/206407.html">https://www.freebuf.com/articles/web/206407.html</a><br>1.2 攻击流程</p>
 <p>一个典型的CSRF攻击有着如下的流程：</p>
 <p>受害者登录 a.com，并保留了登录凭证（Cookie）。</p>
 <p>攻击者引诱受害者访问 b.com。</p>
-<p>b.com 向 a.com 发送了一个请求：a.com/act=xx。浏览器会默认携带 a.com 的 Cookie。</p>
-<p>a.com 接收到请求后，对请求进行验证，并确认是受害者的凭证，误以为是受害者自己发送的请求。</p>
-<p>a.com 以受害者的名义执行了 act=xx。</p>
-<p>攻击完成，攻击者在受害者不知情的情况下，冒充受害者，让 a.com 执行了自己定义的操作。</p>
+<ul>
+<li>b.com 向 a.com 发送了一个请求：a.com/act=xx。浏览器会默认携带 a.com 的 Cookie。</li>
+<li>a.com 接收到请求后，对请求进行验证，并确认是受害者的凭证，误以为是受害者自己发送的请求。</li>
+<li>a.com 以受害者的名义执行了 act=xx。</li>
+<li>攻击完成，攻击者在受害者不知情的情况下，冒充受害者，让 a.com 执行了自己定义的操作。</li>
+</ul>
 <p>图片</p>
 <p>典型的CSRF攻击</p>
 <p>一个CSRF漏洞攻击的实现，其需要由三个部分来构成</p>
-<p>有一个漏洞存在（无需验证、任意修改后台数据、新增请求）；</p>
-<p>伪装数据操作请求的恶意链接或者页面；</p>
-<p>诱使用户主动访问或登录恶意链接，触发非法操作</p>
+<ul>
+<li>有一个漏洞存在（无需验证、任意修改后台数据、新增请求）；</li>
+<li>伪装数据操作请求的恶意链接或者页面；</li>
+<li>诱使用户主动访问或登录恶意链接，触发非法操作</li>
+</ul>
 <h2 id="2-CSRF防御"><a href="#2-CSRF防御" class="headerlink" title="2 CSRF防御"></a>2 CSRF防御</h2><p>CSRF的防御可以从两个方面考虑，一是后台接口层做防御，另一个则是在前端做防御。</p>
 <h3 id="2-1-后端防御CSRF"><a href="#2-1-后端防御CSRF" class="headerlink" title="2.1 后端防御CSRF"></a>2.1 后端防御CSRF</h3><p>后端防御主要是区分哪些请求是恶意请求，哪些请求是来自本网站的请求。区分恶意请求的方式有很多，以下介绍两种。</p>
 <p>一、CSRF Token</p>
 <p>这种方式是在表单页面生成一个随机数，这个随机数一定要后端生成，并且对这个随机数进行存储。举个例子，在前端页面中，对这个Token表单项进行隐藏。代码如下：</p>
-<form method="post" action="/transfer">
-<input type="hidden" name="_csrf" value="4bfd1575-3ad1-4d21-96c7-4ef2d9f86721"/>
-<input type="text" name="amount"/>
-<input type="hidden" name="account"/>
-<input type="submit" value="Transfer"/></form>
-
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs routeros">&lt;form <span class="hljs-attribute">method</span>=<span class="hljs-string">&quot;post&quot;</span> <span class="hljs-attribute">action</span>=<span class="hljs-string">&quot;/transfer&quot;</span>&gt;<br>&lt;input <span class="hljs-attribute">type</span>=<span class="hljs-string">&quot;hidden&quot;</span> <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;_csrf&quot;</span> <span class="hljs-attribute">value</span>=<span class="hljs-string">&quot;4bfd1575-3ad1-4d21-96c7-4ef2d9f86721&quot;</span>/&gt;<br>&lt;input <span class="hljs-attribute">type</span>=<span class="hljs-string">&quot;text&quot;</span> <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;amount&quot;</span>/&gt;<br>&lt;input <span class="hljs-attribute">type</span>=<span class="hljs-string">&quot;hidden&quot;</span> <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;account&quot;</span>/&gt;<br>&lt;input <span class="hljs-attribute">type</span>=<span class="hljs-string">&quot;submit&quot;</span> <span class="hljs-attribute">value</span>=<span class="hljs-string">&quot;Transfer&quot;</span>/&gt;&lt;/form&gt;<br></code></pre></td></tr></table></figure>
 <p>_csrf就是CSRF Token。我们看到他的value是一个UUID，这个UUID是后台生成的。当用户点击转账按钮时，会给银行的后台发送请求，请求中包含_csrf参数，如下：</p>
 <p>POST /transfer HTTP/1.1Host: <a target="_blank" rel="noopener" href="http://www.a-bank.comcookie/">www.a-bank.comCookie</a>: JSESSIONID=randomidContent-Type: application/x-www-form-urlencoded<br>amount=100.00&amp;account=9876&amp;_csrf=4bfd1575-3ad1-4d21-96c7-4ef2d9f86721</p>
 <p>银行后台接收到这个请求后，判断_csrf的值是否存在，如果存在则是自己网站的请求，进行后续的流程；如果不存在，则是恶意网站的请求，直接忽略。</p>
@@ -318,43 +321,42 @@
 <p>以上就是后端防御CSRF攻击的两种方式，都需要在后端做特殊的处理。当然也可以在前端做处理，我们接着往下看。</p>
 <h3 id="2-2-前端防御CSRF"><a href="#2-2-前端防御CSRF" class="headerlink" title="2.2 前端防御CSRF"></a>2.2 前端防御CSRF</h3><p>既然CSRF攻击的危害这么大，为什么不能在前端禁止这种请求呢？各大浏览器厂商似乎也注意到了这个问题，谷歌提出了same-site cookies概念，same-site cookies 是基于 Chrome 和 Mozilla 开发者花了三年多时间制定的 IETF 标准。它是在原有的Cookie中，新添加了一个SameSite属性，它标识着在非同源的请求中，是否可以带上Cookie，它可以设置为3个值，分别为：1) Strict 2) Lax 3) None</p>
 <p>Cookie中的内容为：</p>
-<p>POST /transfer HTTP/1.1Host: <a target="_blank" rel="noopener" href="http://www.a-bank.com/">www.a-bank.com</a><br>Cookie: JSESSIONID=randomid; SameSite=Strict;<br>Strict是最严格的，它完全禁止在跨站情况下，发送Cookie。只有在自己的网站内部发送请求，才会带上Cookie。不过这个规则过于严格，会影响用户的体验。比如在一个网站中有一个链接，这个链接连接到了GitHub上，由于SameSite设置为Strict，跳转到GitHub后，GitHub总是未登录状态。</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs routeros">POST /transfer HTTP/1.1Host: www.a-bank.com<br>Cookie: <span class="hljs-attribute">JSESSIONID</span>=randomid; <span class="hljs-attribute">SameSite</span>=Strict;<br></code></pre></td></tr></table></figure>
+<p>Strict是最严格的，它完全禁止在跨站情况下，发送Cookie。只有在自己的网站内部发送请求，才会带上Cookie。不过这个规则过于严格，会影响用户的体验。比如在一个网站中有一个链接，这个链接连接到了GitHub上，由于SameSite设置为Strict，跳转到GitHub后，GitHub总是未登录状态。</p>
 <p>Lax的规则稍稍放宽了些，大部分跨站的请求也不会带上Cookie，但是一些导航的Get请求会带上Cookie，如下：</p>
 <p>请求类型</p>
 <p>示例</p>
 <p>Lax情况</p>
 <p>链接</p>
-<p><a href="..."></a></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">href</span>=<span class="hljs-string">&quot;...&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span><br></code></pre></td></tr></table></figure>
 <p>发送 Cookie</p>
 <p>预加载</p>
-<link rel="prerender" href="..."/>
-
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs routeros">&lt;link <span class="hljs-attribute">rel</span>=<span class="hljs-string">&quot;prerender&quot;</span> <span class="hljs-attribute">href</span>=<span class="hljs-string">&quot;...&quot;</span>/&gt;<br></code></pre></td></tr></table></figure>
 <p>发送 Cookie</p>
 <p>GET 表单</p>
-<form method="GET" action="...">
-
+<figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs oxygene">&lt;form <span class="hljs-function"><span class="hljs-keyword">method</span>=&quot;<span class="hljs-title">GET</span>&quot; <span class="hljs-title">action</span>=&quot;...&quot;&gt;</span><br></code></pre></td></tr></table></figure>
 <p>发送 Cookie</p>
 <p>POST 表单</p>
-<form method="POST" action="...">
-
+<figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs oxygene">&lt;form <span class="hljs-function"><span class="hljs-keyword">method</span>=&quot;<span class="hljs-title">POST</span>&quot; <span class="hljs-title">action</span>=&quot;...&quot;&gt;</span><br></code></pre></td></tr></table></figure>
 <p>不发送</p>
 <p>iframe</p>
 <p>frameLabelStart–frameLabelEnd</p>
 <p>不发送</p>
 <p>AJAX</p>
-<p>$.get(“…”)</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs routeros">$.<span class="hljs-builtin-name">get</span>(<span class="hljs-string">&quot;...&quot;</span>)<br></code></pre></td></tr></table></figure>
 <p>不发送</p>
 <p>Image</p>
-<img src="..." srcset="/img/loading.gif" lazyload>
-
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs routeros">&lt;img <span class="hljs-attribute">src</span>=<span class="hljs-string">&quot;...&quot;</span>&gt;<br></code></pre></td></tr></table></figure>
 <p>不发送</p>
 <p>上面的表格就是SameSite设置为Lax的时候，Cookie的发送情况。</p>
 <p>None就是关闭SameSite属性，所有的情况下都发送Cookie。不过SameSite设置None，还要同时设置Cookie的Secure属性，否则是不生效的。</p>
 <h2 id="3-常见问题"><a href="#3-常见问题" class="headerlink" title="3 常见问题"></a>3 常见问题</h2><ol>
 <li>CSRF 与 SSRF 区别</li>
 </ol>
-<p>CSRF (Cross-Site Request Forgery) 即跨站请求伪造，伪造用户请求，冒用用户身份。</p>
-<p>SSRF (Server-Side Request Forgery) 即服务端请求伪造，就是伪造一个服务端请求，攻击者伪造服务端的请求发起攻击，攻击者借由服务端为跳板来攻击目标系统。</p>
+<ul>
+<li>CSRF (Cross-Site Request Forgery) 即跨站请求伪造，伪造用户请求，冒用用户身份。</li>
+<li>SSRF (Server-Side Request Forgery) 即服务端请求伪造，就是伪造一个服务端请求，攻击者伪造服务端的请求发起攻击，攻击者借由服务端为跳板来攻击目标系统。</li>
+</ul>
 <p>用非常通俗的语言讲的话，CSRF 更像是钓鱼的举动，是用户攻击用户的；而对于 SSRF 来说，是由服务器发出请求，用户攻击服务器的。</p>
 <ol start="2">
 <li>XSS 与 CSRF的区别</li>
@@ -376,12 +378,16 @@
 <li>什么是同源策略？</li>
 </ol>
 <p>同源策略由Netscape公司引入浏览器。目前，所有浏览器都实行这个策略。含义是指：A网页设置的Cookie，B网页不能打开，除非这两个网页“同源”。所谓同源指的是“三个相同”</p>
-<p>协议相同<br>域名相同<br>端口相同</p>
-<h2 id="4-总结"><a href="#4-总结" class="headerlink" title="4 总结"></a>4 总结</h2><p>CSRF的关键字有：冒用用户身份凭证，前端same-site,后端token及refer检测防御。由于还在学习阶段，CSRF总结笔记后面再进行补充。</p>
-<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/7911">https://xz.aliyun.com/t/7911</a></p>
-<p><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/beta/article/1458194">https://cloud.tencent.com/developer/beta/article/1458194</a></p>
-<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/XRqiLVdUzvzhD-bw2L3hhQ">https://mp.weixin.qq.com/s/XRqiLVdUzvzhD-bw2L3hhQ</a><br>WEB常见漏洞之CSRF（靶场篇）</p>
-
+<ul>
+<li>协议相同</li>
+<li>域名相同</li>
+<li>端口相同<h2 id="4-总结"><a href="#4-总结" class="headerlink" title="4 总结"></a>4 总结</h2>CSRF的关键字有：冒用用户身份凭证，前端same-site,后端token及refer检测防御。由于还在学习阶段，CSRF总结笔记后面再进行补充。<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2></li>
+</ul>
+<section class="footnotes"><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/7911">https://xz.aliyun.com/t/7911</a>
+<a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:2" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/beta/article/1458194">https://cloud.tencent.com/developer/beta/article/1458194</a>
+<a href="#fnref:2" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:3" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/XRqiLVdUzvzhD-bw2L3hhQ">https://mp.weixin.qq.com/s/XRqiLVdUzvzhD-bw2L3hhQ</a>
+<a href="#fnref:3" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:4" class="footnote-text"><span>WEB常见漏洞之CSRF（靶场篇）
+<a href="#fnref:4" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
               
             </div>
             <hr/>
@@ -468,7 +474,7 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/05/06/%E5%A0%86%E5%8F%A0%E6%B3%A8%E5%85%A5/" title="【Sql注入】堆叠注入">
+                      <a href="/2023/05/06/SQL%E6%B3%A8%E5%85%A5%E4%B9%8B%E5%A0%86%E5%8F%A0%E6%B3%A8%E5%85%A5/" title="【Sql注入】堆叠注入">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">【Sql注入】堆叠注入</span>
                         <span class="visible-mobile">上一篇</span>
@@ -478,7 +484,7 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/04/26/HTTP%E6%B3%A8%E5%85%A5/" title="【Sql注入】HTTP注入">
+                      <a href="/2023/04/26/SQL%E6%B3%A8%E5%85%A5%E4%B9%8BHTTP%E6%B3%A8%E5%85%A5/" title="【Sql注入】HTTP注入">
                         <span class="hidden-mobile">【Sql注入】HTTP注入</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>

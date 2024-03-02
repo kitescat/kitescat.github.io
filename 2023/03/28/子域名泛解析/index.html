@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://kitescat.github.io/img/CDNbanner.png">
 <meta property="article:published_time" content="2023-03-28T13:01:25.000Z">
-<meta property="article:modified_time" content="2023-04-22T13:53:22.901Z">
+<meta property="article:modified_time" content="2024-03-02T09:02:30.810Z">
 <meta property="article:author" content="kitescat">
 <meta property="article:tag" content="渗透测试，信息搜集，子域名爆破">
 <meta name="twitter:card" content="summary_large_image">
@@ -222,7 +222,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          865 字
+          920 字
         
       </span>
     
@@ -284,13 +284,16 @@
             
             <div class="markdown-body">
               
-              <h2 id="1-什么是泛解析？"><a href="#1-什么是泛解析？" class="headerlink" title="1 什么是泛解析？"></a>1 什么是泛解析？</h2><p>在子域名解析中，每个子域名都会解析为一个特定的IP地址。只有被设置解析，用户才能正常进行访问。一旦用户输入错误的子域名，就会造成无法访问。<br><img src="/img/baidu.png" srcset="/img/loading.gif" lazyload><br>在网站运营中，域名持有者为了避免因为错误输入，而造成用户流失，就会使用泛域名解析。比如用户输入123.baidu.com，能正常访问到<a target="_blank" rel="noopener" href="http://www.baidu.com./">www.baidu.com。</a><br>泛域名解析是一种特殊的域名解析方式。它使用通配符形式，设置域名解析。它可以将没有明确设置的子域名一律解析到一个IP地址上。这样，即使用户输入错误的子域名，也可以访问到域名持有者指定的IP地址。<br>通过过cmd命令行，ping该站点，确实印证了域名不同却指向了同个ip。<br><img src="/img/CDNbaidu.png" srcset="/img/loading.gif" lazyload><br>此处还有一个知识点，即CDN的存在，a.shifen.com（CDN我们下篇文章解释)</p>
+              <div class="note note-info">
+            <p>本Web安全基础推文系列旨在以平白的语言讲解漏洞原理，文章多数内容为我本人的学习笔记与总结，汇总供大家参考。</p>
+          </div>
+<h2 id="1-什么是泛解析？"><a href="#1-什么是泛解析？" class="headerlink" title="1 什么是泛解析？"></a>1 什么是泛解析？</h2><p>在子域名解析中，每个子域名都会解析为一个特定的IP地址。只有被设置解析，用户才能正常进行访问。一旦用户输入错误的子域名，就会造成无法访问。<br><img src="/img/baidu.png" srcset="/img/loading.gif" lazyload><br>在网站运营中，域名持有者为了避免因为错误输入，而造成用户流失，就会使用泛域名解析。比如用户输入123.baidu.com，能正常访问到<a target="_blank" rel="noopener" href="http://www.baidu.com./">www.baidu.com。</a><br>泛域名解析是一种特殊的域名解析方式。它使用通配符形式，设置域名解析。它可以将没有明确设置的子域名一律解析到一个IP地址上。这样，即使用户输入错误的子域名，也可以访问到域名持有者指定的IP地址。<br>通过过cmd命令行，ping该站点，确实印证了域名不同却指向了同个ip。<br><img src="/img/CDNbaidu.png" srcset="/img/loading.gif" lazyload><br>此处还有一个知识点，即CDN的存在，a.shifen.com（CDN我们下篇文章解释)</p>
 <h2 id="2-如何判断是否开启了泛解析？"><a href="#2-如何判断是否开启了泛解析？" class="headerlink" title="2 如何判断是否开启了泛解析？"></a>2 如何判断是否开启了泛解析？</h2><p>输入一个“模糊”域名，确定能正确解析，则说明该站点开启了泛解析。<br>比如打开cmd，ping一个站点，输入的是 w<a target="_blank" rel="noopener" href="http://www.baiud.com.很明显,这个输入多了一个w,与正常的域名不符,但ping该域名过程却能正常返回ip地址,说明该站点开启了域名泛解析./">www.baiud.com。很明显，这个输入多了一个w，与正常的域名不符，但ping该域名过程却能正常返回ip地址，说明该站点开启了域名泛解析。</a></p>
 <h2 id="3-Solution：IP-黑名单"><a href="#3-Solution：IP-黑名单" class="headerlink" title="3 Solution：IP 黑名单"></a>3 Solution：IP 黑名单</h2><p>目前最常见的解决方式是IP黑名单的方式。<br>首先访问一个随机的并不存在的域，通过返回的结果判断是否存在泛解析。确定存在泛解析后，（脚本实现）不断地生成随机域名并发送请求，将每次返回的IP和TTL记录下来，直到大部分的IP出现次数都大于两次，则IP黑名单收集完成。<br>而后使用域名字典进行爆破，爆破过程中根据IP黑名单进行过滤，同时比较TTL，在泛解析记录中TTL是相同的，如果TTL不相同，则不是泛解析记录。<br>这样就成功地过滤了那些爆破之后存在的泛解析域名。</p>
 <h2 id="4-总结"><a href="#4-总结" class="headerlink" title="4 总结"></a>4 总结</h2><p>最近也是疯狂让自己忙起来的状态，很多事情搞得自己不开心。</p>
 <p>Anyway, Suffering still persists, but blossoms too can’t resist. </p>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/Chu_Jian_Xiong/article/details/127496889">https://blog.csdn.net/Chu_Jian_Xiong/article/details/127496889</a></p>
-
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><section class="footnotes"><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://blog.csdn.net/Chu_Jian_Xiong/article/details/127496889">https://blog.csdn.net/Chu_Jian_Xiong/article/details/127496889</a>
+<a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
               
             </div>
             <hr/>

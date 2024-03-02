@@ -19,13 +19,13 @@
     <meta name="description" content="基于Union连接语句实现">
 <meta property="og:type" content="article">
 <meta property="og:title" content="【Sql注入】联合注入">
-<meta property="og:url" content="https://kitescat.github.io/2023/04/24/%E8%81%94%E5%90%88%E6%B3%A8%E5%85%A5/index.html">
+<meta property="og:url" content="https://kitescat.github.io/2023/04/24/SQL%E6%B3%A8%E5%85%A5%E4%B9%8B%E8%81%94%E5%90%88%E6%B3%A8%E5%85%A5/index.html">
 <meta property="og:site_name" content="kitescat 的博客">
 <meta property="og:description" content="基于Union连接语句实现">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://kitescat.github.io/img/union_inj.png">
 <meta property="article:published_time" content="2023-04-24T03:48:04.000Z">
-<meta property="article:modified_time" content="2023-06-18T07:45:59.156Z">
+<meta property="article:modified_time" content="2024-03-02T09:05:34.864Z">
 <meta property="article:author" content="kitescat">
 <meta property="article:tag" content="渗透测试，SQL注入">
 <meta name="twitter:card" content="summary_large_image">
@@ -284,7 +284,11 @@
             
             <div class="markdown-body">
               
-              <h1 id="联合注入：基于Union的注入"><a href="#联合注入：基于Union的注入" class="headerlink" title="联合注入：基于Union的注入"></a>联合注入：基于Union的注入</h1><h2 id="sql注入漏洞概述"><a href="#sql注入漏洞概述" class="headerlink" title="sql注入漏洞概述"></a>sql注入漏洞概述</h2><p>本篇我们即将开启Web安全基础学习之旅，从我所整理的笔记中梳理常见Web漏洞的诸多知识点，包括漏洞原理，分类，利用场景及手段，渗透测试步骤，防御措施及常用工具等多个角度。本Web安全基础推文系列旨在以平白的语言讲解漏洞原理，文章多数内容为我本人的学习笔记与总结，汇总供大家参考。</p>
+              <div class="note note-info">
+            <p>本Web安全基础推文系列旨在以平白的语言讲解漏洞原理，文章多数内容为我本人的学习笔记与总结，汇总供大家参考。</p>
+          </div>
+
+<h1 id="联合注入：基于Union的注入"><a href="#联合注入：基于Union的注入" class="headerlink" title="联合注入：基于Union的注入"></a>联合注入：基于Union的注入</h1><h2 id="sql注入漏洞概述"><a href="#sql注入漏洞概述" class="headerlink" title="sql注入漏洞概述"></a>sql注入漏洞概述</h2><p>本篇我们即将开启Web安全基础学习之旅，从我所整理的笔记中梳理常见Web漏洞的诸多知识点，包括漏洞原理，分类，利用场景及手段，渗透测试步骤，防御措施及常用工具等多个角度。</p>
 <p>首先，sql注入原理：存在输入口，使得用户输入的恶意sql语句拼接到正常语句中被后台执行。</p>
 <h2 id="1-联合注入-基于Union的注入"><a href="#1-联合注入-基于Union的注入" class="headerlink" title="1 联合注入(基于Union的注入)"></a>1 联合注入(基于Union的注入)</h2><p>上一篇我们已经总结了报错注入的知识点，报错注入是注入页面可显示数据库报错结果的情况下，利用函数报错使其输出错误结果来获取数据库的相关信息的一种sql注入类型。其可以分为数据溢出报错(exp,~)，xpath语法报错(extractvalue/updatexml)，主键重复报错（count()、rand()、group by组合），列名重复报错（NAME_CONST/const/join），几何函数报错。</p>
 <p>本篇我们集中介绍联合注入，即基于Union的注入。</p>
@@ -358,7 +362,7 @@
   <div class="license-box my-3">
     <div class="license-title">
       <div>【Sql注入】联合注入</div>
-      <div>https://kitescat.github.io/2023/04/24/联合注入/</div>
+      <div>https://kitescat.github.io/2023/04/24/SQL注入之联合注入/</div>
     </div>
     <div class="license-meta">
       
@@ -400,7 +404,7 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/04/25/%E7%9B%B2%E6%B3%A8/" title="【Sql注入】盲注">
+                      <a href="/2023/04/25/SQL%E6%B3%A8%E5%85%A5%E4%B9%8B%E7%9B%B2%E6%B3%A8/" title="【Sql注入】盲注">
                         <i class="iconfont icon-arrowleft"></i>
                         <span class="hidden-mobile">【Sql注入】盲注</span>
                         <span class="visible-mobile">上一篇</span>
@@ -410,7 +414,7 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/04/21/%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5/" title="【Sql注入】报错注入">
+                      <a href="/2023/04/21/SQL%E6%B3%A8%E5%85%A5%E4%B9%8B%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5/" title="【Sql注入】报错注入">
                         <span class="hidden-mobile">【Sql注入】报错注入</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
