@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://kitescat.github.io/img/findip.png">
 <meta property="article:published_time" content="2023-03-29T13:19:29.000Z">
-<meta property="article:modified_time" content="2023-10-21T18:22:54.694Z">
+<meta property="article:modified_time" content="2024-03-02T09:36:17.016Z">
 <meta property="article:author" content="kitescat">
 <meta property="article:tag" content="渗透测试，信息搜集，子域名爆破">
 <meta name="twitter:card" content="summary_large_image">
@@ -286,7 +286,7 @@
               
               <p>渗透测试过程中，信息搜集是很重要的准备步骤。而信息搜集大致有域名搜集，C段及旁站扫描，指纹识别，端口扫描，目录扫描等。</p>
 <p>其中域名搜集又分为一级域名和子域名搜集。上一篇文章我们讲解了子域名搜集过程遇到的泛解析问题，爆破得到的子域名可能会泛解析到同个IP。于是通过IP黑名单的方式，达到过滤冗余子域名的效果。本篇博客我们集中于解决域名搜集过程中，如何绕过CDN寻找真实IP的问题。</p>
-<h2 id="1-前景知识"><a href="#1-前景知识" class="headerlink" title="1 前景知识"></a>1 前景知识</h2><p>通常来讲，通过cmd的ping或者nslookup命令，即能快速找到域名对应IP。但很多站点出于用户体验和安全的角度，使用CDN加速，将域名解析到CDN，这时候就需要绕过CDN来查找真实IP。那么什么是CDN？<br>CDN全称为Content Delivery Network-内容分发网络。简单理解，资源服务器比作快递发货店家，CDN节点即为各个快递网点。快递网点会寄存一些店家的库存以方便快速发货到用户手中。这种分包的概念即为CDN的核心思想：用户请求资源时，就近返回节点上缓存的资源，而不需要每个用户的请求都回源站获取，避免网络拥塞。<br>图片</p>
+<h2 id="1-前景知识"><a href="#1-前景知识" class="headerlink" title="1 前景知识"></a>1 前景知识</h2><p>通常来讲，通过cmd的ping或者nslookup命令，即能快速找到域名对应IP。但很多站点出于用户体验和安全的角度，使用CDN加速，将域名解析到CDN，这时候就需要绕过CDN来查找真实IP。那么什么是CDN？<br>CDN全称为Content Delivery Network-内容分发网络。简单理解，资源服务器比作快递发货店家，CDN节点即为各个快递网点。快递网点会寄存一些店家的库存以方便快速发货到用户手中。这种分包的概念即为CDN的核心思想：用户请求资源时，就近返回节点上缓存的资源，而不需要每个用户的请求都回源站获取，避免网络拥塞。</p>
 <h2 id="2-如何判断是否使用了CDN？"><a href="#2-如何判断是否使用了CDN？" class="headerlink" title="2 如何判断是否使用了CDN？"></a>2 如何判断是否使用了CDN？</h2><ol>
 <li>多地 ping </li>
 </ol>
@@ -297,7 +297,9 @@
 <p>nslookup-name server lookup 用于查询DNS服务器上某域名的DNS记录。如下，我们nslookup <a target="_blank" rel="noopener" href="http://www.163.com/">www.163.com</a> ，本地DNS服务器返回了多个地址</p>
 <p>图片</p>
 <p>第一部分：<br>这里是我们本机的DNS服务器信息。<br>第二部分：<br>非权威应答对应的英文是：Non-authoritative answer。什么叫非权威应答？假设某个DNS server没有域名test.com的记录信息，当有客户端通过它请求获取test.com的域名信息，此DNS Server会通过迭代递归的方式从test公司实际存储此记录信息的DNS server中获取test.com的域名信息，反馈给发出请求的客户端，同时会把test.com的记录信息放在自身缓存中放置一段时间，当又有客户端请求test.com域名解析时，此DNS server直接从自身缓存中提取返回给客户端，这个回答叫“非权威回答”，简言之凡是从非实际记录存储DNS server中获取的域名解析回答，都叫“非权威回答”。<br>Name:z163picipv6.v.bsgslb.cn 指的 <a target="_blank" rel="noopener" href="http://www.163.com/">www.163.com</a> 域名实际对应的主机名记录。<br>第三部分：<br>Address有多个记录， 说明该域名实际对应多个物理主机，用户访问<a target="_blank" rel="noopener" href="http://www.163.com时,按照一定规则由其中一台计算机进行应答.(cnd的作用)/">www.163.com时，按照一定规则由其中一台计算机进行应答。（CND的作用）</a><br>Aliase: DNS记录中的一个别名，方便我们记忆。</p>
-<h2 id="3-Solution"><a href="#3-Solution" class="headerlink" title="3 Solution"></a>3 Solution</h2><p>1.查询DNS历史记录<br>查询域名的NS记录、MX记录、TXT记录等很有可能指向的是真实ip或同C段服务器。除了过去的DNS记录，即使是当前的记录也可能泄漏原始服务器IP。例如，MX记录是一种常见的查找IP的方式。如果网站在与web相同的服务器和IP上托管自己的邮件服务器，那么原始服务器IP将在MX记录中。<br>图片</p>
+<h2 id="3-Solution"><a href="#3-Solution" class="headerlink" title="3 Solution"></a>3 Solution</h2><ol>
+<li>查询DNS历史记录<br>查询域名的NS记录、MX记录、TXT记录等很有可能指向的是真实ip或同C段服务器。除了过去的DNS记录，即使是当前的记录也可能泄漏原始服务器IP。例如，MX记录是一种常见的查找IP的方式。如果网站在与web相同的服务器和IP上托管自己的邮件服务器，那么原始服务器IP将在MX记录中。<br>图片</li>
+</ol>
 <p>DNS记录类型分为A,CNAME,NS和MX</p>
 <p>图片</p>
 <p>可以用 <a target="_blank" rel="noopener" href="https://www.ip138.com/">https://www.ip138.com/</a> 查询域名历史解析记录 </p>
@@ -315,11 +317,14 @@
 <li><p>网站敏感文件泄露，例如：Phpinfo 其中有Server IP信息</p>
 </li>
 <li><p>F5 LTM解码法（这个方法我不是很理解，但还是贴出来）<br>当服务器使用F5 LTM做负载均衡时，通过对set-cookie关键字的解码真实ip也可被获取，例如：Set-Cookie: BIGipServerpool_8.29_8030=487098378.24095.0000，先把第一小节的十进制数即487098378取出来，然后将其转为十六进制数1d08880a，接着从后至前，以此取四位数出来，也就是0a.88.08.1d，最后依次把他们转为十进制数10.136.8.29，也就是最后的真实ip。</p>
-<h2 id="4-总结"><a href="#4-总结" class="headerlink" title="4 总结"></a>4 总结</h2><p>本篇博客核心介绍了CDN，DNS的概念以及nslookup这一工具的简易使用。还有其他绕过CDN的方法我们没有涉及，比如利用Fofa或者Shodan网络空间搜索引擎，这些工具我之前在【粗心程序员，后台惨遭删库勒索 】这篇文章有用到过，感兴趣的小伙伴可以去看看。知识靠积累，目前先总结如上信息。</p>
 </li>
 </ol>
-<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_60848021/article/details/128742979">https://blog.csdn.net/qq_60848021/article/details/128742979</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/Hacker_Q/article/details/113937586">https://blog.csdn.net/Hacker_Q/article/details/113937586</a><br><a target="_blank" rel="noopener" href="https://blog.csdn.net/jklbnm12/article/details/122952255?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_baidulandingword~default-0-122952255-blog-113937586.235%5Ev27%5Epc_relevant_recovery_v2&amp;spm=1001.2101.3001.4242.1&amp;utm_relevant_index=3">https://blog.csdn.net/jklbnm12/article/details/122952255?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_baidulandingword~default-0-122952255-blog-113937586.235^v27^pc_relevant_recovery_v2&amp;spm=1001.2101.3001.4242.1&amp;utm_relevant_index=3</a><br><a target="_blank" rel="noopener" href="https://www.cnblogs.com/ghj1976/p/3380477.html">https://www.cnblogs.com/ghj1976/p/3380477.html</a></p>
-
+<h2 id="4-总结"><a href="#4-总结" class="headerlink" title="4 总结"></a>4 总结</h2><p>本篇博客核心介绍了CDN，DNS的概念以及nslookup这一工具的简易使用。还有其他绕过CDN的方法我们没有涉及，比如利用Fofa或者Shodan网络空间搜索引擎，这些工具我之前在【粗心程序员，后台惨遭删库勒索 】这篇文章有用到过，感兴趣的小伙伴可以去看看。知识靠积累，目前先总结如上信息。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><section class="footnotes"><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_60848021/article/details/128742979">https://blog.csdn.net/qq_60848021/article/details/128742979</a>
+<a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:2" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://blog.csdn.net/Hacker_Q/article/details/113937586">https://blog.csdn.net/Hacker_Q/article/details/113937586</a>
+<a href="#fnref:2" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:3" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://blog.csdn.net/jklbnm12/article/details/122952255?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_baidulandingword~default-0-122952255-blog-113937586.235%5Ev27%5Epc_relevant_recovery_v2&amp;spm=1001.2101.3001.4242.1&amp;utm_relevant_index=3">https://blog.csdn.net/jklbnm12/article/details/122952255?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_baidulandingword~default-0-122952255-blog-113937586.235^v27^pc_relevant_recovery_v2&amp;spm=1001.2101.3001.4242.1&amp;utm_relevant_index=3</a>
+<a href="#fnref:3" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:4" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://www.cnblogs.com/ghj1976/p/3380477.html">https://www.cnblogs.com/ghj1976/p/3380477.html</a>
+<a href="#fnref:4" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
               
             </div>
             <hr/>

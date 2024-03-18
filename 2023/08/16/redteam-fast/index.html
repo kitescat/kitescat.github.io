@@ -25,7 +25,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://kitescat.github.io/img/rd.png">
 <meta property="article:published_time" content="2023-08-15T16:01:32.000Z">
-<meta property="article:modified_time" content="2024-03-02T09:24:23.322Z">
+<meta property="article:modified_time" content="2024-03-02T09:43:35.660Z">
 <meta property="article:author" content="kitescat">
 <meta property="article:tag" content="红队">
 <meta name="twitter:card" content="summary_large_image">
@@ -222,7 +222,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          1.4k 字
+          1.6k 字
         
       </span>
     
@@ -234,7 +234,7 @@
         
         
           <!-- compatible with older versions-->
-          12 分钟
+          14 分钟
         
       </span>
     
@@ -289,10 +289,10 @@
 <h2 id="0x01-红队知识扫盲"><a href="#0x01-红队知识扫盲" class="headerlink" title="0x01 红队知识扫盲"></a>0x01 红队知识扫盲</h2><p>渗透测试作为一种安全防护手段，让安全防护从被动转换成主动，正被越来越多企业及机构认可，但也仅限于是防护基础工作之一，代表企业网络系统正合法合规的运行着。然而企业的业务场景是动态变化的，黑客的攻击手法、0day漏洞更是层出不穷，红蓝队对抗便是针对此方面的测试。<br>红蓝队对抗是以红队模拟真实攻击，蓝队负责防御。红队（RedTeam）区别于传统的渗透测试，更偏向于实战。</p>
 <h2 id="0x02-打点技巧总结"><a href="#0x02-打点技巧总结" class="headerlink" title="0x02 打点技巧总结"></a>0x02 打点技巧总结</h2><p>1.拿到靶标，资产收集</p>
 <ul>
-<li>批量域名转IP ，从旁站入手（挂靠在同个服务器的不同站点）；</li>
+<li>批量域名转IP ，从旁站入手（挂靠在同个服务器的不同站点），找各类资产，如小程序，APP，公众号，类似的子站等加入资产中；</li>
 <li>根据IP找C段：我一般用Goby普通扫描去找C段；</li>
 <li>先看靶标再看子域名；</li>
-<li>子域名爆破：子域名爆破有时候往往能找到脆弱站点，比如开发人员忘记关闭测试站点，可以通过弱口令拿到web应用普通权限然后尝试提权或者注入shell实现RCE；比如常见web应用，OA系统，监控系统，Jira，gitlab等等都可能存在系统历史漏洞。</li>
+<li>子域名爆破：用Oneforall 子域名爆破有时候往往能找到脆弱站点，比如开发人员忘记关闭测试站点，可以通过弱口令拿到web应用普通权限然后尝试提权或者注入shell实现RCE；比如常见web应用，OA系统，监控系统，Jira，gitlab等等都可能存在系统历史漏洞。</li>
 <li>同样拿到子域名的IP也可以看C段；</li>
 <li>若有第三方供应商，可以查备案，找到属于该厂商的所有主域名，加入资产列表中。</li>
 </ul>
@@ -322,11 +322,13 @@
 <li>总结下来，几次攻防演练我都停留在找脆弱站点的层面，并没能通过旁站拿到主站权限，往后学习要提升getshell和内网渗透方面的能力。</li>
 </ul>
 <h2 id="0x03-涉及工具"><a href="#0x03-涉及工具" class="headerlink" title="0x03 涉及工具"></a>0x03 涉及工具</h2><ul>
-<li><p>网络空间搜索引擎Fofa，fofaviewer（查看资产更简介快捷）；</p>
+<li><p>网络空间搜索引擎Fofa，fofaviewer（查看资产更简介快捷）<br><a target="_blank" rel="noopener" href="https://search.censys.io/">https://search.censys.io</a>      //端口收集扫描比较全<br><a target="_blank" rel="noopener" href="https://hunter.qianxin.com/">https://hunter.qianxin.com</a>    //可视化图形资产，可与fofa结合使用<br><a target="_blank" rel="noopener" href="https://duckduckgo.com/">https://duckduckgo.com</a>        //找后台比较无助的时候可以尝试site:xxx.com login<br><a target="_blank" rel="noopener" href="https://ww.shodan.io/">https://ww.shodan.io</a>          //shodan；</p>
+</li>
+<li><p>子域名爆破 Oneforall等</p>
 </li>
 <li><p>Nmap（端口扫描）；比如我就通过全端口扫描，找到过一个弱口令登录站点，拿到web应用管理员权限。</p>
 </li>
-<li><p>漏扫Goby（我一般用来全端口扫描和看C段）；</p>
+<li><p>漏扫Goby（一般用来全端口扫描和看C段）,Railgun,Nuclei等；</p>
 </li>
 <li><p>Ehole，Wappalyzer插件指纹识别；</p>
 </li>
