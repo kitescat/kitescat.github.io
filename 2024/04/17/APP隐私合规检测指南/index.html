@@ -16,26 +16,26 @@
   <meta name="author" content="kitescat">
   <meta name="keywords" content="web安全">
   
-    <meta name="description" content="2023年进入尾声，開山安全在此预祝大家新年快乐。本篇博客对我全年工作作简单总结，一并做来年规划。">
+    <meta name="description" content="Frida">
 <meta property="og:type" content="article">
-<meta property="og:title" content="【開山安全】2023年度总结">
-<meta property="og:url" content="https://kitescat.github.io/2023/12/30/%E5%B9%B4%E5%BA%A6%E6%80%BB%E7%BB%93/index.html">
+<meta property="og:title" content="APP隐私合规检测指南">
+<meta property="og:url" content="https://kitescat.github.io/2024/04/17/APP%E9%9A%90%E7%A7%81%E5%90%88%E8%A7%84%E6%A3%80%E6%B5%8B%E6%8C%87%E5%8D%97/index.html">
 <meta property="og:site_name" content="kitescat 的博客">
-<meta property="og:description" content="2023年进入尾声，開山安全在此预祝大家新年快乐。本篇博客对我全年工作作简单总结，一并做来年规划。">
+<meta property="og:description" content="Frida">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://kitescat.github.io/img/kitescat.jpg">
-<meta property="article:published_time" content="2023-12-29T17:56:04.000Z">
-<meta property="article:modified_time" content="2024-04-17T13:25:47.137Z">
+<meta property="og:image" content="https://kitescat.github.io/img/app_privacy.png">
+<meta property="article:published_time" content="2024-04-17T14:30:32.000Z">
+<meta property="article:modified_time" content="2024-04-17T15:08:20.063Z">
 <meta property="article:author" content="kitescat">
-<meta property="article:tag" content="安全">
+<meta property="article:tag" content="web安全">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://kitescat.github.io/img/kitescat.jpg">
+<meta name="twitter:image" content="https://kitescat.github.io/img/app_privacy.png">
   
   
     <meta name="referrer" content="no-referrer-when-downgrade">
   
   
-  <title>【開山安全】2023年度总结 - kitescat 的博客</title>
+  <title>APP隐私合规检测指南 - kitescat 的博客</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -192,13 +192,13 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/3.png') no-repeat center center; background-size: cover;">
+     style="background: url('/img/app_privacy.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="【開山安全】2023年度总结"></span>
+            <span id="subtitle" data-typed-text="APP隐私合规检测指南"></span>
           
         </div>
 
@@ -209,8 +209,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-12-30 01:56" pubdate>
-          2023年12月30日 凌晨
+        <time datetime="2024-04-17 22:30" pubdate>
+          2024年4月17日 晚上
         </time>
       </span>
     
@@ -222,7 +222,7 @@
         <i class="iconfont icon-chart"></i>
         
           <!-- compatible with older versions-->
-          1.4k 字
+          5.9k 字
         
       </span>
     
@@ -234,7 +234,7 @@
         
         
           <!-- compatible with older versions-->
-          12 分钟
+          49 分钟
         
       </span>
     
@@ -280,17 +280,39 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">【開山安全】2023年度总结</h1>
+            <h1 style="display: none">APP隐私合规检测指南</h1>
             
             <div class="markdown-body">
               
-              <p>2023年进入尾声，開山安全在此预祝大家新年快乐ヾ(✿▽ﾟ)ノ。本篇博客对我全年工作作简单总结，一并做来年规划。</p>
-<h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><p>1 持续输出，无限进步<br>2 多段实习，收获良多<br>3 博而不精，待需明确<br>4 总结</p>
-<h2 id="1-持续输出，无限进步"><a href="#1-持续输出，无限进步" class="headerlink" title="1 持续输出，无限进步"></a>1 持续输出，无限进步</h2><p>今年，開山安全累计发出17篇博客，主要是我的Web安全学习笔记。未来一年，将继续输出更多APP安全，云安全，区块链安全等领域的文章，我后续也会整理汇总一些安全知识库，有兴趣的同学也可以关注。下面是我的一些感悟。<br>务必养成做笔记的习惯。安全这个方向学起来大都是是碎片化的知识，我和大多数初学者一样，很容易在学某个漏洞的时候分神或者中途就放弃了。多数时候对漏洞的原理，利用手段以及防御没有深入理解。这是一个需要注意的问题。那么，整理自己的知识库，或者借助已有的知识库简单做做笔记都是有助于进步的。<br>摸着石头过河。我在之前的博客里也引用了tk的话，大致意思是如果想要成为优秀的人，可以先从模仿优秀的人开始，观察他们是如何学习，如何提升技能的。摸着石头过河是有道理的，多和有类似经历的人交流沟通，并付诸实践，也许会有不错的效果。</p>
-<h2 id="2-多段实习，收获良多"><a href="#2-多段实习，收获良多" class="headerlink" title="2 多段实习，收获良多"></a>2 多段实习，收获良多</h2><p>这半年以来，我在多个企业实习，岗位基本与安全相关，期间从多个师傅身上学习了很多，见识了一个公司运作的机制，团队的管理，实习期间也认识了很多小伙伴。第一次去北京，第一次坐飞机，去到了天安门，第一次看雪。<br>对于实习，我大致有几点感悟。<br>要勇于提问，直线沟通。初入职场，我们难免畏畏缩缩，不知道该怎么融入，对分配的工作细节有很多不理解。有时候甚至摸索很久，也不敢问问题，生怕mentor指责或者笑话。但实际上放平姿态，直线沟通，有时候一个小小的问题真的没必要纠结那么久。<br>不要忘记自学。如果能接触到任何知识库或者别人的笔记，一定要积极争取，比如，向对方请教，他是如何打点的，怎么拿到权限的，有什么样的工作流程，一般如何学习。结合自己检索学到的知识丰富自己的知识库。我相信在空闲阶段，师傅们都是愿意与你沟通的，关键是找好时间以及做好功课。</p>
-<h2 id="3-博而不精，待需明确"><a href="#3-博而不精，待需明确" class="headerlink" title="3 博而不精，待需明确"></a>3 博而不精，待需明确</h2><p>从今年的四月底开始，我陆陆续续投了不少于100份简历，实习&amp;秋招面试至少50次，整理了很多面经来梳理自己的薄弱点。收到最多的评价就是博而不精，很多知识点都只知道表面。其他的总结下来就是：<br>面经不是王道。很多面试官可能会问很多网络上的经典面试题，我觉得无可厚非。安全初学者能做到无非是快速掌握这些经典安全漏洞的相关知识，至少要做到能用自己的话讲清楚讲明白。当然深入理解，动手挖洞肯定是必要的。<br>深入某个方向会让你脱颖而出。假如你会内网，免杀，代码审计，或者其他方向，比如云安全，移动安全，或者Src挖的多，打过很多比赛，任何能让人眼前一亮的经历都是加分项。这也是我后面想尝试提升的，可能会从移动安全或者内网去展开学习。<br>不要限制自己的求职方向。一定要海投，有时间规律的投简历，避免非常集中的面试笔试，会吃不消的。还有就是不要局限于某个城市或者某个岗位。以上建议均不适用于安全大佬，请自动忽略。</p>
-<h2 id="4-总结"><a href="#4-总结" class="headerlink" title="4 总结"></a>4 总结</h2><p>未来一年，将继续输出更多APP安全，云安全，区块链安全等领域的文章，我后续也会整理汇总一些安全知识库。<br>2023年是忙碌而又充实的一年，也是悲喜交加的一年。人生所有好坏都是经历，不多也不少。希望来年各位都能实现小心愿，人生会有更多的可能性。 我是kitescat，開山安全再次祝大家2024顺顺利利，健康快乐。</p>
-<p>拜拜！我们明年见！</p>
+              <h2 id="1-安卓基础知识"><a href="#1-安卓基础知识" class="headerlink" title="1 安卓基础知识"></a>1 安卓基础知识</h2><p>安卓四大组件<br>安卓APK的组成<br>AOSP<br>移动安全OWASP TOP 10</p>
+<h2 id="2-隐私合规检测的目的"><a href="#2-隐私合规检测的目的" class="headerlink" title="2 隐私合规检测的目的"></a>2 隐私合规检测的目的</h2><p>应对监管，避免隐私违规行为</p>
+<h2 id="3-隐私合规法律"><a href="#3-隐私合规法律" class="headerlink" title="3 隐私合规法律"></a>3 隐私合规法律</h2><p>《App违法违规收集使用个人信息行为认定方法》<br>《移动互联网应用程序（App）收集个人信息基本要求》<br>● 《网络安全法》<br>● 《信息安全技术个人信息安全规范》<br>● 《关于开展纵深推进APP侵害用户权益专项整治行动》<br>● 《App违法违规使用个人信息自评估指南》<br>● 《App违法违规收集使用个人信息行为认定方法》<br>● 《关于开展纵深推进APP侵害用户权益专项整治行动的通知（工信部信管函〔2020〕164号）<br>● 《移动互联网应用程序个人信息保护管理暂行规定》<br>● 《互联网用户账号信息管理规定》<br>● 《国家网信办启动清朗·移动应用程序PUSH弹窗突出问题专项整治》<br>● 《app弹窗治理》<br>● 《用户感知提升和信息共享公开通知》<br>● 《国家标准|GB/T 35273-2020 (samr.gov.cn)》</p>
+<h2 id="4-检测手段-amp-工具"><a href="#4-检测手段-amp-工具" class="headerlink" title="4 检测手段&amp;工具"></a>4 检测手段&amp;工具</h2><p>合规基础堆栈</p>
+<p>检测工具：开源项目总结<br>camille: <a target="_blank" rel="noopener" href="https://github.com/zhengjim/camille">https://github.com/zhengjim/camille</a><br>privacysentry<br>r0capture<br>Mobile Security Framework (MobSF): <a target="_blank" rel="noopener" href="https://github.com/MobSF/Mobile-Security-Framework-MobSF?tab=readme-ov-file#mobile-security-framework-mobsf">https://github.com/MobSF/Mobile-Security-Framework-MobSF?tab=readme-ov-file#mobile-security-framework-mobsf</a><br>Frida<br>LSposed<br>Xposed<br>Magisk<br>Riru<br>逆向工具<br>Jadx<br>IDA<br>隐私合规检测项<br>安卓框架中的类<br>android.net.wifi.WifiInfo<br>android.content.ClipboardManager<br>android.content.pm.PackageManager<br>android.hardware.SensorManager<br>android.telephony.TelephonyManager<br>对应的Method name</p>
+<p>安全SDK<br>设备指纹<br>ssl unpinning<br>对抗技术的绕过？frida检测 抓包抓不到 加固和抓包是无关的<br>静态扫描 动态扫描<br>APP隐私合规可以从以下几个方面进行检测：</p>
+<ol>
+<li> 隐私政策协议合规性分析：对APP的隐私政策文本进行自动化分析，检查是否包含了必要的内容，是否与实际收集使用行为一致，是否符合相关法律法规的规定，并给出合规性评估和建议。 </li>
+<li> 代码权限检测：对APP的代码进行静态和动态分析，检查是否申请和使用了敏感权限，是否存在超范围采集、泄露或滥用个人信息的行为，是否有安全传输和存储个人信息的措施，并给出风险评估和整改建议。 </li>
+<li> 安全漏洞检测：从多维度、百余项检测项中，对应用中潜在的安全漏洞进行全面分析，并给出合理整改建议。 </li>
+<li> 权限信息检测：统计应用请求的权限信息，并依照风险对其进行分级，进行有重点的排查，避免权限冗余造成额外风险。 </li>
+<li> 恶意行为检测：严格按照国家相关标准规定，通过自主研发的反病毒引擎，捕获恶意行为。 </li>
+<li> 第三方SDK检测：对移动应用中集成的第三方SDK进行检测，保证应用检测全面无死角。 </li>
+<li> 内容违规检测：针对移动应用整体内容的违规检测方案，自动化检测移动应用中的黄赌毒、暴恐、涉政涉党等违规内容。</li>
+<li>敏感API调用检测：对敏感API调用进行检测，检测范围包括敏感API名称及调用位置。<br>frida梳理<br>frida原理<br>常用命令<br>Python 代码中，attach 模式 Hook 已经存在的进程，spawn 模式会重启 APP，启动一个新的进程并挂起，在启动的同时注入 frida 代码，适用于在进程启动前的一些 Hook，attach 模式传入的是 APP 名称，spawn 模式传入的是 APP 包名，查看 APP 名称和包名的方法有很多，这里介绍两个 frida 命令，frida-ps -Uai：列出安装的程序，frida-ps -Ua：列出正在运行中的程序<br>magisk刷机<br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/666820596">https://zhuanlan.zhihu.com/p/666820596</a><br>对抗技术梳理<br>ssl unpinning 证书绑定<br>Xposed+JustTrustMe 将 APK 中所有用于校验 SSL 证书的 API 都进行了 Hook，从而绕过证书检查<br>双向证书认证<br>在burp上查看数据发现数据包返回400，且反编译的文件中存在证书+逻辑代码中存在引用定义。判断其可能使用了双向证书认证，可以直接试试密码自吐。<br>然后查看re目录或者assets目录中是否存在证书<br>常见证书的格式<br>“.pfx” “pkcs12” “p12” “keyStore” “cer”<br><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/5ed1k_fZEmhFT9ONP7_QvA">https://mp.weixin.qq.com/s/5ed1k_fZEmhFT9ONP7_QvA</a></li>
+<li>2）获取证书的解密密钥：</li>
+<li>2.1）通用思路<br>①hook底层框架代码java.security.KeyStore,实现密钥自吐</li>
+</ol>
+<p>-f的是app的包名  ssl 是指的js的文件</p>
+<p>frida检测<br>1.检测frida-server文件名<br>2.检测27042默认端口<br>3.检测D-Bus<br>4.检测/proc/pid/maps映射文件<br>5.检测/proc/pid/tast/tid/stat或/proc/pid/tast/tid/status<br>6.双进程保护<br><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/557713016#:~:text=1.%E6%A3%80%E6%B5%8Bfrida-server%E6%96%87%E4%BB%B6%E5%90%8D%202.%E6%A3%80%E6%B5%8B27042%E9%BB%98%E8%AE%A4%E7%AB%AF%E5%8F%A3%203.%E6%A3%80%E6%B5%8BD-Bus%204.%E6%A3%80%E6%B5%8B%2Fproc%2Fpid%2Fmaps%E6%98%A0%E5%B0%84%E6%96%87%E4%BB%B6,5.%E6%A3%80%E6%B5%8B%2Fproc%2Fpid%2Ftast%2Ftid%2Fstat%E6%88%96%2Fproc%2Fpid%2Ftast%2Ftid%2Fstatus%206.%E5%8F%8C%E8%BF%9B%E7%A8%8B%E4%BF%9D%E6%8A%A4%20%E5%89%8D%E4%B8%A4%E7%A7%8D%E5%8F%AF%E4%BB%A5%E9%80%9A%E8%BF%87%E4%BF%AE%E6%94%B9frida-server%E6%96%87%E4%BB%B6%E5%90%8D%EF%BC%8C%E6%94%B9%E9%BB%98%E8%AE%A4%E7%AB%AF%E5%8F%A3%E7%BB%95%E8%BF%87%E3%80%82%20%E5%8F%8C%E8%BF%9B%E7%A8%8B%E5%8F%AF%E4%BB%A5%E9%80%9A%E8%BF%87-f%20spawn%E6%A8%A1%E5%BC%8F%E5%90%AF%E5%8A%A8%E7%BB%95%E8%BF%87%E3%80%82">https://zhuanlan.zhihu.com/p/557713016#:~:text=1.%E6%A3%80%E6%B5%8Bfrida-server%E6%96%87%E4%BB%B6%E5%90%8D%202.%E6%A3%80%E6%B5%8B27042%E9%BB%98%E8%AE%A4%E7%AB%AF%E5%8F%A3%203.%E6%A3%80%E6%B5%8BD-Bus%204.%E6%A3%80%E6%B5%8B%2Fproc%2Fpid%2Fmaps%E6%98%A0%E5%B0%84%E6%96%87%E4%BB%B6,5.%E6%A3%80%E6%B5%8B%2Fproc%2Fpid%2Ftast%2Ftid%2Fstat%E6%88%96%2Fproc%2Fpid%2Ftast%2Ftid%2Fstatus%206.%E5%8F%8C%E8%BF%9B%E7%A8%8B%E4%BF%9D%E6%8A%A4%20%E5%89%8D%E4%B8%A4%E7%A7%8D%E5%8F%AF%E4%BB%A5%E9%80%9A%E8%BF%87%E4%BF%AE%E6%94%B9frida-server%E6%96%87%E4%BB%B6%E5%90%8D%EF%BC%8C%E6%94%B9%E9%BB%98%E8%AE%A4%E7%AB%AF%E5%8F%A3%E7%BB%95%E8%BF%87%E3%80%82%20%E5%8F%8C%E8%BF%9B%E7%A8%8B%E5%8F%AF%E4%BB%A5%E9%80%9A%E8%BF%87-f%20spawn%E6%A8%A1%E5%BC%8F%E5%90%AF%E5%8A%A8%E7%BB%95%E8%BF%87%E3%80%82</a><br><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/8RrsDc2NBSjrlmpF5B1fpw">https://mp.weixin.qq.com/s/8RrsDc2NBSjrlmpF5B1fpw</a><br>检测D-Bus<br>● D-Bus是一种进程间通信(IPC)和远程过程调用(RPC)机制,最初是为Linux开发的,目的是用一个统一的协议替代现有的和竞争的IPC解决方案。<br>● 遍历连接手机所有端口发送D-bus消息，如果返回”REJECT”这个特征则认为存在frida-server。</p>
+<p>root检测<br>首先，为什么有些app尤其是某金融类app要进行root检测？<br>Android系统是基于Linux内核的，而Linux是多用户的，但自己手机自己用就行了，所以Linux的多用户机制被用到了app隔离上。默认情况下app互相隔离，没有互相访问读写的权限。App之间的交互通过AndroidManifest.xml实现用户ID共享，前提是共享app的签名必须一致。<br>但是!Linux中存在root用户，它可以无视沙箱的隔离机制，跨越用户和用户组对文件、目录进行读写删除等操作<br>1、检查常用目录是否存在su<br>    /system/bin/su<br>    /system/xbin/su<br>    /sbin/su<br>    /system/su<br>    /system/bin/.ext/.su<br>    /system/usr/we-need-root/su-backup<br>    /system/xbin/mu<br>2、使用which命令查看是否存在su<br>3、主动申请root权限<br>4、执行busybox<br>5、访问私有目录，如/data目录，查看读写权限<br>6、读取build.prop中关键属性，如ro.build.tags和ro.build.type<br>7、检查市面主流的模拟器<br>8、检测frida、xposed等Hook框架的特征<br>如何绕过Root检测机制呢？</p>
+<ol>
+<li>对应用下手，干预应用的Root检测行为；</li>
+<li>对系统下手，隐藏系统自身Root相关的特征；<br>我们可以借助jadx等逆向工具对应用源码进行分析，Hook相关的实现函数绕过；<br>Magisk自身提供了MagiskHide的功能，点击进入MagiskHide中，勾选的应用即为被隐藏root的应用。<br>自定义ROM权限，可以自带root环境，可免root运行Xposed等模块。<br>也可以获取AOSP源码，通过定制ROM来隐藏Root的特征。</li>
+</ol>
+<p>APK的完整性保护在Android逆向安全中是一个常见的话题，通常指为了防二次打包，防篡改，防独立调用so等，通过验证apk包名、签名，及apk包本身（如META-INF下签名文件，MD5等）来达到防范的目的。笔者曾分析过一些大型的APK，发现即使使用了包名、签名、apk完整性验证，仍然可以通过一定手段来绕过验证。</p>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/6nn6VHe1_PPuU897MOg2zQ">https://mp.weixin.qq.com/s/6nn6VHe1_PPuU897MOg2zQ</a><br><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/keCX_37zRK67-BVFQdE9Uw">https://mp.weixin.qq.com/s/keCX_37zRK67-BVFQdE9Uw</a><br>● Xposed检测绕过：<a target="_blank" rel="noopener" href="https://bbs.pediy.com/thread-271347.htm">https://bbs.pediy.com/thread-271347.htm</a> root<br>● 检测方法小结：<a target="_blank" rel="noopener" href="https://blog.csdn.net/ly_xiamu/article/details/81943267">https://blog.csdn.net/ly_xiamu/article/details/81943267</a><br>● 概述APK完整性保护的逆向分析及防护策略：<a target="_blank" rel="noopener" href="https://bbs.pediy.com/thread-268480.htm">https://bbs.pediy.com/thread-268480.htm</a><br>● 静态分析-IDA绕过so层root检测：<a target="_blank" rel="noopener" href="https://bbs.pediy.com/thread-271376.htm">https://bbs.pediy.com/thread-271376.htm</a><br>● 静态分析-绕过java层root检测：<a target="_blank" rel="noopener" href="https://bbs.pediy.com/thread-271375.htm">https://bbs.pediy.com/thread-271375.htm</a></p>
+<h2 id="5-国内外现状调研"><a href="#5-国内外现状调研" class="headerlink" title="5 国内外现状调研"></a>5 国内外现状调研</h2><h2 id="6-优秀文章案例"><a href="#6-优秀文章案例" class="headerlink" title="6 优秀文章案例"></a>6 优秀文章案例</h2><p>Android APP合规检查工具<br>Gradle Plugin+Transform+ASM Hook并替换隐私方法调用(彻底解决隐私不合规问题)<br>APP逆向分析/渗透测试/安全检测/隐私合规如何选择手机机型或系统<br>移动端APP隐私合规检测<br>移动APP安全合规<br>APP隐私合规<br>隐私合规代码排查思路<br>Android 隐私合规检查工具套装</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p>[1]隐私合规代码排查思路: <a target="_blank" rel="noopener" href="https://juejin.cn/post/7042967031599071269">https://juejin.cn/post/7042967031599071269</a><br>[2]Android 隐私合规静态检查: <a target="_blank" rel="noopener" href="https://musicfe.com/android-privacy/">https://musicfe.com/android-privacy/</a><br>[3]VirtualXposed: <a target="_blank" rel="noopener" href="https://github.com/android-hacker/VirtualXposed">https://github.com/android-hacker/VirtualXposed</a><br>[4]隐私合规代码排查思路: <a target="_blank" rel="noopener" href="https://juejin.cn/post/7042967031599071269">https://juejin.cn/post/7042967031599071269</a><br>[5]epic: <a target="_blank" rel="noopener" href="https://github.com/tiann/epic/blob/master/README_cn.md">https://github.com/tiann/epic/blob/master/README_cn.md</a><br>[6]Pine: <a target="_blank" rel="noopener" href="https://github.com/canyie/pine/blob/master/README_cn.md">https://github.com/canyie/pine/blob/master/README_cn.md</a><br>[7]ART上的动态Java方法hook框架: <a target="_blank" rel="noopener" href="https://blog.canyie.top/2020/04/27/dynamic-hooking-framework-on-art/">https://blog.canyie.top/2020/04/27/dynamic-hooking-framework-on-art/</a><br>[8]camille: <a target="_blank" rel="noopener" href="https://github.com/zhengjim/camille">https://github.com/zhengjim/camille</a><br>[9]frida gadget : <a target="_blank" rel="noopener" href="https://frida.re/docs/gadget/#script">https://frida.re/docs/gadget/#script</a><br>[10]frida-gadget.so: <a target="_blank" rel="noopener" href="https://github.com/frida/frida/releases">https://github.com/frida/frida/releases</a><br>[11]Android Hook 技术: <a target="_blank" rel="noopener" href="https://meik2333.com/posts/android-hook/">https://meik2333.com/posts/android-hook/</a><br>[12]Frida Gadget: <a target="_blank" rel="noopener" href="https://frida.re/docs/gadget/">https://frida.re/docs/gadget/</a><br>[13]frida Gadget so 免 root 注入 app: <a target="_blank" rel="noopener" href="https://blog.51cto.com/u_15127527/4546627">https://blog.51cto.com/u_15127527/4546627</a><br>[14]网易云音乐 Android 隐私合规静态检查: <a target="_blank" rel="noopener" href="https://musicfe.com/android-privacy/">https://musicfe.com/android-privacy/</a><br>[15]Android App 隐私合规检测辅助工具 Camille: <a target="_blank" rel="noopener" href="https://github.com/zhengjim/camille">https://github.com/zhengjim/camille</a><br>[16]非 root 环境下 frida 的两种使用方式: <a target="_blank" rel="noopener" href="https://nszdhd1.github.io/2021/06/15/%E9%9D%9Eroot%E7%8E%AF%E5%A2%83%E4%B8%8Bfrida%E7%9A%84%E4%B8%A4%E7%A7%8D%E4%BD%BF%E7%94%A8%E6%96%B9%E5%BC%8F/">https://nszdhd1.github.io/2021/06/15/%E9%9D%9Eroot%E7%8E%AF%E5%A2%83%E4%B8%8Bfrida%E7%9A%84%E4%B8%A4%E7%A7%8D%E4%BD%BF%E7%94%A8%E6%96%B9%E5%BC%8F/</a><br>[17]Mobile Security Framework (MobSF): <a target="_blank" rel="noopener" href="https://github.com/MobSF/Mobile-Security-Framework-MobSF?tab=readme-ov-file#mobile-security-framework-mobsf">https://github.com/MobSF/Mobile-Security-Framework-MobSF?tab=readme-ov-file#mobile-security-framework-mobsf</a><br>[18]ART上的动态Java方法hook框架: <a target="_blank" rel="noopener" href="https://blog.canyie.top/2020/04/27/dynamic-hooking-framework-on-art/">https://blog.canyie.top/2020/04/27/dynamic-hooking-framework-on-art/</a></p>
 
               
             </div>
@@ -298,34 +320,6 @@
             <div>
               <div class="post-metas my-3">
   
-    <div class="post-meta mr-3 d-flex align-items-center">
-      <i class="iconfont icon-category"></i>
-      
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/%E9%9A%8F%E7%AC%94/" class="category-chain-item">随笔</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-    </div>
-  
-  
-    <div class="post-meta">
-      <i class="iconfont icon-tags"></i>
-      
-        <a href="/tags/%E5%AE%89%E5%85%A8/">#安全</a>
-      
-    </div>
   
 </div>
 
@@ -335,8 +329,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>【開山安全】2023年度总结</div>
-      <div>https://kitescat.github.io/2023/12/30/年度总结/</div>
+      <div>APP隐私合规检测指南</div>
+      <div>https://kitescat.github.io/2024/04/17/APP隐私合规检测指南/</div>
     </div>
     <div class="license-meta">
       
@@ -348,7 +342,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年12月30日</div>
+          <div>2024年4月17日</div>
         </div>
       
       
@@ -378,9 +372,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2024/04/17/%E4%BB%80%E4%B9%88%E6%98%AFwaf/" title="什么是waf">
+                      <a href="/2024/04/17/%E5%AE%89%E5%85%A8%E5%90%88%E8%A7%84%E7%9F%A5%E8%AF%86%E6%80%BB%E7%BB%93/" title="安全合规知识总结">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">什么是waf</span>
+                        <span class="hidden-mobile">安全合规知识总结</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -388,8 +382,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/10/18/%E9%A2%84%E7%BC%96%E8%AF%91%E6%98%AF%E5%A6%82%E4%BD%95%E9%98%BB%E6%AD%A2sql%E6%B3%A8%E5%85%A5%E7%9A%84/" title="预编译是如何阻止sql注入的">
-                        <span class="hidden-mobile">预编译是如何阻止sql注入的</span>
+                      <a href="/2024/04/17/%E4%BB%80%E4%B9%88%E6%98%AFwaf/" title="什么是waf">
+                        <span class="hidden-mobile">什么是waf</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
