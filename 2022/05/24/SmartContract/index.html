@@ -1,0 +1,807 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/icon.ico">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="kitescat">
+  <meta name="keywords" content="web安全">
+  
+    <meta name="description" content="区块链3.0时代，还不知道智能合约是什么吗？">
+<meta property="og:type" content="article">
+<meta property="og:title" content="区块链智能合约||Web3的投币机">
+<meta property="og:url" content="https://kitescat.github.io/2022/05/24/SmartContract/index.html">
+<meta property="og:site_name" content="kitescat 的博客">
+<meta property="og:description" content="区块链3.0时代，还不知道智能合约是什么吗？">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://kitescat.github.io/img/smartcontract.png">
+<meta property="article:published_time" content="2022-05-23T17:54:15.000Z">
+<meta property="article:modified_time" content="2024-03-18T15:34:47.376Z">
+<meta property="article:author" content="kitescat">
+<meta property="article:tag" content="区块链">
+<meta property="article:tag" content="智能合约">
+<meta property="article:tag" content="以太坊">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://kitescat.github.io/img/smartcontract.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>区块链智能合约||Web3的投币机 - kitescat 的博客</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"kitescat.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"Bdvwiy7o0pH7cQqR3w5tSkwq-gzGzoHsz","app_key":"F1k0q0hNrqIoyqh5dgzVHVYi","server_url":null,"path":"window.location.pathname","ignore_local":false,"security":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>kitescat&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/test.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="区块链智能合约||Web3的投币机"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2022-05-24 01:54" pubdate>
+          2022年5月24日 凌晨
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          3.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          27 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">区块链智能合约||Web3的投币机</h1>
+            
+            <div class="markdown-body">
+              
+              <p>这篇文章主要整理了我的一些疑惑和解答，仅供参考，本人还在学习。</p>
+<h2 id="0x01-什么是智能合约？"><a href="#0x01-什么是智能合约？" class="headerlink" title="0x01 什么是智能合约？"></a>0x01 什么是智能合约？</h2><p>以太坊的智能合约并非现实中常见的合同，而是存在区块链上，可以被触发执行的一段<strong>程序代码</strong>，这些代码实现了某种预定的规则，是存在于以太坊执行环境中的“自治代理”。</p>
+<h2 id="0x02-没有智能合约之前是如何运作的？"><a href="#0x02-没有智能合约之前是如何运作的？" class="headerlink" title="0x02 没有智能合约之前是如何运作的？"></a>0x02 没有智能合约之前是如何运作的？</h2><p>我们知道区块链简单可以分为三个发展阶段。</p>
+<ol>
+<li><p>Blockchain 1.0<br>加密货币概念开始：第一代技术始于2009年的比特币网络，它被称为区块链1.0。在这一代中，引入了第一个加密货币的创造。<br>这一阶段的想法都是关于<strong>支付及生成加密货币</strong>的功能。</p>
+</li>
+<li><p>Blockchain 2.0<br>智能合约的出现：在区块链技术的第二阶段，2010年引入了各种应用的智能合约和金融服务。<strong>以太坊和超级账本</strong>在这一代中出现。</p>
+</li>
+<li><p>Blockchain 3.0</p>
+</li>
+</ol>
+<p><strong>去中心化应用程序Dapp</strong>的兴起：在这一代区块链中，引入了对分散应用的收敛性。各种研究领域，如卫生、监管、物联网、供应链、商业和智能计算机被考虑用来构建去中心化的应用程序。<br>在这个级别上，使用了以太坊、超级账本和其他一些能够为各种应用程序编写智能合约的平台</p>
+<p>由此我们得知，<strong>没有智能合约之前，区块链技术只能实现很简单的交易等，并不能实现去中心化服务</strong>。</p>
+<h2 id="0x03-智能合约是如何发布和运行的？有什么用"><a href="#0x03-智能合约是如何发布和运行的？有什么用" class="headerlink" title="0x03 智能合约是如何发布和运行的？有什么用?"></a>0x03 智能合约是如何发布和运行的？有什么用?</h2><h3 id="3-1-智能合约的创建："><a href="#3-1-智能合约的创建：" class="headerlink" title="3.1 智能合约的创建："></a>3.1 智能合约的创建：</h3><p>外部账户发起一个转账交易到0x0地址，合约的代码在data域里。<br><img src="/img/contract_new.png" srcset="/img/loading.gif" lazyload></p>
+<h3 id="3-2-智能合约的部署："><a href="#3-2-智能合约的部署：" class="headerlink" title="3.2 智能合约的部署："></a>3.2 智能合约的部署：</h3><p>主要流程包括以下4个步骤：<br>（1）启动一个以太坊节点/在本地安装hardhat、truffle等平台，他们是solidity编译器；<br>（2）编写智能合约；<br>（3）编写后的智能合约经以太坊虚拟机的编译，成为计算机可运行的字节码；<br>（4）外部账户（合约发起者）发起一个转账交易到0x0地址，编译好的字节码文件在data域里。最终，通过发起交易的形式广播到区块链网络中，由矿工挖矿确认后即可将智能合约存入区块链中，并得到智能合约所在地址及调用合约所需接口。<br>以上就是智能合约的部署方式。</p>
+<p><strong>tips:</strong><br>(1)不是必须的，不一定非要有一个节点 普通用户编写完智能合约之后，在hardhat或者remix等平台本地编译，发送一个新建智能合约的交易到网关节点，由网关节点发送交易到0x0地址，并以广播形式… 重复以上。<br>data域是交易的其中一个内容。</p>
+<h3 id="3-3-智能合约的执行："><a href="#3-3-智能合约的执行：" class="headerlink" title="3.3 智能合约的执行："></a>3.3 智能合约的执行：</h3><p>智能合约可以被外部调用，也可以被另一个合约调用。<br>外部即外部账户，普通用户想要调用智能合约的某个功能,他会</p>
+<pre><code class="hljs">(1) 首先 ，发起一个智能合约交易，data中存储调用的函数。相应的有Gas消耗
+(2) 交易发送到比如网关节点 infura之类的
+infura节点对该交易进行验证，加入自己的交易池中，并向其他节点广播该交易
+(3) 其他节点收到交易之后,也进行验证,并加入交易池,广播给其他节点
+重复以上直到该交易广播到全网 （这个过程时间多少？）
+(4) 矿工节点除了有广播和验证的功能之外，还有打包区块的功能。
+最终，该交易会被一个矿工节点打包到区块上，添加到区块链上。
+(5) 新的区块不断广播，节点验证每个区块，加入到自己本地存储的区块链，也就是账本上。
+注意：每个节点都会执行新产生的区块中的智能合约操作，在EVM中执行。
+</code></pre>
+<p>tips:<br>Infura是一个托管的以太坊节点集群，可以将你开发的以太坊智能合约部署到infura提供的节点上，而无需搭建自己的以太坊节点。通过api调用，可以执行交易，合约交易产生的结果输出到程序中。</p>
+<h2 id="0x04-EVM的作用"><a href="#0x04-EVM的作用" class="headerlink" title="0x04 EVM的作用"></a>0x04 EVM的作用</h2><p>以太坊虚拟机是在沙盒中运行，这是和区块链主链完全隔离的，并且完美地作为测试环境运行。因此，任何想要使用EVM创建智能合约的人，都可以在不受到其他区块链操作的影响下完成。</p>
+<p>注意EVM和节点主机是隔离的，所以智能合约的运行和运行节点客户端的主机之间无关。<br>个人理解：主机运行客户端，所以成为节点。客户端中有EVM和区块链等。<br>至于节点客户端和主机之间有什么交互，我们后续再解答，笔者还未了解详细。</p>
+<h2 id="0x05-以太坊的交易"><a href="#0x05-以太坊的交易" class="headerlink" title="0x05 以太坊的交易"></a>0x05 以太坊的交易</h2><h3 id="5-1-交易的执行"><a href="#5-1-交易的执行" class="headerlink" title="5.1 交易的执行"></a>5.1 交易的执行</h3><p><strong>以太坊一个普通交易是如何执行的？</strong></p>
+<ol>
+<li>用户从Dapp或者钱包初始化一笔交易，比如发送资金或者调用合约。这个类似弹出了MetaMask交易界面。</li>
+<li>用户使用它们的钱包（私钥）签名这个交易。这个例如我们在第一步弹出的交易界面点击确定按钮（签名交易）。</li>
+<li>钱包将签名后的交易发送到连接到以太坊网络的一个节点，通常叫着网关节点。比如我们常用的Infura节点。</li>
+<li>网关节点验证该交易有效并将它放入自己的内存池（交易池/交易队列）中。此时，该交易为Pending状态，所有人都可以读取（前提是提供该项服务）。具体的对象名称在Geth和Parity客户并不相同。进入pending状态的交易代表着将要被交易，具体交易区块由打包矿工决定。</li>
+<li>网关节点将该交易向其它节点（邻近节点）扩散（广播）。这是个Pending交易传播过程。<br>它节点接收到该交易后也验证有效性，然后放入自己的内存池中。然后再向其它节点扩散。这是其它节点将pending放入自己的内存池中。</li>
+<li>重复上述步骤，直到该交易扩散到整个网络。<br>矿工是一种特殊节点，它们除了接收交易和验证它以外，还试图把它加入一个区块。矿工特权，具有打包交易的权利。</li>
+<li>最终，会有一个矿工将该交易打包到区块中（这里假定交易成功并且会被打包）并添加到区块链上（产生一个新区块）。这就是通常所说的挖矿（出块）。<br>新产生的区块向全网广播。（以太坊大概13秒左右出一个块，基本上能够全网广播）。</li>
+<li>所有节点接收到该区块，查看其中包含的交易并将其从自己的内存池中移除。</li>
+</ol>
+<p>当然，这里是有前提的，假定该交易一定被打包，实际上，交易有可能不会被打包，还有可能会被挤出内存池，因为矿工遵循利益最大化原则，谁出的价格高（gasPrice)，先给谁打包，这个原则也催生了跟随交易和抢先交易。</p>
+<h3 id="5-2-交易的种类"><a href="#5-2-交易的种类" class="headerlink" title="5.2 交易的种类"></a>5.2 交易的种类</h3><p><strong>以太坊区块链可以托管三种类型的交易：</strong></p>
+<ol>
+<li><p>首先，你可以将以太坊从一个账户转移到另一个账户。这些转账和比特币转账差不多。例如，你可以转3ETH到房东的账户，作为房租。这些转账记录会包含以下内容：转账生效时的时间戳，转出资金者的地址作为资金的来源，接受者的地址，当然还有资金的数额。</p>
+</li>
+<li><p>用户还可以不给特定对象转账。这类转账就是创建智能合约。例如，假如Jackson和James很聪明，他们打算为特定赌注的条件创建智能合约。这种转账就会包含转出者的账户地址以及时间戳。</p>
+</li>
+<li><p>从外部账户转账到智能合约。每次账户想要执行智能合约，转账就会根据智能合约完成，而且相关的执行规则会记录在数据中，来指导这个合约如何运行。<br>每次上述的转账发生，网络中的节点就会通过EVM来运行特定的代码。</p>
+</li>
+</ol>
+<p><strong>以下内容我并未整理清楚，等待我后续补全！</strong></p>
+<ol>
+<li>智能合约的调用和交易流程</li>
+<li>智能合约有什么新的发展方向</li>
+<li>Solidity 智能合约审计</li>
+<li>其他关于以太坊的知识</li>
+</ol>
+<h2 id="0x06-一些有用的课程和笔记"><a href="#0x06-一些有用的课程和笔记" class="headerlink" title="0x06 一些有用的课程和笔记"></a>0x06 一些有用的课程和笔记</h2><h2 id="0x07-参考链接："><a href="#0x07-参考链接：" class="headerlink" title="0x07 参考链接："></a>0x07 参考链接：</h2><center>欢迎关注我的个人公众号</center>
+
+<p><img src="/img/debug.jpg" srcset="/img/loading.gif" lazyload><section class="footnotes"><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://blog.csdn.net/Mu_Xiaoye/article/details/104299664?spm=1001.2014.3001.5506">https://blog.csdn.net/Mu_Xiaoye/article/details/104299664?spm=1001.2014.3001.5506</a><br><a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://blog.csdn.net/XYlittlework/article/details/118026479">https://blog.csdn.net/XYlittlework/article/details/118026479</a><br><a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:2" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1Vt411X7JF?p=22">https://www.bilibili.com/video/BV1Vt411X7JF?p=22</a><br><a href="#fnref:2" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:2" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://www.jb51.net/blockchain/768106.html">https://www.jb51.net/blockchain/768106.html</a><br><a href="#fnref:2" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:3" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_39430411/article/details/118197937">https://blog.csdn.net/weixin_39430411/article/details/118197937</a><br><a href="#fnref:3" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:4" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://blog.csdn.net/Mu_Xiaoye/article/details/104299664?spm=1001.2014.3001.5506">https://blog.csdn.net/Mu_Xiaoye/article/details/104299664?spm=1001.2014.3001.5506</a><br><a href="#fnref:4" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:5" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1Vt411X7JF?p=22">https://www.bilibili.com/video/BV1Vt411X7JF?p=22</a><br><a href="#fnref:5" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section></p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%8C%BA%E5%9D%97%E9%93%BE/" class="category-chain-item">区块链</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E5%8C%BA%E5%9D%97%E9%93%BE/">#区块链</a>
+      
+        <a href="/tags/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6/">#智能合约</a>
+      
+        <a href="/tags/%E4%BB%A5%E5%A4%AA%E5%9D%8A/">#以太坊</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>区块链智能合约||Web3的投币机</div>
+      <div>https://kitescat.github.io/2022/05/24/SmartContract/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>kitescat</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2022年5月24日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2022/05/27/DH-keyexchange/" title="密码学笔记|Diffie Hellman key exchange 密钥交换协议">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">密码学笔记|Diffie Hellman key exchange 密钥交换协议</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2022/05/23/SignatureSchema/" title="数字签名知多少？| 一篇总结与分类">
+                        <span class="hidden-mobile">数字签名知多少？| 一篇总结与分类</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

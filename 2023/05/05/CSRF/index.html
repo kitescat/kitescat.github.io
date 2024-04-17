@@ -1,0 +1,843 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/icon.ico">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="kitescat">
+  <meta name="keywords" content="web安全">
+  
+    <meta name="description" content="CSRF的关键字有：冒用用户身份凭证，前端same-site,后端token及refer检测防御。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【Web安全基础】CSRF">
+<meta property="og:url" content="https://kitescat.github.io/2023/05/05/CSRF/index.html">
+<meta property="og:site_name" content="kitescat 的博客">
+<meta property="og:description" content="CSRF的关键字有：冒用用户身份凭证，前端same-site,后端token及refer检测防御。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://kitescat.github.io/img/CSRF.png">
+<meta property="article:published_time" content="2023-05-05T03:48:04.000Z">
+<meta property="article:modified_time" content="2024-03-02T09:28:28.324Z">
+<meta property="article:author" content="kitescat">
+<meta property="article:tag" content="渗透测试">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://kitescat.github.io/img/CSRF.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>【Web安全基础】CSRF - kitescat 的博客</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"kitescat.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"Bdvwiy7o0pH7cQqR3w5tSkwq-gzGzoHsz","app_key":"F1k0q0hNrqIoyqh5dgzVHVYi","server_url":null,"path":"window.location.pathname","ignore_local":false,"security":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>kitescat&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/CSRF.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="【Web安全基础】CSRF"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-05-05 11:48" pubdate>
+          2023年5月5日 中午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          4.3k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          36 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">【Web安全基础】CSRF</h1>
+            
+            <div class="markdown-body">
+              
+              <div class="note note-info">
+            <p>本Web安全基础推文系列旨在以平白的语言讲解漏洞原理，文章多数内容为我本人的学习笔记与总结，汇总供大家参考。</p>
+          </div>
+
+<h2 id="1-CSRF原理"><a href="#1-CSRF原理" class="headerlink" title="1 CSRF原理"></a>1 CSRF原理</h2><p>CSRF, Cross-site request forgery，即“跨站请求伪造”，是指攻击者可能利用网页中的恶意<br>代码强迫受害者浏览器向被攻击的Web站点发送伪造的请求，篡夺受害者的认证Cookie等身份<br>信息，从而假冒受害者对目标站点执行指定的操作。<br>简单来讲，CSRF 攻击就是黑客冒用用户身份并通过第三方的站点执行非法操作。这种攻击我们也称为“One Click Attack”或者Session Riding。</p>
+<h3 id="1-1-什么是cookie？"><a href="#1-1-什么是cookie？" class="headerlink" title="1.1 什么是cookie？"></a>1.1 什么是cookie？</h3><p>在 Web认证中 ,因为HTTP协议本身的局限，必须采用其他技术将相关认证标记以某种方式持续传送，以免客户从一个页面跳转至另一个页面时重新输入认证信息。<br>Cookie由一个名称（Name）、一个值（Value）和其它几个用于控制Cookie有效期、安全性、使用范围的可选属性组成。<br>图片</p>
+<p>csrf漏洞的成因就是网站的cookie在浏览器中不会过期，只要不关闭浏览器或者退出登录，那以后只要是访问这个网站，都会默认你已经登录的状态。而在这个期间，攻击者发送了构造好的csrf脚本或包含csrf脚本的链接，可能会执行一些用户不想做的功能（比如是添加账号等）。这个操作不是用户真正想要执行的。<br><a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/web/206407.html">https://www.freebuf.com/articles/web/206407.html</a><br>1.2 攻击流程</p>
+<p>一个典型的CSRF攻击有着如下的流程：</p>
+<p>受害者登录 a.com，并保留了登录凭证（Cookie）。</p>
+<p>攻击者引诱受害者访问 b.com。</p>
+<ul>
+<li>b.com 向 a.com 发送了一个请求：a.com/act=xx。浏览器会默认携带 a.com 的 Cookie。</li>
+<li>a.com 接收到请求后，对请求进行验证，并确认是受害者的凭证，误以为是受害者自己发送的请求。</li>
+<li>a.com 以受害者的名义执行了 act=xx。</li>
+<li>攻击完成，攻击者在受害者不知情的情况下，冒充受害者，让 a.com 执行了自己定义的操作。</li>
+</ul>
+<p>图片</p>
+<p>典型的CSRF攻击</p>
+<p>一个CSRF漏洞攻击的实现，其需要由三个部分来构成</p>
+<ul>
+<li>有一个漏洞存在（无需验证、任意修改后台数据、新增请求）；</li>
+<li>伪装数据操作请求的恶意链接或者页面；</li>
+<li>诱使用户主动访问或登录恶意链接，触发非法操作</li>
+</ul>
+<h2 id="2-CSRF防御"><a href="#2-CSRF防御" class="headerlink" title="2 CSRF防御"></a>2 CSRF防御</h2><p>CSRF的防御可以从两个方面考虑，一是后台接口层做防御，另一个则是在前端做防御。</p>
+<h3 id="2-1-后端防御CSRF"><a href="#2-1-后端防御CSRF" class="headerlink" title="2.1 后端防御CSRF"></a>2.1 后端防御CSRF</h3><p>后端防御主要是区分哪些请求是恶意请求，哪些请求是来自本网站的请求。区分恶意请求的方式有很多，以下介绍两种。</p>
+<p>一、CSRF Token</p>
+<p>这种方式是在表单页面生成一个随机数，这个随机数一定要后端生成，并且对这个随机数进行存储。举个例子，在前端页面中，对这个Token表单项进行隐藏。代码如下：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs routeros">&lt;form <span class="hljs-attribute">method</span>=<span class="hljs-string">&quot;post&quot;</span> <span class="hljs-attribute">action</span>=<span class="hljs-string">&quot;/transfer&quot;</span>&gt;<br>&lt;input <span class="hljs-attribute">type</span>=<span class="hljs-string">&quot;hidden&quot;</span> <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;_csrf&quot;</span> <span class="hljs-attribute">value</span>=<span class="hljs-string">&quot;4bfd1575-3ad1-4d21-96c7-4ef2d9f86721&quot;</span>/&gt;<br>&lt;input <span class="hljs-attribute">type</span>=<span class="hljs-string">&quot;text&quot;</span> <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;amount&quot;</span>/&gt;<br>&lt;input <span class="hljs-attribute">type</span>=<span class="hljs-string">&quot;hidden&quot;</span> <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;account&quot;</span>/&gt;<br>&lt;input <span class="hljs-attribute">type</span>=<span class="hljs-string">&quot;submit&quot;</span> <span class="hljs-attribute">value</span>=<span class="hljs-string">&quot;Transfer&quot;</span>/&gt;&lt;/form&gt;<br></code></pre></td></tr></table></figure>
+<p>_csrf就是CSRF Token。我们看到他的value是一个UUID，这个UUID是后台生成的。当用户点击转账按钮时，会给银行的后台发送请求，请求中包含_csrf参数，如下：</p>
+<p>POST /transfer HTTP/1.1Host: <a target="_blank" rel="noopener" href="http://www.a-bank.comcookie/">www.a-bank.comCookie</a>: JSESSIONID=randomidContent-Type: application/x-www-form-urlencoded<br>amount=100.00&amp;account=9876&amp;_csrf=4bfd1575-3ad1-4d21-96c7-4ef2d9f86721</p>
+<p>银行后台接收到这个请求后，判断_csrf的值是否存在，如果存在则是自己网站的请求，进行后续的流程；如果不存在，则是恶意网站的请求，直接忽略。</p>
+<p>二、通过请求头中的referer字段判断请求的来源</p>
+<p>每一个发送给后端的请求，在http请求头中都会包含一个referer字段，这个字段标识着请求的来源。如果请求是从银行网站发出的，这个字段会是银行网站转账页的链接，比如：<a target="_blank" rel="noopener" href="https://www.a-bank.com/transfer-view%EF%BC%9B%E5%A6%82%E6%9E%9C%E6%98%AF%E4%BB%8E%E6%81%B6%E6%84%8F%E7%BD%91%E7%AB%99%E5%8F%91%E5%87%BA%E7%9A%84%EF%BC%8C%E9%82%A3%E4%B9%88referer%E5%AD%97%E6%AE%B5%E4%B8%8D%E4%BC%9A%E6%98%AF%E9%93%B6%E8%A1%8C%E7%BD%91%E7%AB%99%E3%80%82%E6%88%91%E4%BB%AC%E5%9C%A8%E5%81%9A%E5%90%8E%E7%AB%AF%E9%98%B2%E5%BE%A1%E6%97%B6%EF%BC%8C%E5%8F%AF%E4%BB%A5%E5%85%88%E5%8F%96%E5%87%BA%E6%AF%8F%E4%B8%AA%E8%AF%B7%E6%B1%82%E7%9A%84%E8%AF%B7%E6%B1%82%E5%A4%B4%E4%B8%AD%E7%9A%84referer%E5%AD%97%E6%AE%B5%EF%BC%8C%E5%88%A4%E6%96%AD%E6%98%AF%E4%B8%8D%E6%98%AF%E4%BB%A5%E8%87%AA%E5%B7%B1%E7%BD%91%E7%AB%99%E7%9A%84%E5%9F%9F%E5%90%8D%E5%BC%80%E5%A4%B4%EF%BC%8C%E5%9C%A8%E5%92%B1%E4%BB%AC%E7%9A%84%E7%A4%BA%E4%BE%8B%E4%B8%AD%EF%BC%8C%E5%A6%82%E6%9E%9Creferer%E5%AD%97%E6%AE%B5%E6%98%AF%E4%BB%A5https://www.a-bank.com/%E5%BC%80%E5%A4%B4%E7%9A%84%EF%BC%8C%E5%88%99%E7%BB%A7%E7%BB%AD%E6%89%A7%E8%A1%8C%E8%BD%AC%E8%B4%A6%E6%93%8D%E4%BD%9C%EF%BC%9B%E5%A6%82%E6%9E%9C%E4%B8%8D%E6%98%AF%EF%BC%8C%E5%88%99%E7%9B%B4%E6%8E%A5%E5%BF%BD%E7%95%A5%E6%8E%89%E8%BF%99%E4%B8%AA%E8%AF%B7%E6%B1%82%E3%80%82">https://www.a-bank.com/transfer-view；如果是从恶意网站发出的，那么referer字段不会是银行网站。我们在做后端防御时，可以先取出每个请求的请求头中的referer字段，判断是不是以自己网站的域名开头，在咱们的示例中，如果referer字段是以https://www.a-bank.com/开头的，则继续执行转账操作；如果不是，则直接忽略掉这个请求。</a></p>
+<p>以上就是后端防御CSRF攻击的两种方式，都需要在后端做特殊的处理。当然也可以在前端做处理，我们接着往下看。</p>
+<h3 id="2-2-前端防御CSRF"><a href="#2-2-前端防御CSRF" class="headerlink" title="2.2 前端防御CSRF"></a>2.2 前端防御CSRF</h3><p>既然CSRF攻击的危害这么大，为什么不能在前端禁止这种请求呢？各大浏览器厂商似乎也注意到了这个问题，谷歌提出了same-site cookies概念，same-site cookies 是基于 Chrome 和 Mozilla 开发者花了三年多时间制定的 IETF 标准。它是在原有的Cookie中，新添加了一个SameSite属性，它标识着在非同源的请求中，是否可以带上Cookie，它可以设置为3个值，分别为：1) Strict 2) Lax 3) None</p>
+<p>Cookie中的内容为：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs routeros">POST /transfer HTTP/1.1Host: www.a-bank.com<br>Cookie: <span class="hljs-attribute">JSESSIONID</span>=randomid; <span class="hljs-attribute">SameSite</span>=Strict;<br></code></pre></td></tr></table></figure>
+<p>Strict是最严格的，它完全禁止在跨站情况下，发送Cookie。只有在自己的网站内部发送请求，才会带上Cookie。不过这个规则过于严格，会影响用户的体验。比如在一个网站中有一个链接，这个链接连接到了GitHub上，由于SameSite设置为Strict，跳转到GitHub后，GitHub总是未登录状态。</p>
+<p>Lax的规则稍稍放宽了些，大部分跨站的请求也不会带上Cookie，但是一些导航的Get请求会带上Cookie，如下：</p>
+<p>请求类型</p>
+<p>示例</p>
+<p>Lax情况</p>
+<p>链接</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">href</span>=<span class="hljs-string">&quot;...&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span><br></code></pre></td></tr></table></figure>
+<p>发送 Cookie</p>
+<p>预加载</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs routeros">&lt;link <span class="hljs-attribute">rel</span>=<span class="hljs-string">&quot;prerender&quot;</span> <span class="hljs-attribute">href</span>=<span class="hljs-string">&quot;...&quot;</span>/&gt;<br></code></pre></td></tr></table></figure>
+<p>发送 Cookie</p>
+<p>GET 表单</p>
+<figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs oxygene">&lt;form <span class="hljs-function"><span class="hljs-keyword">method</span>=&quot;<span class="hljs-title">GET</span>&quot; <span class="hljs-title">action</span>=&quot;...&quot;&gt;</span><br></code></pre></td></tr></table></figure>
+<p>发送 Cookie</p>
+<p>POST 表单</p>
+<figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs oxygene">&lt;form <span class="hljs-function"><span class="hljs-keyword">method</span>=&quot;<span class="hljs-title">POST</span>&quot; <span class="hljs-title">action</span>=&quot;...&quot;&gt;</span><br></code></pre></td></tr></table></figure>
+<p>不发送</p>
+<p>iframe</p>
+<p>frameLabelStart–frameLabelEnd</p>
+<p>不发送</p>
+<p>AJAX</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs routeros">$.<span class="hljs-builtin-name">get</span>(<span class="hljs-string">&quot;...&quot;</span>)<br></code></pre></td></tr></table></figure>
+<p>不发送</p>
+<p>Image</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs routeros">&lt;img <span class="hljs-attribute">src</span>=<span class="hljs-string">&quot;...&quot;</span>&gt;<br></code></pre></td></tr></table></figure>
+<p>不发送</p>
+<p>上面的表格就是SameSite设置为Lax的时候，Cookie的发送情况。</p>
+<p>None就是关闭SameSite属性，所有的情况下都发送Cookie。不过SameSite设置None，还要同时设置Cookie的Secure属性，否则是不生效的。</p>
+<h2 id="3-常见问题"><a href="#3-常见问题" class="headerlink" title="3 常见问题"></a>3 常见问题</h2><ol>
+<li>CSRF 与 SSRF 区别</li>
+</ol>
+<ul>
+<li>CSRF (Cross-Site Request Forgery) 即跨站请求伪造，伪造用户请求，冒用用户身份。</li>
+<li>SSRF (Server-Side Request Forgery) 即服务端请求伪造，就是伪造一个服务端请求，攻击者伪造服务端的请求发起攻击，攻击者借由服务端为跳板来攻击目标系统。</li>
+</ul>
+<p>用非常通俗的语言讲的话，CSRF 更像是钓鱼的举动，是用户攻击用户的；而对于 SSRF 来说，是由服务器发出请求，用户攻击服务器的。</p>
+<ol start="2">
+<li>XSS 与 CSRF的区别</li>
+</ol>
+<p>XSS (Cross Site Scripting) 跨站脚本攻击 与 CSRF 的最大区别在于对 Cookie 的使用，XSS 把受害者 的 Cookie 偷过来，而 CSRF 则是借用了受害者的 Cookie。</p>
+<ol start="3">
+<li>samesite防御CSRF的原理</li>
+</ol>
+<p>在原有的Cookie中，新添加了一个SameSite属性，它标识着在非同源的请求中，是否可以带上Cookie，它可以设置为3个值，分别为：Strict Lax None</p>
+<ol start="4">
+<li>json格式的CSRF如何防御？</li>
+</ol>
+<p>前景知识：</p>
+<p>json格式的CSRF存在的条件是POST 传参采用 JSON 格式，而不是传统的parameter=value的格式。一般采用 Json 格式传输参数时，请求包中都有 Content-Type 头，一般服务器也会验证 Content-Type 值是否为 application/json，当服务器验证 Content-Type 时，若不符合要求，则会抛出异常，导致传输的数据失效。</p>
+<p>1）用户操作验证，在提交数据时需要输入验证码</p>
+<p>2）请求来源验证，验证请求来源的referer</p>
+<p>3）表单token验证</p>
+<ol start="5">
+<li>什么是同源策略？</li>
+</ol>
+<p>同源策略由Netscape公司引入浏览器。目前，所有浏览器都实行这个策略。含义是指：A网页设置的Cookie，B网页不能打开，除非这两个网页“同源”。所谓同源指的是“三个相同”</p>
+<ul>
+<li>协议相同</li>
+<li>域名相同</li>
+<li>端口相同<h2 id="4-总结"><a href="#4-总结" class="headerlink" title="4 总结"></a>4 总结</h2>CSRF的关键字有：冒用用户身份凭证，前端same-site,后端token及refer检测防御。由于还在学习阶段，CSRF总结笔记后面再进行补充。<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2></li>
+</ul>
+<section class="footnotes"><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/7911">https://xz.aliyun.com/t/7911</a>
+<a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:2" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/beta/article/1458194">https://cloud.tencent.com/developer/beta/article/1458194</a>
+<a href="#fnref:2" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:3" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/XRqiLVdUzvzhD-bw2L3hhQ">https://mp.weixin.qq.com/s/XRqiLVdUzvzhD-bw2L3hhQ</a>
+<a href="#fnref:3" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:4" class="footnote-text"><span>WEB常见漏洞之CSRF（靶场篇）
+<a href="#fnref:4" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/" class="category-chain-item">渗透测试</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/">#渗透测试</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>【Web安全基础】CSRF</div>
+      <div>https://kitescat.github.io/2023/05/05/CSRF/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>kitescat</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年5月5日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/05/06/SQL%E6%B3%A8%E5%85%A5%E4%B9%8B%E5%A0%86%E5%8F%A0%E6%B3%A8%E5%85%A5/" title="【Sql注入】堆叠注入">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">【Sql注入】堆叠注入</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/04/26/SQL%E6%B3%A8%E5%85%A5%E4%B9%8BHTTP%E6%B3%A8%E5%85%A5/" title="【Sql注入】HTTP注入">
+                        <span class="hidden-mobile">【Sql注入】HTTP注入</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

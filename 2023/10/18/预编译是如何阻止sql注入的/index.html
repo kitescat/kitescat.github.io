@@ -1,0 +1,834 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/icon.ico">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="kitescat">
+  <meta name="keywords" content="web安全">
+  
+    <meta name="description" content="预编译，“预”的是什么？">
+<meta property="og:type" content="article">
+<meta property="og:title" content="预编译是如何阻止sql注入的">
+<meta property="og:url" content="https://kitescat.github.io/2023/10/18/%E9%A2%84%E7%BC%96%E8%AF%91%E6%98%AF%E5%A6%82%E4%BD%95%E9%98%BB%E6%AD%A2sql%E6%B3%A8%E5%85%A5%E7%9A%84/index.html">
+<meta property="og:site_name" content="kitescat 的博客">
+<meta property="og:description" content="预编译，“预”的是什么？">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://kitescat.github.io/img/prestatement.png">
+<meta property="article:published_time" content="2023-10-17T17:39:24.000Z">
+<meta property="article:modified_time" content="2024-03-02T09:21:05.663Z">
+<meta property="article:author" content="kitescat">
+<meta property="article:tag" content="sql注入">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://kitescat.github.io/img/prestatement.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>预编译是如何阻止sql注入的 - kitescat 的博客</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"kitescat.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"Bdvwiy7o0pH7cQqR3w5tSkwq-gzGzoHsz","app_key":"F1k0q0hNrqIoyqh5dgzVHVYi","server_url":null,"path":"window.location.pathname","ignore_local":false,"security":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>kitescat&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/prestatement.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="预编译是如何阻止sql注入的"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-10-18 01:39" pubdate>
+          2023年10月18日 凌晨
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          4.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          39 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">预编译是如何阻止sql注入的</h1>
+            
+            <div class="markdown-body">
+              
+              <p>本篇主要分享sql注入防御之预编译的原理，并解释模糊查询语句如何适配预编译。预编译是利用占位符替代参数值，预先建立语法树的过程。注入的恶意SQL语句只会被视为参数，参与不了SQL语句的语法树构建，也就无法改变其语法结构，也就无法达到编译恶意语句的目的。然而，预编译有一些局限性，比如，模糊查询由于存在% _使得参数值是不确定的，需要修改预编译语句。</p>
+<h2 id="1-SQL注入原理"><a href="#1-SQL注入原理" class="headerlink" title="1 SQL注入原理"></a>1 SQL注入原理</h2><p>sql注入是指攻击者拼接恶意SQL语句到接受外部参数的动态SQL查询中，程序本身未对插入的SQL语句进行过滤，导致SQL语句直接被服务端执行。<br>拼接的SQL查询例如，通过在id变量后插入or 1=1这样的条件，来绕过身份验证，获得未授权数据的访问权。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs SQL"><span class="hljs-keyword">SELECT</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">FROM</span> <span class="hljs-keyword">user</span> <span class="hljs-keyword">WHERE</span> id <span class="hljs-operator">=</span> <span class="hljs-number">-1</span> <span class="hljs-keyword">or</span> <span class="hljs-number">1</span><span class="hljs-operator">=</span><span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+<p>由于or 1=1 满足永真结果，sql语句会执行输出user中的全部内容。<br><img src="/img/pre_ex1.png" srcset="/img/loading.gif" lazyload></p>
+<p>拼接后的执行结果示例如上</p>
+<h2 id="2-SQL注入的防御方式"><a href="#2-SQL注入的防御方式" class="headerlink" title="2 SQL注入的防御方式"></a>2 SQL注入的防御方式</h2><ol>
+<li><p>定制严格的白名单校验，加强对用户输入的验证，限制用户输入。限制用户输入内容的大小和数据类型，强制执行适当的限制与转换，并在用户提交请求的时候进行检查，凡不符合该类型的提交就认为是非法请求。限制查询长度：SQL注入需要构造较长的SQL语句。</p>
+</li>
+<li><p>设置数据库权限，遵循最小化原则。根据程序要求为特定的表设置特定的权限，如：某段程序对某表只需具备select权限即可，这样即使程序存在问题，恶意用户也无法对表进行update或insert等写入操作。严格区分普通用户与管理员用户的权限。如果页面查询用户使用的是root，注入时被带入了drop table,drop database等语句，后果将不堪设想 。</p>
+</li>
+<li><p>限制目录权限：WEB目录应至少遵循“可写目录不可执行，可执行目录不可写”的原则，在此基础上，对各目录进行必要的权限细化。建议是不要给执行权限。</p>
+</li>
+<li><p>预编译。使用参数而不是将用户输入变量嵌入到SQL语句中，可以杜绝大部分的SQL注入式攻击。</p>
+</li>
+</ol>
+<p>那么，终于引出文章的主角——预编译。</p>
+<div class="note note-info">
+            <p>以MySQL为例，数据库在执行SQL语句时，需要经历7个步骤：</p>
+          </div>
+
+<ul>
+<li><p>词法分析：将SQL语句分解成一个个token（关键字、标识符、运算符），然后对token进行分类和解析，生成相应的数据结构。</p>
+</li>
+<li><p>语法分析：根据SQL语法检测规则检查语法是否正确，并生成语法树。</p>
+</li>
+<li><p>语义分析：遍历语法树，确定表和列等信息，同时检查语义的正确性。优化处理：使用优化器对SQL语句进行处理和优化，比如执行计划、索引等。</p>
+</li>
+<li><p>执行计划：使用执行计划生成器生成SQL语句的执行计划，比如数据的访问方式，索引的使用方式等。</p>
+</li>
+<li><p>引擎执行：将执行计划发送给相应的数据库引擎进行处理，执行计划被翻译成底层的操作指令，执行数据扫描、索引查找、排序、分组等操作。</p>
+</li>
+<li><p>返回数据：将执行结果返回给客户端，比如查询结果集或操作结果。在这里，我们粗暴的把执行过程理解成两步，即：先编译SQL语法结构（1<del>3步），再执行SQL语句（4</del>7步）。</p>
+</li>
+</ul>
+<div class="note note-info">
+            <p>SQL编译的过程包括：</p>
+          </div>
+
+<ul>
+<li><p>词法分析 Scanning 分词</p>
+</li>
+<li><p>语法分析 Syntax 组句</p>
+</li>
+<li><p>语义分析 Semantic 识意 收集标识符的属性信息 和 对语义的检查（检查合法性）</p>
+</li>
+</ul>
+<h2 id="3-预编译的原理"><a href="#3-预编译的原理" class="headerlink" title="3 预编译的原理"></a>3 预编译的原理</h2><p>预编译：用占位符替代参数值，预先建立语法树。恶意语句不参与语法书的建立，所以不影响SQL语法，也就无法造成恶意注入。最初的目的是提高代码的复用性，因为有很多只有参数值不同的SQL（完全相同的SQL会从缓存里查），比如：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs SQL"><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> <span class="hljs-keyword">user</span> <span class="hljs-keyword">where</span> id<span class="hljs-operator">=</span><span class="hljs-string">&#x27;1&#x27;</span><br><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> <span class="hljs-keyword">user</span> <span class="hljs-keyword">where</span> id<span class="hljs-operator">=</span><span class="hljs-string">&#x27;2&#x27;</span><br></code></pre></td></tr></table></figure>
+<p>这些SQL的语法树相同，但每次都要进行重复的编译，很浪费时间。SQL预编译将SQL语句模板化，用占位符替代值（参数化绑定）并存储在数据库中，以便在需要时再传入值执行，省掉了重复建立语法树的时间，实现快速执行。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs SQL">select * from user where id=&#123;占位符&#125;<br></code></pre></td></tr></table></figure>
+<p>以MySQL为例，利用mysqli的预编译功能编写的核心PHP语句为：</p>
+<p>//定义需要预编译的SQL语句，从外界传递的参数（输入）用占位符?表示</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-variable">$sql</span>= <span class="hljs-string">&quot;SELECT FROM security.users WHERE id= ? LIMIT 0,1&quot;</span>;<br><span class="hljs-regexp">//</span>创建预处理对象<br><span class="hljs-variable">$mysqli_stmt</span> = <span class="hljs-variable">$mysqli</span>-&gt;prepare(<span class="hljs-variable">$sql</span>);<br><span class="hljs-regexp">//</span>绑定参数<br><span class="hljs-variable">$mysqli_stmt</span>-&gt;bind_param(<span class="hljs-string">&#x27;i&#x27;</span>, <span class="hljs-variable">$id</span>);<br><span class="hljs-regexp">//</span>绑定结果集<br><span class="hljs-variable">$mysqli_stmt</span>-&gt;bind_result(<span class="hljs-variable">$id</span>, <span class="hljs-variable">$username</span>, <span class="hljs-variable">$password</span>);<br><span class="hljs-regexp">//</span>执行<br><span class="hljs-variable">$mysqli_stmt</span>-&gt;execute();<br></code></pre></td></tr></table></figure>
+
+<p>预编译语句的优势在于：一次编译、多次运行，省去了解析优化等过程。</p>
+<p>预编译防止SQL注入的原理</p>
+<p>正常情况下，用户输入的参数会直接参与SQL语法的编译，而预编译则是先构建语法树，确定SQL语法结构以后，再拼接用户的参数。注入的恶意SQL语句只会被视为参数，参与不了SQL语句的语法树构建，也就无法改变其语法结构，也就无法达到编译恶意语句的目的。</p>
+<p>比如：不使用预编译，用单引号提前闭合的方式注入恶意SQL语句</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">select</span> count(<span class="hljs-number">1</span>) <span class="hljs-keyword">from</span> students <span class="hljs-keyword">where</span> <span class="hljs-type">name</span>=<span class="hljs-string">&#x27;张三&#x27;</span> <span class="hljs-keyword">or</span> <span class="hljs-string">&#x27;1=1&#x27;</span>；<br></code></pre></td></tr></table></figure>
+<p>使用了预编译：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">select</span> count(<span class="hljs-number">1</span>) <span class="hljs-keyword">from</span> students <span class="hljs-keyword">where</span> <span class="hljs-type">name</span>=<span class="hljs-string">&#x27;张三” or “1=1&#x27;</span>；<br></code></pre></td></tr></table></figure>
+<p>这里payload是张三’ or ‘1=1，会被当做参数，单引号会被转义成’’，从数据库查的时候，查的就是name=’张三’ or ‘1=1’,而数据库不会存在名字为’张三’ or ‘1=1’的人，所有查不到。</p>
+<h2 id="4-预编译的局限性"><a href="#4-预编译的局限性" class="headerlink" title="4 预编译的局限性"></a>4 预编译的局限性</h2><p>预编译的机制是先编译，再传值，用户传递的参数无法改变SQL语法结构，从根本上解决了SQL注入的问题。但并不是所有参数都可以使用预编译。</p>
+<ul>
+<li><p>比如动态表名和列名的场景：在生成语法树的过程中，预处理器在进一步检查解析后的语法树时，会检查数据表和数据列是否存在，因此数据表和数据列不能被占位符?所替代。但在很多业务场景中，表名需要作为一个变量存在，因此这部分仍需由加号进行SQL语句的拼接，若表名是由外部传入且可控的，仍会造成SQL注入。</p>
+</li>
+<li><p>动态传参的场景，如动态表名，列名，Order by $param，不能使用预编译，应该使用严格的白名单校验。order by后一般是接字段名，而字段名是不能带引号的，比如 order by username；如果带上引号成了order by ‘username’，那username就是一个字符串不是字段名了，这就产生了语法错误。一方面预编译又只有自动加引号的setString()方法，没有不加引号的方法；而另一方面order by后接的字段名不能有引号。</p>
+</li>
+<li><p>凡是字符串但又不能加引号的位置都不能参数化；包括sql关键字、库名表名字段名函数名等等。不能参数化的位置。不管怎么拼接，最终都是和使用“+”号拼接字符串的功效一样：拼成了sql语句但没有防sql注入的效果。</p>
+</li>
+</ul>
+<h2 id="5-模糊查询预编译"><a href="#5-模糊查询预编译" class="headerlink" title="5 模糊查询预编译"></a>5 模糊查询预编译</h2><p>模糊查询本身并不支持预编译，占位符 ? 不适用于模糊查询中的通配符 %。占位符只能用于替换具体的值，而不能用于替换SQL语句中的其他结构，如通配符或标识符，因为预编译需要明确的参数值来进行参数绑定，所以无法进行预编译。例如：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">SELECT</span> * <span class="hljs-keyword">FROM</span> users <span class="hljs-keyword">WHERE</span> <span class="hljs-type">name</span> <span class="hljs-keyword">LIKE</span> ‘%abc%’<br></code></pre></td></tr></table></figure>
+<p>这个查询会返回名字中包含“abc”的所有用户。但是，由于通配符的存在，参数值是不确定的，因此无法进行预编译。当执行如下语句时，会报错：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">SELECT</span> * <span class="hljs-keyword">FROM</span> users <span class="hljs-keyword">WHERE</span> <span class="hljs-type">name</span> <span class="hljs-keyword">LIKE</span> ‘%?%’<br></code></pre></td></tr></table></figure>
+<p>报错：Parameter index out of range (1 &gt; number of parameters, which is 0).</p>
+<p>%?%是字符串，所以不会被当做一个参数解析。</p>
+<p>解决方案是修改语句如下：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">select</span> id,<span class="hljs-type">name</span>,age <span class="hljs-keyword">from</span> people <span class="hljs-keyword">where</span> address <span class="hljs-keyword">LIKE</span><br><br>concat(<span class="hljs-string">&#x27;%&#x27;</span>,?,<span class="hljs-string">&#x27;%&#x27;</span>) <span class="hljs-keyword">order</span> <span class="hljs-keyword">by</span> id <span class="hljs-keyword">desc</span>；<br><br><span class="hljs-keyword">select</span> id,<span class="hljs-type">name</span>,age <span class="hljs-keyword">from</span> people <span class="hljs-keyword">where</span> address <span class="hljs-keyword">LIKE</span><br><br>concat(<span class="hljs-string">&#x27;%&#x27;</span>,#&#123;key,jdbcType=<span class="hljs-type">VARCHAR</span>&#125;,<span class="hljs-string">&#x27;%&#x27;</span>) <span class="hljs-keyword">order</span> <span class="hljs-keyword">by</span> id <span class="hljs-keyword">desc</span>；<br></code></pre></td></tr></table></figure>
+<p>Mybatis场景下$和#的区别</p>
+<p>${}:表示拼接sql串，将接收到参数的内容不加任何修饰拼接在sql中，可能引发sql注入。</p>
+<p>#{ }是预编译处理，MyBatis在处理#{ }时，它会将sql中的#{ }替换为？，然后调用PreparedStatement的set方法来赋值，传入字符串后，会在值两边加上单引号，使用占位符的方式提高效率，可以防止sql注入。因此最好使用#{ }方式。</p>
+<h2 id="6-总结"><a href="#6-总结" class="headerlink" title="6 总结"></a>6 总结</h2><p>预编译是利用占位符替代参数值，预先建立语法树的过程。注入的恶意SQL语句只会被视为参数，参与不了SQL语句的语法树构建，也就无法改变其语法结构，也就无法达到编译恶意语句的目的。然而，预编译有一些局限性，比如，模糊查询由于存在% _使得参数值是不确定的，需要修改预编译语句。</p>
+<p>我的上一篇博客出现了两个错误，我这里做出勘误。</p>
+<p>我在查找相关资料的时候，在知乎上遇到了错误的回答（而且还是一个大佬的回答），大致是强调Java预编译会做强制类型转换来防止SQL注入。注意预编译防止SQL注入并不是从强制类型转换这一角度出发的，setstring()这类操作只是Java预编译对用户输入增加的过滤操作而已。务必记住关键词，那就是语法树的建立。模糊查询也是可以通过修改语句来适配预编译的。再次强调，希望大家在学习的时候务必多搜索多求证，避免出现知识误区。</p>
+<h2 id="7-参考链接"><a href="#7-参考链接" class="headerlink" title="7 参考链接"></a>7 参考链接</h2><section class="footnotes"><div class="footnote-list"><ol><li><span id="fn:1" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://www.zhihu.com/question/52869762/answer/132471224">https://www.zhihu.com/question/52869762/answer/132471224</a>
+<a href="#fnref:1" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:2" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/578134933">https://zhuanlan.zhihu.com/p/578134933</a>
+<a href="#fnref:2" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:3" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://blog.csdn.net/wangyuxiang946/article/details/132356363">https://blog.csdn.net/wangyuxiang946/article/details/132356363</a>
+<a href="#fnref:3" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:4" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://blog.csdn.net/HZX19941018/article/details/100047456">https://blog.csdn.net/HZX19941018/article/details/100047456</a>
+<a href="#fnref:4" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:5" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html">https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html</a>
+<a href="#fnref:5" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:6" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://segmentfault.com/a/1190000040023061">https://segmentfault.com/a/1190000040023061</a>
+<a href="#fnref:6" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:7" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/210732421">https://zhuanlan.zhihu.com/p/210732421</a>
+<a href="#fnref:7" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:8" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_34868715/article/details/100734095">https://blog.csdn.net/qq_34868715/article/details/100734095</a>
+<a href="#fnref:8" rev="footnote" class="footnote-backref"> ↩</a></span></span></li><li><span id="fn:9" class="footnote-text"><span><a target="_blank" rel="noopener" href="https://blog.csdn.net/jie11447416/article/details/51318389">https://blog.csdn.net/jie11447416/article/details/51318389</a>
+<a href="#fnref:9" rev="footnote" class="footnote-backref"> ↩</a></span></span></li></ol></div></section>
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/" class="category-chain-item">渗透测试</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/sql%E6%B3%A8%E5%85%A5/">#sql注入</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>预编译是如何阻止sql注入的</div>
+      <div>https://kitescat.github.io/2023/10/18/预编译是如何阻止sql注入的/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>kitescat</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年10月18日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/12/30/%E5%B9%B4%E5%BA%A6%E6%80%BB%E7%BB%93/" title="【開山安全】2023年度总结">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">【開山安全】2023年度总结</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/08/16/redteam-fast/" title="【干货】红队打点技巧总结">
+                        <span class="hidden-mobile">【干货】红队打点技巧总结</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

